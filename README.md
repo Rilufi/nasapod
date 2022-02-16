@@ -15,4 +15,4 @@ Bot consiste em pegar imagem + texto do APOD, assim como a referência do site. 
 Como esse bot é irmão do meu outro bot pra dados do covid, qualquer outra informação sobre python, pip e API do Twitter podem ser encontradas em https://github.com/Rilufi/coronga
 
 ## e deu certo?
-Opa, pra checar os resultados só procurar o Nasobot ou entrar aqui: https://twitter.com/twbyuorit
+Opa, pra checar os resultados só procurar o [Nasobot](https://twitter.com/nasobot)
