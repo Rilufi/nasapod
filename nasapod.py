@@ -3,7 +3,6 @@
 import tweepy
 import os
 import sys
-from nasa import apod
 import urllib.request
 import requests
 
@@ -13,26 +12,14 @@ consumer_key = ''
 consumer_secret = ''
 access_token = ''
 access_token_secret = ''
+api_key = ''
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
-os.environ['NASA_API_KEY'] = ''
-api_key = ''
 
-# Get the picture/explanation
-
-picture = apod.apod()
-site = str(picture.url)
-explanation = str(picture.explanation)
-
-toReply = "" # user to get most recent tweet
-
-site = picture.url
-title = picture.title
-
-# Get the video thumbnail
+# Get the picture, explanation and/or video thumbnail
 
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
@@ -41,9 +28,11 @@ params = {
       'thumbs':'True'
   }
 response = requests.get(URL_APOD,params=params).json()
+site = (response.get('url'))
 thumbs = (response.get('thumbnail_url'))
-type = (response.get('media_type'))
-
+media = (response.get('media_type'))
+explanation = (response.get('explanation'))
+title = (response.get('title'))
 
 mystring = f""" Astronomy Picture of the Day
 
@@ -53,11 +42,11 @@ Fonte: {site}"""
 
 # Decide whether is an image or a video and post
 
-if type == 'image':
+if media == 'image':
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
     api.update_with_media(image, mystring)
-elif type == 'video':
+elif media == 'video':
     urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
     video = 'apodvideo.jpeg'
     api.update_with_media(video, mystring)
@@ -79,12 +68,14 @@ def get_chunks(s, maxlength):
 
 chunks = get_chunks(myexstring, 280)
 
-# Make list with line lengths:
+#Make list with line lengths:
 chunkex = [(n) for n in chunks]
 
 coun = 0
 
 # Post the explanation
+
+toReply = "nasobot" #user to get most recent tweet
 
 while coun < len(chunkex):
     tweets = api.user_timeline(screen_name = toReply, count=1)
