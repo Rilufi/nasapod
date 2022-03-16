@@ -8,11 +8,11 @@ import requests
 
 # Autentication
 
-consumer_key = ''
-consumer_secret = ''
-access_token = ''
-access_token_secret = ''
-api_key = ''
+consumer_key = os.environ["CONSUMER_KEY"]
+consumer_secret = os.environ["CONSUMER_SECRET"]
+access_token = os.environ["ACCESS_TOKEN"]
+access_token_secret = os.environ["ACCESS_TOKEN_SECRET"]
+api_key = os.environ["API_KEY"]
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
