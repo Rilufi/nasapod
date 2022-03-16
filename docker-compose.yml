@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+    web:
+        env_file:
+            - .env
+        build: .
+        command:
+            - /bin/bash
+            - -c
+            - python3 /code/nasapod.py
+
+        volumes:
+            - .:/code
+
+
