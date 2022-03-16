@@ -1,0 +1,2 @@
+-i https://pypi.org/simple
+tweepy==3.10.0
