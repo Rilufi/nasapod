@@ -2,8 +2,7 @@
 Bot em Python para postar informações sobre o Astronomy Picture of the Day da NASA
 
 ## Instalações
-Único pacote externo necessário é o da nasa, já que urllib já vem normalmente por padrão:
-$ pip install nasa
+Nenhuma. Tirei a necessidade do pacote externo da nasa e o urllib já vem normalmente por padrão
 
 ## NASA API
 é necessário pedir uma key para o API da NASA, pra isso é só entrar no site e preencher seu nome e email em "Generate API Keys" https://api.nasa.gov/ não esqueça de incluir essas keys no credential.py em nasa_key
