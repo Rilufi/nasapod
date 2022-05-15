@@ -38,7 +38,7 @@ mystring = f""" Astronomy Picture of the Day
 
 {title}
 
-Fonte: {site}"""
+Source: {site}"""
 
 # Decide whether is an image or a video and post
 
