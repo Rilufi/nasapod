@@ -23,6 +23,7 @@ def rtquery(hash):
             api.create_friendship(tweet.user.screen_name)
             api.create_favorite(tweet.id)
             tweet.retweet()
+            print(f"{hash} rolou.")
         except:
             print(f"{hash} já foi.")
             pass
