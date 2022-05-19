@@ -24,7 +24,7 @@ def rtquery(hash):
             api.create_favorite(tweet.id)
             tweet.retweet()
         except:
-            print("esse já foi.")
+            print(f"{hash} já foi.")
             pass
     
 for query in queries:
