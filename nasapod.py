@@ -78,7 +78,7 @@ coun = 0
 toReply = "nasobot" #user to get most recent tweet
 
 while coun < len(chunkex):
-    tweets = api.user_timeline(screen_name = toReply, count=1)
+    tweets = api.user_timeline(screen_name = toReply, include_rts = False, exclude_replies = True ,count=1)
     for tweet in tweets:
         api.update_status(str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
