@@ -15,7 +15,7 @@ api = tweepy.API(auth)
 
 #search hashtag, RT, like and follow
 #three filters: one for only RT the original tweet, other for just media content, safe images and no elon musk
-queries = ['#NASA' ,'#space' ,'#science' ,'#astronomy', '#hubble']
+queries = ['#NASA' ,'#space', #cosmology ,'#astronomy', '#hubble']
 
 def rtquery(hash):
     for tweet in tweepy.Cursor(api.search, q=f"{hash} -#elonmusk -@elonmusk -elonmusk -elon -musk -spacex -starlink -tesla -filter:retweets -filter:replies filter:images filter:safe",  result_type="recent").items(1):
