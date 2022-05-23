@@ -18,7 +18,7 @@ api = tweepy.API(auth)
 queries = ['#NASA' ,'#space', '#cosmology' ,'#astronomy', '#hubble']
 
 def rtquery(hash):
-    for tweet in tweepy.Cursor(api.search, q=f"{hash} -#elonmusk -@elonmusk -elonmusk -elon -musk -spacex -starlink -tesla -filter:retweets -filter:replies filter:images filter:safe",  result_type="recent").items(1):
+    for tweet in tweepy.Cursor(api.search, q=f"{hash} -UFO -#elonmusk -@elonmusk -elonmusk -elon -musk -spacex -starlink -tesla -filter:retweets -filter:replies filter:images filter:safe",  result_type="recent").items(1):
         try:
             api.create_friendship(tweet.user.screen_name)
             api.create_favorite(tweet.id)
