@@ -15,10 +15,10 @@ api = tweepy.API(auth)
 
 #search hashtag, RT, like and follow
 #three filters: one for only RT the original tweet, other for just media content, safe images and no elon musk
-queries = ['#NASA' ,'#space', '#cosmology' ,'#astronomy', '#hubble']
+queries = ['#NASA' , '#cosmology' ,'#astronomy', '#hubble', '#astrophotography']
 
 def rtquery(hash):
-    for tweet in tweepy.Cursor(api.search, q=f"{hash} -OVNI -UFO -#elonmusk -@elonmusk -elonmusk -elon -musk -spacex -starlink -tesla -filter:retweets -filter:replies filter:images filter:safe",  result_type="recent").items(1):
+    for tweet in tweepy.Cursor(api.search, q=f"{hash} -$hbb -OVNI -UFO -#elonmusk -@elonmusk -elonmusk -elon -musk -spacex -starlink -tesla -filter:retweets -filter:replies filter:images filter:safe",  result_type="recent").items(1):
         try:
             api.create_friendship(tweet.user.screen_name)
             api.create_favorite(tweet.id)
