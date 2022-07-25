@@ -10,7 +10,7 @@ class desfollow:
         print("You follow:", len(friends))
         print("The difference between followers and following is:", len(friends)-len(followers))
 
-        while friends > 3000:
+        while len(friends) > 3000:
             for friend in friends[::-1]:
                 if friend not in followers:
                     api.destroy_friendship(friend) 
