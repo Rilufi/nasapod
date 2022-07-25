@@ -16,3 +16,4 @@ class desfollow:
                     api.destroy_friendship(friend) 
             friends = api.friends_ids(screen_name=api.me().screen_name)
             print("Now you're following:", len(friends))
+            pass
