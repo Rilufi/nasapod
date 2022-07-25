@@ -12,8 +12,9 @@ class desfollow:
 
         for friend in friends[::-1]:
             if friend not in followers:
-                while len(friends) > 3000:
+                if len(friends) > 3000:
                     api.destroy_friendship(friend) 
-            friends = api.friends_ids(screen_name=api.me().screen_name)
-            print("Now you're following:", len(friends))
-            pass
+                else:
+                    friends = api.friends_ids(screen_name=api.me().screen_name)
+                    print("Now you're following:", len(friends))
+                    pass
