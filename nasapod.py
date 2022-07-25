@@ -1,26 +1,16 @@
 # coding=utf-8
-
 import tweepy
 import os
 import sys
 import urllib.request
 import requests
+from auth import api
+
 
 # Autentication
-
-consumer_key = os.environ["CONSUMER_KEY"]
-consumer_secret = os.environ["CONSUMER_SECRET"]
-access_token = os.environ["ACCESS_TOKEN"]
-access_token_secret = os.environ["ACCESS_TOKEN_SECRET"]
 api_key = os.environ["API_KEY"]
 
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
-
-
 # Get the picture, explanation and/or video thumbnail
-
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
       'api_key':api_key,
@@ -70,15 +60,11 @@ chunks = get_chunks(myexstring, 280)
 
 #Make list with line lengths:
 chunkex = [(n) for n in chunks]
-
 coun = 0
 
 # Post the explanation
-
-toReply = "nasobot" #user to get most recent tweet
-
 while coun < len(chunkex):
-    tweets = api.user_timeline(screen_name = toReply, include_rts = False, exclude_replies = False ,count=1)
+    tweets = api.user_timeline(screen_name=api.me().screen_name, include_rts = False, exclude_replies = False ,count=1)
     for tweet in tweets:
         api.update_status(str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
