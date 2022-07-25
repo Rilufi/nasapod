@@ -5,7 +5,7 @@ import sys
 import urllib.request
 import requests
 from auth import api
-
+from unfollow import desfollow
 
 # Autentication
 api_key = os.environ["API_KEY"]
@@ -68,3 +68,6 @@ while coun < len(chunkex):
     for tweet in tweets:
         api.update_status(str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
+
+desf = desfollow()
+desf.unfollower()
