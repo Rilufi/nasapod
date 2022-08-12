@@ -11,4 +11,4 @@ ACCESS_TOKEN_SECRET = os.environ["ACCESS_TOKEN_SECRET"]
 #connect on twitter
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True)
