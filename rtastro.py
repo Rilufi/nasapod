@@ -1,5 +1,6 @@
 import tweepy
 from auth import api
+from twitter_unfollow import unfollow
 
 #search hashtag, RT, like and follow
 #three filters: one for only RT the original tweet, other for just media content, safe images and no elon musk
@@ -18,3 +19,6 @@ def rtquery(hash):
     
 for query in queries:
     rtquery(query)
+
+unfollow = unfollow()
+unfollow.unfollow()
