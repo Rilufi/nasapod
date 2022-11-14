@@ -5,10 +5,10 @@ import sys
 import urllib.request
 import requests
 from auth import api
-#from twitter_unfollow import unfollow
+
 
 # Autentication
-api_key = os.environ["API_KEY"]
+api_key = os.environ.get("API_KEY")
 
 # Get the picture, explanation and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -68,6 +68,3 @@ while coun < len(chunkex):
     for tweet in tweets:
         api.update_status(str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
-
-#unfollow = unfollow()
-#unfollow.unfollow()
