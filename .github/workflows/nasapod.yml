@@ -53,4 +53,4 @@ jobs:
 
                   API_KEY: ${{ secrets.API_KEY }}
                   
-        run: python rtastro.py
+        run: python nasapod.py
