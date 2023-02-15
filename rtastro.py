@@ -2,7 +2,8 @@ import tweepy
 from auth import api
 
 #search hashtag, RT, like and follow
-#three filters: one for only RT the original tweet, other for just media content, safe images and no elon musk
+#four filters: only RT the original tweet, media content, safe images and no elon musk
+
 queries = ['#NASA' , '#cosmology' ,'#astronomy', '#hubble', '#astrophotography', '#AstroMiniBR', '#AstroThreadBR']
 
 def rtquery(hash):
