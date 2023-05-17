@@ -1,5 +1,6 @@
 import tweepy
 from auth import api
+import random
 
 #search hashtag, RT, like and follow
 #four filters: only RT the original tweet, media content, safe images and no elon musk
@@ -19,3 +20,15 @@ def rtquery(hash):
     
 for query in queries:
     rtquery(query)
+
+
+lines=open('lista_links.txt').read().splitlines()
+status = random.choice(lines)+'/?ref=gedp4al8'
+mystring = f""" Calling all stargazers! Explore the universe with captivating astronomy-themed merchandise from The Space Store. Discover celestial treasures and ignite your passion for the cosmos. Start your cosmic shopping journey today!
+✨🌌 #Astronomy
+{status}"""
+
+try:
+    api.update_status(mystring)
+except:
+    pass
