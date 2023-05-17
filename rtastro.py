@@ -24,8 +24,7 @@ for query in queries:
 
 lines=open('lista_links.txt').read().splitlines()
 status = random.choice(lines)+'/?ref=gedp4al8'
-mystring = f""" Calling all stargazers! Explore the universe with captivating astronomy-themed merchandise from The Space Store. Discover celestial treasures and ignite your passion for the cosmos. Start your cosmic shopping journey today!
-✨🌌 #Astronomy
+mystring = f""" Calling all stargazers! Explore the universe with captivating astronomy-themed merchandise from The Space Store. Discover celestial treasures and ignite your passion for the cosmos. Start your cosmic shopping journey today! ✨🌌 #Astronomy
 {status}"""
 
 try:
