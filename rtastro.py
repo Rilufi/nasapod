@@ -19,8 +19,8 @@ def rtquery(hash):
         print(f"{hash} já foi.")
         pass
 
-for query in queries:
-    rtquery(query)
+#for query in queries:
+#    rtquery(query)
 
 
 lines=open('lista_links.txt').read().splitlines()
