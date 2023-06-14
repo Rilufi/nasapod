@@ -41,7 +41,7 @@ elif media == 'video':
     video = 'apodvideo.jpeg'
     api.update_with_media(video, mystring)
 else:
-    api.update_status(mystring)
+    api.create_tweet(text = mystring)
 
 myexstring = f"""{explanation}"""
 
