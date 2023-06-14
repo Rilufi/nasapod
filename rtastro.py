@@ -28,6 +28,6 @@ mystring = f""" Calling all stargazers! Explore the universe with captivating as
 {status}"""
 
 try:
-    api.update_status(mystring)
+    api.create_tweet(text = mystring)
 except:
     pass
