@@ -64,7 +64,7 @@ coun = 0
 
 # Post the explanation
 while coun < len(chunkex):
-    tweets = api.get_users_tweets(screen_name=api.me().screen_name, include_rts = False, exclude_replies = False ,count=1)
+    tweets = api.get_users_tweets(screen_name=api.verify_credentials().screen_name, include_rts = False, exclude_replies = False ,count=1)
     for tweet in tweets:
-        api.update_status(str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
+        api.create_tweet(text = str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
