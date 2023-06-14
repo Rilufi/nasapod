@@ -32,16 +32,16 @@ Source: {site}"""
 
 # Decide whether is an image or a video and post
 
-if media == 'image':
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
-    api.update_with_media(image, mystring)
-elif media == 'video':
-    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-    video = 'apodvideo.jpeg'
-    api.update_with_media(video, mystring)
-else:
-    api.create_tweet(text = mystring)
+#if media == 'image':
+#    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+#    image = "apodtoday.jpeg"
+#    api.update_with_media(image, mystring)
+#elif media == 'video':
+#    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
+#    video = 'apodvideo.jpeg'
+#    api.update_with_media(video, mystring)
+#else:
+api.create_tweet(text = mystring)
 
 myexstring = f"""{explanation}"""
 
