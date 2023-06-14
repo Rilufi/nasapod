@@ -41,7 +41,7 @@ mystring = f""" Astronomy Picture of the Day
 #    video = 'apodvideo.jpeg'
 #    api.update_with_media(video, mystring)
 #else:
-api.create_tweet(text = mystring)
+#api.create_tweet(text = mystring)
 
 myexstring = f"""{explanation}"""
 
@@ -64,7 +64,8 @@ coun = 0
 
 # Post the explanation
 while coun < len(chunkex):
-    tweets = api.get_users_tweets(screen_name=api.verify_credentials().screen_name, include_rts = False, exclude_replies = False ,count=1)
+    tweets = api.get_home_timeline(max_results=1)#, include_rts = False, exclude_replies = False ,count=1)
     for tweet in tweets:
         api.create_tweet(text = str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
         coun += 1
+            
