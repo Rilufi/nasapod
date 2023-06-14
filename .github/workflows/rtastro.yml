@@ -1,11 +1,11 @@
 name: Retuiastro
 
 
-on:
+on: push
 
-    schedule:
+#    schedule:
 
-        - cron: '00 * * * *'
+#        - cron: '00 * * * *'
 
 jobs:
   tweet:
