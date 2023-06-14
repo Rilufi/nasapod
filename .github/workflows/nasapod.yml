@@ -1,11 +1,11 @@
 name: Nasobot
 
 
-on:
+on: push
 
-    schedule:
+ #   schedule:
 
-        - cron: '0 11 * * *'
+  #      - cron: '0 11 * * *'
 
 
 jobs:
