@@ -1,5 +1,5 @@
 import tweepy
-from auth import api
+from auth import api, client
 import random
 
 #search hashtag, RT, like and follow
@@ -29,6 +29,6 @@ mystring = f""" Calling all stargazers! Explore the universe with captivating as
 {status}"""
 
 try:
-    api.create_tweet(text = mystring)
+    client.create_tweet(text = mystring)
 except:
     pass
