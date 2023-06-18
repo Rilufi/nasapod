@@ -4,7 +4,7 @@ import os
 import sys
 import urllib.request
 import requests
-from auth import api
+from auth import api, client
 
 
 # Autentication
@@ -28,20 +28,24 @@ mystring = f""" Astronomy Picture of the Day
 
 {title}
 
-{site}"""
+Source: {site}"""
 
 # Decide whether is an image or a video and post
 
-#if media == 'image':
-#    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-#    image = "apodtoday.jpeg"
-#    api.update_with_media(image, mystring)
-#elif media == 'video':
-#    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-#    video = 'apodvideo.jpeg'
-#    api.update_with_media(video, mystring)
-#else:
-api.create_tweet(text = mystring)
+if media == 'image':
+    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+    media = api.media_upload(image)
+    client.create_tweet(text=mystring, media_ids=[media.media_id])
+    #api.update_with_media(image, mystring)
+elif media == 'video':
+    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
+    video = 'apodvideo.jpeg'
+    media = api.media_upload(video)
+    client.create_tweet(text=mystring, media_ids=[media.media_id])    
+    #api.update_with_media(video, mystring)
+else:
+    client.create_tweet(text = mystring)
 
 myexstring = f"""{explanation}"""
 
