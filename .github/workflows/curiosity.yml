@@ -41,7 +41,7 @@ jobs:
           pip install -r requirements.txt
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: tweet APOD 🐦
+      - name: tweet Mars picture 🐦
         env:
                   CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
 
