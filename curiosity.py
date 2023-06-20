@@ -11,5 +11,4 @@ client = Client(api_key)
 photo = client.curiosity.get_latest_photo()
 media = api.media_upload(photo)
 
-mystring = ""Latest photo taken by the Curiosity Rover""
-client.create_tweet(text=mystring, media_ids=[media.media_id])
+client.create_tweet(text="Latest photo taken by the Curiosity Rover", media_ids=[media.media_id])
