@@ -18,7 +18,7 @@ def rover_pic(URL_APOD, rover):
     sol = latest_photo['sol']
     site = latest_photo['img_src']
 
-    mystring = f""" Latest {rover} Rover Picture
+    mystring = f""" Latest Mars Picture from the {rover}
 
 Taken from the {camera} on Sol {sol}
 
