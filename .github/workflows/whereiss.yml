@@ -53,4 +53,6 @@ jobs:
 
                   API_KEY: ${{ secrets.API_KEY }}
                   
+                  NOMINATIM_KEY: ${{ secrets.NOMINATIM_KEY }}
+                  
         run: python whereiss.py
