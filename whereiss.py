@@ -11,7 +11,12 @@ result = json.loads(response.read())
 location = result["iss_position"]
 latitude = float(location['latitude'])
 longitude = float(location['longitude'])
-geolocator = Nominatim(user_agent="geoapiExercises")
+
+Nominatin_Key = os.environ.get("NOMINATIM_KEY")
+geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)
+geolocator.headers = {'Authorization': Nominatin_Key}
+                      #'Bearer NOMINATIM_KEY'}
+
 coordinates = (latitude, longitude)
 location = geolocator.reverse(coordinates, exactly_one=True)
 
