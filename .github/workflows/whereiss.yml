@@ -1,11 +1,11 @@
 name: ISSer
 
 
-on: push
+on:
 
-   # schedule:
+    schedule:
 
-  #      - cron: '0 */11 * * *'
+        - cron: '15/30 * * * *'
 
 
 jobs:
