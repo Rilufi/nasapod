@@ -43,7 +43,7 @@ if location is not None and location.raw.get("address") is not None:
     print("País: ", country)
     mystring = f""" ISS Tracker
 
-The International Space Station currently position is above {country}"""
+The International Space Station currently position above {country}"""
     client.create_tweet(text=mystring, media_ids=[media.media_id])
 else:
     mystring = """ ISS Tracker
