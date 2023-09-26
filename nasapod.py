@@ -35,6 +35,7 @@ mystring = f""" Astronomy Picture of the Day
 
 Source: {site}"""
 
+
 ##logging instagram
 try:
       cl = Client(request_timeout=7)
@@ -44,7 +45,8 @@ except:
       print('instapod deslogado')
       pass
 
-insta_string = f""" Astronomy Picture of the Day - {title}
+insta_string = f""" Astronomy Picture of the Day
+{title}
 
 {explanation}
 
