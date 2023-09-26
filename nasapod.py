@@ -35,8 +35,8 @@ mystring = f""" Astronomy Picture of the Day
 
 Source: {site}"""
 
-# Decide whether is an image or a video and post
 
+# Decide whether is an image or a video and post
 if media == 'image':
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
