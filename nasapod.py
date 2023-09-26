@@ -54,13 +54,13 @@ else:
 
 
 ##logging instagram
-try:
-  cl = Client(request_timeout=7)
-  cl.login(USERNAME, PASSWORD)
-  print('instapod logado')
-except:
-  print('instapod deslogado')
-  pass
+#try:
+cl = Client(request_timeout=7)
+cl.login(USERNAME, PASSWORD)
+print('instapod logado')
+#except:
+  #print('instapod deslogado')
+  #pass
 
 
 insta_string = f""" Astronomy Picture of the Day - {title}
