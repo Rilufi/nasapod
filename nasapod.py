@@ -35,24 +35,6 @@ mystring = f""" Astronomy Picture of the Day
 
 Source: {site}"""
 
-
-# Decide whether is an image or a video and post
-if media == 'image':
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
-    media = api.media_upload(image)
-    client.create_tweet(text=mystring, media_ids=[media.media_id])
-    #api.update_with_media(image, mystring)
-elif media == 'video':
-    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-    video = 'apodvideo.jpeg'
-    media = api.media_upload(video)
-    client.create_tweet(text=mystring, media_ids=[media.media_id])    
-    #api.update_with_media(video, mystring)
-else:
-    client.create_tweet(text = mystring)
-
-
 ##logging instagram
 #try:
 cl = Client(request_timeout=7)
@@ -62,17 +44,25 @@ print('instapod logado')
   #print('instapod deslogado')
   #pass
 
-
 insta_string = f""" Astronomy Picture of the Day - {title}
 
 {explanation}
 
 Source: {site}"""
 
+# Decide whether is an image or a video and post
 if media == 'image':
-      cl.photo_upload(image, insta_string)
+    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+    media = api.media_upload(image)
+    client.create_tweet(text=mystring, media_ids=[media.media_id])
+    cl.photo_upload(image, insta_string)
 elif media == 'video':
-      cl.photo_upload(video, insta_string)
+    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
+    video = 'apodvideo.jpeg'
+    media = api.media_upload(video)
+    client.create_tweet(text=mystring, media_ids=[media.media_id])    
+    cl.photo_upload(video, insta_string)
 else:
-      print("deu ruim o insta")
-      pass
+    client.create_tweet(text = mystring)
+    print("deu ruim o insta")
