@@ -5,10 +5,15 @@ import sys
 import urllib.request
 import requests
 from auth import api, client
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
+import math
+from instagrapi import Client
 
 
 # Autentication
 api_key = os.environ.get("API_KEY")
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
 
 # Get the picture, explanation and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
