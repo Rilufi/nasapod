@@ -3,3 +3,4 @@ tweepy
 geopy
 geopandas
 matplotlib
+instagrapi
