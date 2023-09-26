@@ -70,9 +70,9 @@ insta_string = f""" Astronomy Picture of the Day - {title}
 Source: {site}"""
 
 if media == 'image':
-      cl.photo_upload(path: image, caption: insta_string)
+      cl.photo_upload(image, insta_string)
 elif media == 'video':
-      cl.photo_upload(path: video, caption: insta_string)
+      cl.photo_upload(video, insta_string)
 else:
       print("deu ruim o insta")
       pass
