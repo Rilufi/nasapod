@@ -52,29 +52,27 @@ elif media == 'video':
 else:
     client.create_tweet(text = mystring)
 
-myexstring = f"""{explanation}"""
 
-# Cut the explanation into multiple tweets
+##logging instagram
+try:
+  cl = Client(request_timeout=7)
+  cl.login(USERNAME, PASSWORD)
+  print('instapod logado')
+except:
+  print('instapod deslogado')
+  pass
 
-def get_chunks(s, maxlength):
-    start = 0
-    end = 0
-    while start + maxlength  < len(s) and end != -1:
-        end = s.rfind(" ", start, start + maxlength + 1)
-        yield s[start:end]
-        start = end +1
-    yield s[start:]
 
-chunks = get_chunks(myexstring, 280)
+insta_string = f""" Astronomy Picture of the Day - {title}
 
-#Make list with line lengths:
-chunkex = [(n) for n in chunks]
-coun = 0
+{explanation}
 
-# Post the explanation
-#while coun < len(chunkex):
-#    tweets = api.get_home_timeline(max_results=1)#, include_rts = False, exclude_replies = False ,count=1)
-#    for tweet in tweets:
-#        api.create_tweet(text = str(chunkex[coun]), in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True)
-#        coun += 1
-            
+Source: {site}"""
+
+if media == 'image':
+      cl.photo_upload(path: image, caption: insta_string)
+elif media == 'video':
+      cl.photo_upload(path: video, caption: insta_string)
+else:
+      print("deu ruim o insta")
+      pass
