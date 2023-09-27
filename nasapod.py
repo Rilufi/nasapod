@@ -50,7 +50,9 @@ insta_string = f""" Astronomy Picture of the Day
 
 {explanation}
 
-Source: {site}"""
+Source: {site}
+#Astronomy #Space #Universe #Astrophotography #Cosmos #Stars #Galaxy #NASA #Science #NightSky"""
+
 
 # Decide whether is an image or a video and post
 if media == 'image':
