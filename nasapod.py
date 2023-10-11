@@ -64,9 +64,9 @@ if media == 'image':
       cl.photo_upload(image, insta_string)
       print("foto publicada no insta")
     except:
-      image = Image.open("apodtoday.gif")
+      image = Image.open("apodtoday")
       image.save("apodtoday.jpg")
-      cl.photo_upload(image, insta_string)
+      cl.photo_upload("apodtoday.jpg", insta_string)
     print("gif convertido e postado")
 elif media == 'video':
     urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
