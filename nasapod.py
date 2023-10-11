@@ -56,11 +56,18 @@ Source: {site}
 
 # Decide whether is an image or a video and post
 if media == 'image':
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
+    urllib.request.urlretrieve(site, 'apodtoday')
+    image = "apodtoday"
     media = api.media_upload(image)
     client.create_tweet(text=mystring, media_ids=[media.media_id])
-    cl.photo_upload(image, insta_string)
+    try:
+      cl.photo_upload(image, insta_string)
+      print("foto publicada no insta")
+    except:
+      image = Image.open("apodtoday.gif")
+      image.save("apodtoday.jpg")
+      cl.photo_upload(image, insta_string)
+    print("gif convertido e postado")
 elif media == 'video':
     urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
     video = 'apodvideo.jpeg'
