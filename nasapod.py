@@ -8,12 +8,16 @@ from auth import api, client
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
 import math
 from instagrapi import Client
+import telebot
 
 
 # Autentication
 api_key = os.environ.get("API_KEY")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
+tele_user = os.environ.get("TELE_USER")
+TOKEN = os.environ["TELEGRAM_TOKEN"]
+bot = telebot.TeleBot(TOKEN)
 
 # Get the picture, explanation and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -65,15 +69,8 @@ if media == 'image':
       print("foto publicada no insta")
     except:
       with Image.open("apodtoday") as im:
-        print(im.mode) # 👉️ P
-
         rgb_im = im.convert('RGB')
-
-        print(rgb_im.mode) # 👉️ RGB
-
         rgb_im.save('apodtoday.jpg')
-  #    image = Image.open("apodtoday")
-  #    image.save("apodtoday.jpg")
       cl.photo_upload("apodtoday.jpg", insta_string)
     print("gif convertido e postado")
 elif media == 'video':
@@ -85,3 +82,4 @@ elif media == 'video':
 else:
     client.create_tweet(text = mystring)
     print("deu ruim o insta")
+    bot.send_message(tele_user,  'apod com problema')
