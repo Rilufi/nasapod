@@ -64,8 +64,16 @@ if media == 'image':
       cl.photo_upload(image, insta_string)
       print("foto publicada no insta")
     except:
-      image = Image.open("apodtoday")
-      image.save("apodtoday.jpg")
+      with Image.open("apodtoday") as im:
+        print(im.mode) # 👉️ P
+
+        rgb_im = im.convert('RGB')
+
+        print(rgb_im.mode) # 👉️ RGB
+
+        rgb_im.save('apodtoday.jpg')
+  #    image = Image.open("apodtoday")
+  #    image.save("apodtoday.jpg")
       cl.photo_upload("apodtoday.jpg", insta_string)
     print("gif convertido e postado")
 elif media == 'video':
