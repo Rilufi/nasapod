@@ -7,6 +7,7 @@ from auth import api, client
 import datetime
 from instagrapi import Client
 import telebot
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
 
 
 today = datetime.date.today()
