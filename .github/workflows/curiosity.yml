@@ -1,11 +1,11 @@
 name: Curioso
 
 
-on:
+on: push
 
-    schedule:
+#    schedule:
 
-        - cron: '0 */11 * * *'
+#        - cron: '0 */11 * * *'
 
 
 jobs:
@@ -52,5 +52,13 @@ jobs:
                   ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
 
                   API_KEY: ${{ secrets.API_KEY }}
+
+                  USERNAME: ${{ secrets.USERNAME }}
+
+                  PASSWORD: ${{ secrets.PASSWORD }}
+
+                  TELE_USER: ${{ secrets.TELE_USER }}
+
+                  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
                   
         run: python curiosity.py
