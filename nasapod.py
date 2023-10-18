@@ -47,6 +47,7 @@ try:
       print('instapod logado')
 except:
       print('instapod deslogado')
+      bot.send_message(tele_user,  'apod com problema')
       pass
 
 insta_string = f""" Astronomy Picture of the Day
