@@ -12,7 +12,7 @@ import math
 
 
 today = datetime.date.today()
-hoje = today.strftime('%y-%m-%d')
+hoje = today.strftime('%Y-%m-%d')
 ontem = '2023-10-16'
 api_key = os.environ["API_KEY"]
 username = os.environ.get("USERNAME")
@@ -94,7 +94,7 @@ Taken from the {camera} on Sol {sol}"""
         media = api.media_upload(image)
         client.create_tweet(text=mystring, media_ids=[media.media_id])
         print(mystring)
-        formatImage('rovertoday.jpeg')
+        #formatImage('rovertoday.jpeg')
         cl.photo_upload_to_story('rovertoday.jpeg',insta_string)
     else:
         print(f'Sem {rover_name} hoje')
