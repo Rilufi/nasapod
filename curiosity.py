@@ -10,7 +10,8 @@ import telebot
 
 
 today = datetime.date.today()
-hoje = today.strftime('%Y-%m-%d')
+hoje = today.strftime('%y-%m-%d')
+ontem = '2023-10-16'
 api_key = os.environ["API_KEY"]
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
@@ -68,7 +69,7 @@ def rover_pic(URL_APOD, rover_name):
     response = requests.get(URL_APOD, params=params).json()
     rover = response.get('rover')
     max_date = rover['max_date']
-    if max_date == hoje:
+    if max_date == ontem:
         URL_APOD = URL_APOD+'latest_photos'
         response = requests.get(URL_APOD, params=params).json()
         latest_photos = response.get('latest_photos')
@@ -95,7 +96,6 @@ Taken from the {camera} on Sol {sol}"""
         cl.photo_upload_to_story('rovertoday.jpeg',insta_string)
     else:
         print(f'Sem {rover_name} hoje')
-        bot.send_message(tele_user,  'apod com problema')
         pass
 
 rover_pic("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/", 'Curiosity')
