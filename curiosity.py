@@ -71,7 +71,7 @@ def rover_pic(URL_APOD, rover_name):
     response = requests.get(URL_APOD, params=params).json()
     rover = response.get('rover')
     max_date = rover['max_date']
-    if max_date == ontem:
+    if max_date == hoje:
         URL_APOD = URL_APOD+'latest_photos'
         response = requests.get(URL_APOD, params=params).json()
         latest_photos = response.get('latest_photos')
@@ -94,7 +94,7 @@ Taken from the {camera} on Sol {sol}"""
         media = api.media_upload(image)
         client.create_tweet(text=mystring, media_ids=[media.media_id])
         print(mystring)
-        #formatImage('rovertoday.jpeg')
+        formatImage('rovertoday.jpeg')
         cl.photo_upload_to_story('rovertoday.jpeg',insta_string)
     else:
         print(f'Sem {rover_name} hoje')
