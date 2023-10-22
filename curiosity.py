@@ -21,16 +21,6 @@ tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 
-##logging instagram
-try:
-      cl = Client(request_timeout=7)
-      cl.login(username, password)
-      print('instapod logado')
-except:
-      print('instapod deslogado')
-      bot.send_message(tele_user,  'apod com problema')
-      pass
-
 
 def formatImage(image):
     base = Image.new('RGB', (1080,1920), (255,255,0))
@@ -95,11 +85,19 @@ Taken from the {camera} on Sol {sol}"""
         client.create_tweet(text=mystring, media_ids=[media.media_id])
         print(mystring)
         formatImage('rovertoday.jpeg')
-        cl.photo_upload_to_story('rovertoday.jpeg',insta_string)
+        ##logging instagram
+        try:
+              cl = Client(request_timeout=7)
+              cl.login(username, password)
+              print('instapod logado')
+              cl.photo_upload_to_story('rovertoday.jpeg',insta_string)
+        except:
+              print('instapod deslogado')
+              bot.send_message(tele_user,  'apod com problema')
+              pass
     else:
         print(f'Sem {rover_name} hoje')
         pass
 
 rover_pic("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/", 'Curiosity')
 rover_pic("https://api.nasa.gov/mars-photos/api/v1/rovers/perseverance/", 'Perseverance')
-rover_pic("https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/", 'Spirit')
