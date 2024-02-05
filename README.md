@@ -1,13 +1,10 @@
-Sure, here it is:
-
-```
 # nasapod
 Python bot to post the Astronomy Picture of the Day and photos of Mars rovers using the NASA API. It also identifies the current location of the ISS with an updated map.
 
 ## Installations
 All required packages are listed in `requirements.txt`. You can install them using:
 
-```bash
+```
 $ pip install -r requirements.txt
 ```
 
