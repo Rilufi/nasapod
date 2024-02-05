@@ -1,3 +1,38 @@
+Sure, here it is:
+
+```
+# nasapod
+Python bot to post the Astronomy Picture of the Day and photos of Mars rovers using the NASA API. It also identifies the current location of the ISS with an updated map.
+
+## Installations
+All required packages are listed in `requirements.txt`. You can install them using:
+
+```bash
+$ pip install -r requirements.txt
+```
+
+## NASA API
+You need to request a key for the NASA API by visiting the website and filling in your name and email under "Generate API Keys" at [NASA API](https://api.nasa.gov/). Don't forget to include this key in `auth.py` under `nasa_key`.
+
+## Nominatim API
+For geographical information about the ISS location, you also need a key. After creating an account, visit [Nominatim API](https://www.openstreetmap.org/user/<your_username>/oauth_clients/new) and place the key inside `whereiss.py`.
+
+## What does the bot do?
+The bot retrieves images from APOD, Mars rovers, and the ISS location.
+
+## ISS
+In `whereiss.py`, there's code to locate the International Space Station (ISS), identify if it's currently over any country, and create a map charting its location worldwide.
+
+## Space Store
+As the account grew, I'm now affiliated with the [Space Store](https://thespacestore.com/), including a list of products to post along with retweets containing my affiliate link.
+
+## + info
+Since this bot is a sibling to my other bot for COVID data, any additional information about Python, pip, and the Twitter API can be found at [GitHub - Coronga](https://github.com/Rilufi/coronga)
+
+## Did it work?
+To check the results on Twitter/X, simply search for [Nasobot](https://twitter.com/nasobot), and on Instagram, check [Apodinsta](https://www.instagram.com/apodinsta/).
+
+
 # nasapod
 Bot em Python para postar postar a Astronomy Picture of the Day e fotos dos Mars rovers pelo API da NASA. Também identifica onde a ISS se encontra com um mapa atualizado.
 
