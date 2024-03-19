@@ -3,9 +3,9 @@ name: ISSer
 
 on:
 
-    schedule:
+#    schedule:
 
-        - cron: '0 * * * *'
+  #      - cron: '0 * * * *'
 
 
 jobs:
