@@ -15,9 +15,7 @@ latitude = float(location['latitude'])
 longitude = float(location['longitude'])
 
 Nominatin_Key = os.environ.get("NOMINATIM_KEY")
-geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)
-geolocator.headers = {'Authorization': Nominatin_Key}
-                      #'Bearer NOMINATIM_KEY'}
+geolocator = Nominatim(user_agent="geoapiExercises", timeout=10, key=Nominatin_Key)
 
 coordinates = (latitude, longitude)
 location = geolocator.reverse(coordinates, exactly_one=True)
