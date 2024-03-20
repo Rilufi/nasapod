@@ -83,15 +83,6 @@ chunks = get_chunks(explanation, 280)
 # Make list with line lengths
 chunkex = [(n) for n in chunks]
 
-# Define a list to store tweet IDs
-tweet_ids = []
-
-# Post each part of the text and store the tweet IDs
-for parte in chunkex:
-    # Attempt to create the tweet with retry and exponential backoff
-    tweet_id = create_tweet_with_retry(client, str(parte))
-    if tweet_id:
-        tweet_ids.append(str(tweet_id))
 
 # Check the type of media and post on Twitter and Instagram accordingly
 if type == 'image':
@@ -99,11 +90,10 @@ if type == 'image':
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
     media = api.media_upload(image)
-    tweet_id = create_tweet_with_retry(client, mystring, media_ids=[media.media_id])
-    if tweet_id:
-        tweet_ids.append(str(tweet_id))
-    else:
-        print("Failed to create tweet.")
+    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+      
+    # Salva o ID do tweet da imagem
+    tweet_id_imagem = tweet_imagem['id']
 
     # Post the image on Instagram
     try:
@@ -119,11 +109,10 @@ elif type == 'video':
     urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
     video = 'apodvideo.jpeg'
     media = api.media_upload(video)
-    tweet_id = create_tweet_with_retry(client, mystring, media_ids=[media.media_id])
-    if tweet_id:
-        tweet_ids.append(str(tweet_id))
-    else:
-        print("Failed to create tweet.")
+    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+      
+    # Salva o ID do tweet da imagem
+    tweet_id_imagem = tweet_imagem['id']
 
     # Post the video on Instagram
     try:
@@ -138,13 +127,24 @@ else:
     print("Something went wrong with the media type.")
     bot.send_message(tele_user, 'apod com problema')
 
+# Posta cada parte da explicação como um reply para o tweet da imagem
+tweet_ids_explicacao = []
+reply_id_anterior = tweet_id_imagem
+for parte in chunkex:
+    # Posta a parte da explicação como reply
+    tweet_explicacao = client.create_tweet(text=str(parte), in_reply_to=reply_id_anterior)
+    
+    # Salva o ID do tweet de explicação
+    tweet_ids_explicacao.append(tweet_explicacao['id'])
+    
+    # Atualiza o ID do tweet anterior para o próximo reply
+    reply_id_anterior = tweet_explicacao['id']
 
-# Concatenate the URLs of the tweets into a threaded tweet
-tweet_encadeado = "The official NASA explanation for today's Astronomy Picture of the Day (APOD) can be found in the tweet sequence below:\n" + "\n".join([f"https://twitter.com/nasobot/status/{tweet_id}" for tweet_id in tweet_ids])
+# Concatena os IDs dos tweets de explicação em uma lista para referência posterior
+tweet_ids_total = [tweet_id_imagem] + tweet_ids_explicacao
 
-# Publish the threaded tweet
-try:
-    response = client.create_tweet(text=tweet_encadeado)
-    print("Threaded tweet published successfully.")
-except Exception as e:
-    print(f"Error publishing threaded tweet: {e}")
+# Verifica se todos os tweets foram postados corretamente
+if all(tweet_id is not None for tweet_id in tweet_ids_total):
+    print("Todos os tweets foram postados com sucesso.")
+else:
+    print("Houve um erro ao postar os tweets.")
