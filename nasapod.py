@@ -31,14 +31,15 @@ thumbs = response.get('thumbnail_url')
 type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
+hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
-
-# Create the strings for each use
-mystring = f""" Astronomy Picture of the Day
+mystring = f"""Astronomy Picture of the Day
 
 {title}
 
-Source: {site}"""
+Source: {site}
+
+{hashtags}"""
 
 insta_string = f""" Astronomy Picture of the Day
 {title}
@@ -46,7 +47,8 @@ insta_string = f""" Astronomy Picture of the Day
 {explanation}
 
 Source: {site}
-#Astronomy #Space #Universe #Astrophotography #Cosmos #Stars #Galaxy #NASA #Science #NightSky"""
+
+{hashtags}"""
 
 myexstring = f"""{explanation}"""
 
