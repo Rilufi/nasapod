@@ -93,7 +93,7 @@ if type == 'image':
     tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
       
     # Salva o ID do tweet da imagem
-    tweet_id_imagem = tweet_imagem['id']
+    tweet_id_imagem = tweet_imagem.data['id']
 
     # Post the image on Instagram
     try:
@@ -112,7 +112,7 @@ elif type == 'video':
     tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
       
     # Salva o ID do tweet da imagem
-    tweet_id_imagem = tweet_imagem['id']
+    tweet_id_imagem = tweet_imagem.data['id']
 
     # Post the video on Instagram
     try:
