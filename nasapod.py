@@ -132,7 +132,7 @@ tweet_ids_explicacao = []
 reply_id_anterior = tweet_id_imagem
 for parte in chunkex:
     # Posta a parte da explicação como reply
-    tweet_explicacao = client.create_tweet(text=str(parte), in_reply_to=reply_id_anterior)
+    tweet_explicacao = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_id_anterior)
     
     # Salva o ID do tweet de explicação
     tweet_ids_explicacao.append(tweet_explicacao['id'])
