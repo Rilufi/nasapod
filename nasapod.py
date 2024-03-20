@@ -1,18 +1,14 @@
 # coding=utf-8
-import tweepy
 import os
-import sys
 import urllib.request
 import requests
+import tweepy
+import time
 from auth import api, client
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
-import math
 from instagrapi import Client
 import telebot
-import time
 
-
-# Autentication
+# Authentication
 api_key = os.environ.get("API_KEY")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
@@ -20,38 +16,25 @@ tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 
-# Get the picture, explanation and/or video thumbnail
+# Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
       'api_key':api_key,
       'hd':'True',
       'thumbs':'True'
   }
-response = requests.get(URL_APOD,params=params).json()
-site = (response.get('url'))
-thumbs = (response.get('thumbnail_url'))
-type = (response.get('media_type'))
-explanation = (response.get('explanation'))
-title = (response.get('title'))
+response = requests.get(URL_APOD, params=params).json()
+site = response.get('url')
+thumbs = response.get('thumbnail_url')
+type = response.get('media_type')
+explanation = response.get('explanation')
+title = response.get('title')
 
 mystring = f""" Astronomy Picture of the Day
 
 {title}
 
 Source: {site}"""
-
-myexstring = f"""{explanation}"""
-
-### Instagram stuff
-##logging instagram
-try:
-      cl = Client(request_timeout=7)
-      cl.login(username, password)
-      print('instapod logado')
-except:
-      print('instapod deslogado')
-      bot.send_message(tele_user,  'apod com problema')
-      pass
 
 insta_string = f""" Astronomy Picture of the Day
 {title}
@@ -61,8 +44,6 @@ insta_string = f""" Astronomy Picture of the Day
 Source: {site}
 #Astronomy #Space #Universe #Astrophotography #Cosmos #Stars #Galaxy #NASA #Science #NightSky"""
 
-
-### Twitter/X stuff
 # Define a function to handle tweet creation with retry and exponential backoff
 def create_tweet_with_retry(client, text, media_ids=None):
     max_retries = 5  # Maximum number of retries
@@ -91,15 +72,15 @@ def create_tweet_with_retry(client, text, media_ids=None):
 def get_chunks(s, maxlength):
     start = 0
     end = 0
-    while start + maxlength  < len(s) and end != -1:
+    while start + maxlength < len(s) and end != -1:
         end = s.rfind(" ", start, start + maxlength + 1)
         yield s[start:end]
-        start = end +1
+        start = end + 1
     yield s[start:]
 
 chunks = get_chunks(explanation, 280)
 
-# Make list with line lengths:
+# Make list with line lengths
 chunkex = [(n) for n in chunks]
 
 # Define a list to store tweet IDs
@@ -126,6 +107,8 @@ if type == 'image':
 
     # Post the image on Instagram
     try:
+        cl = Client(request_timeout=7)
+        cl.login(username, password)
         cl.photo_upload(image, insta_string)
         print("Photo published on Instagram")
     except Exception as e:
@@ -144,17 +127,24 @@ elif type == 'video':
 
     # Post the video on Instagram
     try:
+        cl = Client(request_timeout=7)
+        cl.login(username, password)
         cl.video_upload(video, insta_string)
         print("Video published on Instagram")
     except Exception as e:
         print(f"Error posting video on Instagram: {e}")
 
 else:
-    print("deu ruim o insta")
-    bot.send_message(tele_user,  'apod com problema')
+    print("Something went wrong with the media type.")
+    bot.send_message(tele_user, 'apod com problema')
+
 
 # Concatenate the URLs of the tweets into a threaded tweet
-tweet_encadeado = "The official NASA explanation for today's Astronomy Picture of the Day (APOD) can be found in the tweet sequence below: " + "\n".join([f"https://twitter.com/nasobot/status/{tweet_id}" for tweet_id in tweet_ids])
+tweet_encadeado = "The official NASA explanation for today's Astronomy Picture of the Day (APOD) can be found in the tweet sequence below:\n" + "\n".join([f"https://twitter.com/nasobot/status/{tweet_id}" for tweet_id in tweet_ids])
 
 # Publish the threaded tweet
-client.create_tweet(text=tweet_encadeado)
+try:
+    response = client.create_tweet(text=tweet_encadeado)
+    print("Threaded tweet published successfully.")
+except Exception as e:
+    print(f"Error publishing threaded tweet: {e}")
