@@ -21,17 +21,15 @@ password = os.environ.get("PASSWORD")
 client = Client()
 client.login(username, password)
 
-# Accounts to monitor
-contas = ["boturinsta", "doglufi"]
+# Accounts to monitor with their respective user IDs
+contas = {"boturinsta": 62183085222, "doglufi": 61863629167}
 
 # Specific word in the caption
 palavra_chave = data
 
 # Check the latest posts from each account
-for conta in contas:
+for conta, user_id in contas.items():
     try:
-        # Get the user id by username
-        user_id = client.user_id_from_username(conta)
         # Get the latest media from the user
         postagens = client.user_medias(user_id=user_id, amount=1)
         if postagens:
