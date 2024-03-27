@@ -38,9 +38,9 @@ for conta in contas:
             # Check if the caption contains the keyword
             caption = postagens[0].caption_text
             if palavra_chave in caption:
-                # Share the post as a story
-                client.story_share(postagens[0].pk, "user")
-                print(f"Post from {conta} shared as story.")
+                # Like the story
+                client.story_like(postagens[0].pk)
+                print(f"Post from {conta} liked as story.")
             else:
                 print(f"The latest post from {conta} does not contain the keyword.")
         else:
