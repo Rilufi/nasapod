@@ -30,10 +30,10 @@ palavra_chave = data
 # Check the latest posts from each account
 for conta in contas:
     try:
-        # Get the user info by username
-        user_info = client.user_info_by_username(conta)
+        # Get the user id by username
+        user_id = client.user_id_from_username(conta)
         # Get the latest media from the user
-        postagens = client.user_medias(user_id=user_info.pk, amount=1)
+        postagens = client.user_medias(user_id=user_id, amount=1)
         if postagens:
             # Check if the post is valid
             if postagens[0].media_type == 1:  # Check if it's an image
