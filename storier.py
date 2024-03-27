@@ -17,38 +17,30 @@ data = today.strftime("%d/%m")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
-# Initialize the client
-client = Client()
-client.login(username, password)
+# Defina as contas que você deseja monitorar
+contas = ["boturinsta", "doglufi"]
 
-# Accounts to monitor with their respective user IDs
-contas = {"boturinsta": 62183085222, "doglufi": 61863629167}
-
-# Specific word in the caption
+# Defina a palavra-chave que você deseja detectar
 palavra_chave = data
 
-# Check the latest posts from each account
-for conta, user_id in contas.items():
-    try:
-        # Get the latest media from the user
-        postagens = client.user_medias(user_id=user_id, amount=1)
-        if postagens:
-            # Check if the post is valid
-            if postagens[0].media_type == 1:  # Check if it's an image
-                # Check if the caption contains the keyword
-                caption = postagens[0].caption_text
-                if palavra_chave in caption:
-                    # Like the story
-                    client.story_like(postagens[0].pk)
-                    print(f"Post from {conta} liked as story.")
-                else:
-                    print(f"The latest post from {conta} does not contain the keyword.")
-            else:
-                print(f"The latest post from {conta} is not an image.")
-        else:
-            print(f"No posts found for {conta}.")
-    except ClientError as e:
-        print(f"Error getting post from {conta}: {e}")
+# Crie uma instância do cliente Instagrapi
+client = Client()
 
-# Logout
+# Faça login na sua conta do Instagram
+client.login(username, password)
+
+# Para cada conta, verifique a última postagem
+for conta in contas:
+    # Obtenha a última postagem da conta
+    postagem = client.user_medias(conta, 1)[0]
+
+    # Verifique se a legenda da postagem contém a palavra-chave
+    if palavra_chave in postagem["caption"]:
+        # Se sim, compartilhe a postagem nos seus stories
+        client.story_share(postagem["pk"])
+
+# Aguarde alguns segundos para evitar problemas de taxa de limite
+time.sleep(5)
+
+# Logout da sua conta
 client.logout()
