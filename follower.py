@@ -1,7 +1,7 @@
+import os
 from instagrapi import Client
 import time
 import random
-import os
 import requests
 
 # Chamando variáveis secretas
@@ -32,6 +32,7 @@ while total_followed < 30:
     if response.status_code == 200:
         try:
             json_data = response.json()
+            print(json_data)  # Imprimir o conteúdo da resposta JSON para depuração
             results = json_data.get('graphql', {}).get('hashtag', {}).get('edge_hashtag_to_media', {}).get('edges', [])
         except ValueError:
             print("Failed to decode JSON from response")
