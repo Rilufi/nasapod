@@ -1,4 +1,4 @@
-name: Astrofollow
+name: Storier
 
 
 on: push
@@ -38,10 +38,11 @@ jobs:
       - name: Install packages ⚙
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install intagrapi
+        #  pip install -r requirements.txt
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: follow astro 🌠
+      - name: astrories 🌠
         env:
                   USERNAME: ${{ secrets.USERNAME }}
 
@@ -51,4 +52,4 @@ jobs:
 
                   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
                   
-        run: python follower.py
+        run: python storier.py
