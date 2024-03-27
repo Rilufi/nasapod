@@ -5,8 +5,8 @@ import os
 import requests
 
 # Chamando variáveis secretas
-username = os.environ.get("USUARIO")
-password = os.environ.get("SENHA")
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
 
 # Criando um cliente instagrapi
 client = Client(request_timeout=7)
