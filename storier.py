@@ -35,14 +35,18 @@ for conta in contas:
         # Get the latest media from the user
         postagens = client.user_medias(user_id=user_info.pk, amount=1)
         if postagens:
-            # Check if the caption contains the keyword
-            caption = postagens[0].caption_text
-            if palavra_chave in caption:
-                # Like the story
-                client.story_like(postagens[0].pk)
-                print(f"Post from {conta} liked as story.")
+            # Check if the post is valid
+            if postagens[0].media_type == 1:  # Check if it's an image
+                # Check if the caption contains the keyword
+                caption = postagens[0].caption_text
+                if palavra_chave in caption:
+                    # Like the story
+                    client.story_like(postagens[0].pk)
+                    print(f"Post from {conta} liked as story.")
+                else:
+                    print(f"The latest post from {conta} does not contain the keyword.")
             else:
-                print(f"The latest post from {conta} does not contain the keyword.")
+                print(f"The latest post from {conta} is not an image.")
         else:
             print(f"No posts found for {conta}.")
     except ClientError as e:
