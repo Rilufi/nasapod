@@ -18,7 +18,7 @@ username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
 # Defina as contas que você deseja monitorar
-contas = ["boturinsta", "doglufi"]
+contas = [62183085222, 61863629167]
 
 # Defina a palavra-chave que você deseja detectar
 palavra_chave = data
