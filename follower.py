@@ -5,8 +5,8 @@ import os
 import requests
 
 # Chamando variáveis secretas
-username = os.environ.get("USERNAME")
-password = os.environ.get("PASSWORD")
+username = os.environ.get("USUARIO")
+password = os.environ.get("SENHA")
 
 # Criando um cliente instagrapi
 client = Client(request_timeout=7)
@@ -29,7 +29,16 @@ while total_followed < 30:
         f"https://www.instagram.com/explore/tags/{target_hashtag}/?__a=1",
         headers=headers
     )
-    results = response.json().get('graphql', {}).get('hashtag', {}).get('edge_hashtag_to_media', {}).get('edges', [])
+    if response.status_code == 200:
+        try:
+            json_data = response.json()
+            results = json_data.get('graphql', {}).get('hashtag', {}).get('edge_hashtag_to_media', {}).get('edges', [])
+        except ValueError:
+            print("Failed to decode JSON from response")
+            break
+    else:
+        print(f"Failed to retrieve data. Status code: {response.status_code}")
+        break
     
     # Extrair os IDs dos usuários das postagens encontradas
     user_ids = [result['node']['owner']['id'] for result in results]
