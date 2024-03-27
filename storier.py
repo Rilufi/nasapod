@@ -35,9 +35,8 @@ for conta in contas:
     postagem = client.user_medias(conta, 1)[0]
 
     # Verifique se a legenda da postagem contém a palavra-chave
-    if palavra_chave in postagem["caption"]:
-        # Se sim, compartilhe a postagem nos seus stories
-        client.story_share(postagem["pk"])
+    if palavra_chave in postagem.caption_text:  # Assuming 'caption_text' is the new property
+        client.story_share(postagem.pk)
 
 # Aguarde alguns segundos para evitar problemas de taxa de limite
 time.sleep(5)
