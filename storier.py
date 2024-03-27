@@ -31,7 +31,7 @@ palavra_chave = data
 for conta in contas:
     try:
         # Obtenha a última postagem da conta
-        postagem = client.user_detail_info_by_username(conta).latest_reel_media
+        postagem = client.user_info_by_username(conta).latest_reel_media
         if postagem:
             # Verifique se a legenda contém a palavra-chave
             if palavra_chave in postagem.caption.text:
