@@ -1,57 +1,48 @@
-import os
 from instagrapi import Client
-import time
-import random
-import requests
+from instagrapi.exceptions import ClientError
+from datetime import date, timezone, timedelta, datetime
 
-# Chamando variáveis secretas
+#get the time with timezone
+fuso_horario = timezone(timedelta(hours=-3))
+data_e_hora_atuais = datetime.now()
+data_e_hora_sao_paulo = data_e_hora_atuais.astimezone(fuso_horario)
+hora = data_e_hora_sao_paulo.strftime('%H')
+
+#what day is it?
+today = date.today() # ex 2015-10-31
+data = today.strftime("%d/%m")
+
+# Autenticação
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
-# Criando um cliente instagrapi
-client = Client(request_timeout=7)
-client.login(username, password)
+# Inicialize o cliente
+client = Client()
+client.login(username, password)  # Faça login na sua conta
 
-# Definindo o usuário alvo ou hashtag relacionada à astronomia
-target_hashtag = "#astronomy"
+# Contas que você deseja monitorar
+contas = ["boturinsta", "doglufi"]
 
-# Definindo o número total de contas seguidas
-total_followed = 0
+# Palavra específica na legenda
+palavra_chave = data
 
-# Set the custom user agent in the headers
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-}
+# Verifique as últimas postagens de cada conta
+for conta in contas:
+    try:
+        # Obtenha a última postagem da conta
+        postagem = client.user_detail_info_by_username(conta).latest_reel_media
+        if postagem:
+            # Verifique se a legenda contém a palavra-chave
+            if palavra_chave in postagem.caption.text:
+                # Compartilhe a postagem como história
+                client.story_share(postagem.pk, "user")
+                print(f"Postagem de {conta} compartilhada como história.")
+            else:
+                print(f"A última postagem de {conta} não contém a palavra-chave.")
+        else:
+            print(f"Nenhuma postagem encontrada para {conta}.")
+    except ClientError as e:
+        print(f"Erro ao obter postagem de {conta}: {e}")
 
-while total_followed < 30:
-    # Pesquisando por postagens relacionadas à hashtag de astronomia
-    response = requests.get(
-        f"https://www.instagram.com/explore/tags/{target_hashtag}",
-        headers=headers
-    )
-    if response.status_code == 200:
-        try:
-            json_data = response.json()
-            print(json_data)  # Imprimir o conteúdo da resposta JSON para depuração
-            results = json_data.get('graphql', {}).get('hashtag', {}).get('edge_hashtag_to_media', {}).get('edges', [])
-        except ValueError:
-            print("Failed to decode JSON from response")
-            break
-    else:
-        print(f"Failed to retrieve data. Status code: {response.status_code}")
-        break
-    
-    # Extrair os IDs dos usuários das postagens encontradas
-    user_ids = [result['node']['owner']['id'] for result in results]
-    
-    # Iterar sobre os IDs dos usuários encontrados e segui-los
-    for user_id in user_ids:
-        client.user_follow(user_id)
-        total_followed += 1
-        print(f"Followed user {total_followed}/{30}")
-        if total_followed >= 30:
-            break  # Parar se o limite de 30 contas seguidas for atingido
-        time.sleep(360)  # Esperar 6 minutos antes de seguir a próxima conta
-
-# Fazer logout após completar as ações
+# Logout
 client.logout()
