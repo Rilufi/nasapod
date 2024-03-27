@@ -26,7 +26,7 @@ headers = {
 while total_followed < 30:
     # Pesquisando por postagens relacionadas à hashtag de astronomia
     response = requests.get(
-        f"https://www.instagram.com/explore/tags/{target_hashtag}/?__a=1",
+        f"https://www.instagram.com/explore/tags/{target_hashtag}",
         headers=headers
     )
     if response.status_code == 200:
