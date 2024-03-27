@@ -36,7 +36,7 @@ for conta in contas:
         postagens = client.user_medias(user_id=user_info.pk, amount=1)
         if postagens:
             # Check if the caption contains the keyword
-            caption = postagens[0].json_data.get('caption', {}).get('text', '')
+            caption = postagens[0].caption_text
             if palavra_chave in caption:
                 # Share the post as a story
                 client.story_share(postagens[0].pk, "user")
