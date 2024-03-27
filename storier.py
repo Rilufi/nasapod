@@ -3,47 +3,49 @@ from instagrapi.exceptions import ClientError
 from datetime import date, timezone, timedelta, datetime
 import os
 
-#get the time with timezone
+# Get the time with timezone
 fuso_horario = timezone(timedelta(hours=-3))
 data_e_hora_atuais = datetime.now()
 data_e_hora_sao_paulo = data_e_hora_atuais.astimezone(fuso_horario)
 hora = data_e_hora_sao_paulo.strftime('%H')
 
-#what day is it?
-today = date.today() # ex 2015-10-31
+# What day is it?
+today = date.today()
 data = today.strftime("%d/%m")
 
-# Autenticação
+# Authentication
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
-# Inicialize o cliente
+# Initialize the client
 client = Client()
-client.login(username, password)  # Faça login na sua conta
+client.login(username, password)
 
-# Contas que você deseja monitorar
+# Accounts to monitor
 contas = ["boturinsta", "doglufi"]
 
-# Palavra específica na legenda
+# Specific word in the caption
 palavra_chave = data
 
-# Verifique as últimas postagens de cada conta
+# Check the latest posts from each account
 for conta in contas:
     try:
-        # Obtenha a última postagem da conta
-        postagem = client.user_info_by_username(conta).latest_reel_media
-        if postagem:
-            # Verifique se a legenda contém a palavra-chave
-            if palavra_chave in postagem.caption.text:
-                # Compartilhe a postagem como história
-                client.story_share(postagem.pk, "user")
-                print(f"Postagem de {conta} compartilhada como história.")
+        # Get the user info by username
+        user_info = client.user_info_by_username(conta)
+        # Get the latest media from the user
+        postagens = client.user_medias(user_id=user_info.pk, amount=1)
+        if postagens:
+            # Check if the caption contains the keyword
+            if palavra_chave in postagens[0].caption.text:
+                # Share the post as a story
+                client.story_share(postagens[0].pk, "user")
+                print(f"Post from {conta} shared as story.")
             else:
-                print(f"A última postagem de {conta} não contém a palavra-chave.")
+                print(f"The latest post from {conta} does not contain the keyword.")
         else:
-            print(f"Nenhuma postagem encontrada para {conta}.")
+            print(f"No posts found for {conta}.")
     except ClientError as e:
-        print(f"Erro ao obter postagem de {conta}: {e}")
+        print(f"Error getting post from {conta}: {e}")
 
 # Logout
 client.logout()
