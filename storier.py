@@ -1,6 +1,7 @@
 from instagrapi import Client
 from instagrapi.exceptions import ClientError
 import time
+import os
 
 # Authentication
 username = os.environ.get("USERNAME")
