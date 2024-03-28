@@ -12,7 +12,7 @@ client = Client()
 client.login(username, password)  # Log in to your account
 
 # ID of NASA's official Instagram account
-nasa_user_id = "1518284433"  # ID of NASA's official account
+nasa_user_id = "528817151"  # ID of NASA's official account
 
 # Get followers of NASA's official account
 try:
