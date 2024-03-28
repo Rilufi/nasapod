@@ -26,17 +26,30 @@ palavra_chave = data
 # Crie uma instância do cliente Instagrapi
 client = Client()
 
-# Faça login na sua conta do Instagram
-client.login(username, password)
-
 # Para cada conta, verifique a última postagem
 for conta in contas:
     # Obtenha a última postagem da conta
     postagem = client.user_medias(conta, 1)[0]
 
-    # Verifique se a legenda da postagem contém a palavra-chave
-    if palavra_chave in postagem.caption_text:  # Assuming 'caption_text' is the new property
-        client.story_share(postagem.pk)
+    if palavra_chave in postagem.caption_text:
+        # Create a custom story with a placeholder image
+        client.story_configure(
+            background_color="F5F8FA",
+            media_type=instagrapi.MediaType.PHOTO,
+            media_file="placeholder.jpg"  # Replace with a placeholder image
+         )
+
+    # Overlay the post's media on top of the custom story
+    # (Adjust coordinates as needed)
+        client.story_add_sticker(
+            sticker_type=instagrapi.StorySticker.PHOTO,
+            x=0.5,
+            y=0.5,
+            media=postagem.media_file  # Assuming postagem contains the post's media
+    )
+
+        # Publish the story
+        client.story_publish()
 
 # Aguarde alguns segundos para evitar problemas de taxa de limite
 time.sleep(5)
