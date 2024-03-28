@@ -1,59 +1,28 @@
 from instagrapi import Client
 from instagrapi.exceptions import ClientError
-from datetime import date, timezone, timedelta, datetime
-import os
 import time
-
-# Get the time with timezone
-fuso_horario = timezone(timedelta(hours=-3))
-data_e_hora_atuais = datetime.now()
-data_e_hora_sao_paulo = data_e_hora_atuais.astimezone(fuso_horario)
-hora = data_e_hora_sao_paulo.strftime('%H')
-
-# What day is it?
-today = date.today()
-data = today.strftime("%d/%m")
 
 # Authentication
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
-# Defina as contas que você deseja monitorar
-contas = [62183085222, 61863629167]
-
-# Defina a palavra-chave que você deseja detectar
-palavra_chave = data
-
-# Crie uma instância do cliente Instagrapi
+# Inicialize o cliente
 client = Client()
+client.login(username, password)  # Faça login na sua conta
 
-# Para cada conta, verifique a última postagem
-for conta in contas:
-    # Obtenha a última postagem da conta
-    postagem = client.user_medias(conta, 1)[0]
+# ID da conta oficial da NASA no Instagram
+nasa_user_id = "1518284433"  # ID da conta oficial da NASA
 
-    if palavra_chave in postagem.caption_text:
-        # Create a custom story with a placeholder image
-        client.story_configure(
-            background_color="F5F8FA",
-            media_type=instagrapi.MediaType.PHOTO,
-            media_file="placeholder.jpg"  # Replace with a placeholder image
-         )
+# Obtenha os seguidores da conta oficial da NASA
+try:
+    followers = client.user_followers(nasa_user_id, amount=50)  # Obtenha 50 seguidores da NASA
+    for follower in followers:
+        # Siga o seguidor
+        client.user_follow(follower.pk)
+        print(f"Seguindo {follower.username}")
+        time.sleep(360)  # Espere 6 minutos antes de seguir o próximo seguidor (50 seguidores em 5 horas)
+except ClientError as e:
+    print(f"Erro ao obter seguidores da NASA: {e}")
 
-    # Overlay the post's media on top of the custom story
-    # (Adjust coordinates as needed)
-        client.story_add_sticker(
-            sticker_type=instagrapi.StorySticker.PHOTO,
-            x=0.5,
-            y=0.5,
-            media=postagem.media_file  # Assuming postagem contains the post's media
-    )
-
-        # Publish the story
-        client.story_publish()
-
-# Aguarde alguns segundos para evitar problemas de taxa de limite
-time.sleep(5)
-
-# Logout da sua conta
+# Logout
 client.logout()
