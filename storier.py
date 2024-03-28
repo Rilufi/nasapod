@@ -1,13 +1,20 @@
 import os
 from instapy import InstaPy
+from selenium import webdriver
 
-
-# Authentication
+# Authentication (using environment variables)
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 
-# Crie uma instância do InstaPy
-session = InstaPy(username=username, password=password)
+# WebDriver path (replace with the actual path)
+#driver_path = "/path/to/geckodriver"
+
+# Define options for headless mode (if needed)
+options = webdriver.FirefoxOptions()
+options.add_argument("--headless")  # Uncomment for headless mode
+
+# Create a session with explicit driver path
+session = InstaPy(username=username, password=password, webdriver_options=options)
 
 # Inicie a sessão
 session.login()
