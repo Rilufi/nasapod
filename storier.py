@@ -2,6 +2,7 @@ from instagrapi import Client
 from instagrapi.exceptions import ClientError
 from datetime import date, timezone, timedelta, datetime
 import os
+import time
 
 # Get the time with timezone
 fuso_horario = timezone(timedelta(hours=-3))
