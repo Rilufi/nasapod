@@ -83,6 +83,7 @@ if type == 'image':
         print("Photo published on Instagram")
     except Exception as e:
         print(f"Error posting photo on Instagram: {e}")
+        bot.send_message(tele_user, 'apod com problema')
 
 elif type == 'video':
     # Post the video on Twitter
