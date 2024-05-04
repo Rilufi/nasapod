@@ -4,6 +4,7 @@ import urllib.request
 import requests
 import tweepy
 import time
+import google.generativeai as genai
 from auth import api, client
 from instagrapi import Client
 import telebot
@@ -16,7 +17,11 @@ password = os.environ.get("PASSWORD")
 tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
+GOOGLE_API_KEY=os.environ["GOOGLE_API_KEY"]
+genai.configure(api_key=GOOGLE_API_KEY)
 
+# Choose a GenAI model (e.g., 'gemini-pro')
+model = genai.GenerativeModel('gemini-pro')
 
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -33,6 +38,36 @@ explanation = response.get('explanation')
 title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
+# Prompt para traduzir a explicação da APOD
+prompt = f"Traduza a explicação para a Astronomy Picture of the Day retirada diretamente da NASA de forma científicamente correta: {explanation}"
+
+# Generate text using the GenAI model
+response = model.generate_content(prompt)
+
+try:
+    # Access the candidates directly from the response
+    candidates = response.candidates
+    
+    if candidates:
+        prompt_text = candidates[0].content.parts[0].text
+    else:
+        raise IndexError("No candidates found in response")
+except (AttributeError, IndexError, KeyError) as e:
+    # Handle potential errors or missing attributes
+    print(f"Error extracting prompt text: {e}")
+    prompt_text = ""
+
+
+insta_string = f"""Foto Astronômica do Dia
+{title}
+
+{prompt_text}
+
+Fonte: {site}
+
+{hashtags}"""
+
+
 mystring = f"""Astronomy Picture of the Day
 
 {title}
@@ -41,14 +76,6 @@ Source: {site}
 
 {hashtags}"""
 
-insta_string = f""" Astronomy Picture of the Day
-{title}
-
-{explanation}
-
-Source: {site}
-
-{hashtags}"""
 
 myexstring = f"""{explanation}"""
 
