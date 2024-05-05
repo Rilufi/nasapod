@@ -42,10 +42,13 @@ hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 def gerar_traducao(prompt):
     while True:
         response = model.generate_content(prompt)
-        if response.candidates:
+        # Verifique se a resposta contém candidatos antes de prosseguir
+        if response.candidates and len(response.candidates) > 0:
             return response.candidates[0].content.parts[0].text
         else:
-            print("Tentando novamente obter candidatos válidos...")
+            print("Nenhum candidato válido encontrado, tentando novamente...")
+            time.sleep(1)  # Pausa breve para evitar sobrecarga no serviço de IA
+
 
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Traduza o seguinte para o português de forma científicamente correta:\nTítulo: {title}\nExplicação: {explanation}"
@@ -94,10 +97,10 @@ if type == 'image':
     # Post the image on Twitter
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
-    media = api.media_upload(image)
-    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+#    media = api.media_upload(image)
+#    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
     # Salva o ID do tweet da imagem
-    tweet_id_imagem = tweet_imagem.data['id']
+#    tweet_id_imagem = tweet_imagem.data['id']
 
     # Post the image on Instagram
     try:
