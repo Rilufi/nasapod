@@ -45,13 +45,15 @@ def gerar_traducao(prompt, max_retries=5):
         response = model.generate_content(prompt)
         # Verifique se a resposta contém candidatos e se a lista não está vazia
         if response.candidates and len(response.candidates) > 0:
-            return response.candidates[0].content.parts[0].text
+            if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
+                return response.candidates[0].content.parts[0].text
+            else:
+                print("Nenhuma parte de conteúdo encontrada na resposta.")
         else:
             print(f"Nenhum candidato válido encontrado, tentando novamente... ({retries+1}/{max_retries})")
             retries += 1
             time.sleep(1)  # Pausa breve para evitar sobrecarga no serviço de IA
     raise Exception("Falha ao gerar tradução após várias tentativas")
-
 
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Traduza o seguinte para o português de forma científicamente correta:\nTítulo: {title}\nExplicação: {explanation}"
