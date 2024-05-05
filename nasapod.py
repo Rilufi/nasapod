@@ -108,10 +108,10 @@ if type == 'image':
     # Post the image on Twitter
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
-#    media = api.media_upload(image)
-#    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+    media = api.media_upload(image)
+    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
     # Salva o ID do tweet da imagem
-#    tweet_id_imagem = tweet_imagem.data['id']
+    tweet_id_imagem = tweet_imagem.data['id']
 
     # Post the image on Instagram
     try:
