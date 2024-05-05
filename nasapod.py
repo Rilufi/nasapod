@@ -38,30 +38,27 @@ explanation = response.get('explanation')
 title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
-# Prompt para traduzir a explicação da APOD
-prompt = f"Traduza a explicação para a Astronomy Picture of the Day retirada diretamente da NASA de forma científicamente correta: {explanation}"
+# Função para gerar conteúdo traduzido usando o modelo GenAI
+def gerar_traducao(prompt):
+    while True:
+        response = model.generate_content(prompt)
+        if response.candidates:
+            return response.candidates[0].content.parts[0].text
+        else:
+            print("Tentando novamente obter candidatos válidos...")
 
-# Generate text using the GenAI model
-response = model.generate_content(prompt)
+# Combinar o título e a explicação em um único prompt
+prompt_combinado = f"Traduza o seguinte para o português de forma científicamente correta:\nTítulo: {title}\nExplicação: {explanation}"
+traducao_combinada = gerar_traducao(prompt_combinado)
 
-try:
-    # Access the candidates directly from the response
-    candidates = response.candidates
-    
-    if candidates:
-        prompt_text = candidates[0].content.parts[0].text
-    else:
-        raise IndexError("No candidates found in response")
-except (AttributeError, IndexError, KeyError) as e:
-    # Handle potential errors or missing attributes
-    print(f"Error extracting prompt text: {e}")
-    prompt_text = ""
+# Separe a tradução combinada em título e explicação
+titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
 
-
+# Use as traduções na string do Instagram
 insta_string = f"""Foto Astronômica do Dia
-{title}
+{titulo_traduzido}
 
-{prompt_text}
+{explicacao_traduzida}
 
 Fonte: {site}
 
