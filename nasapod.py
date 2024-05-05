@@ -39,20 +39,23 @@ title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
-def gerar_traducao(prompt):
-    while True:
+def gerar_traducao(prompt, max_retries=5):
+    retries = 0
+    while retries < max_retries:
         response = model.generate_content(prompt)
-        # Verifique se a resposta contém candidatos antes de prosseguir
+        # Verifique se a resposta contém candidatos e se a lista não está vazia
         if response.candidates and len(response.candidates) > 0:
             return response.candidates[0].content.parts[0].text
         else:
-            print("Nenhum candidato válido encontrado, tentando novamente...")
+            print(f"Nenhum candidato válido encontrado, tentando novamente... ({retries+1}/{max_retries})")
+            retries += 1
             time.sleep(1)  # Pausa breve para evitar sobrecarga no serviço de IA
+    raise Exception("Falha ao gerar tradução após várias tentativas")
 
 
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Traduza o seguinte para o português de forma científicamente correta:\nTítulo: {title}\nExplicação: {explanation}"
-traducao_combinada = gerar_traducao(prompt_combinado)
+traducao_combinada = gerar_traducao(prompt_combinado, max_retries=5)
 
 # Separe a tradução combinada em título e explicação
 titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
