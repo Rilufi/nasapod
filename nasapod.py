@@ -145,7 +145,7 @@ elif type == 'video':
     try:
         cl = Client(request_timeout=7)
         cl.login(username, password)
-	video = download(site)
+        video = download(site)
         cl.video_upload(video, insta_string)
         print("Video published on Instagram")
     except Exception as e:
