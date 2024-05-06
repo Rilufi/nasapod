@@ -149,16 +149,9 @@ elif type == 'video':
             media = api.media_upload(video_file)
             tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
 	    # Salva o ID do tweet da imagem
-            tweet_id_imagem = tweet_imagem.data['id']
+            tweet_id_imagem = tweet_video.data['id']
         except Exception as e:
             print(f"Erro ao postar vídeo no Twitter: {e}")
-    #except:
-     #   urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-      #  video = 'apodvideo.jpeg'
-       # media = api.media_upload(video)
-        #tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        # Salva o ID do tweet da imagem
-       # tweet_id_imagem = tweet_imagem.data['id']
 
         # Posta o vídeo no Instagram
         try:
