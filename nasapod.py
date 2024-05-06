@@ -138,19 +138,25 @@ if type == 'image':
 
 elif type == 'video':
     # Post the video on Twitter
-    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-    video = 'apodvideo.jpeg'
-    media = api.media_upload(video)
-    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-    # Salva o ID do tweet da imagem
-    tweet_id_imagem = tweet_imagem.data['id']
+    try:
+	    video_file = download(site)
+	    media = api.media_upload(video_file)
+	    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+	    # Salva o ID do tweet da imagem
+	    tweet_id_imagem = tweet_imagem.data['id']
+    except:
+    	    urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
+	    video = 'apodvideo.jpeg'
+	    media = api.media_upload(video)
+	    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+	    # Salva o ID do tweet da imagem
+	    tweet_id_imagem = tweet_imagem.data['id']
 
     # Post the video on Instagram
     try:
         cl = Client(request_timeout=7)
         cl.login(username, password)
-        video_file = download(site)
-        cl.clip_upload(video_file, insta_string)
+        #cl.clip_upload(video_file, insta_string)
         print("Video published on Instagram")
 
     except Exception as e:
