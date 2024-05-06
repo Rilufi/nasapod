@@ -103,19 +103,22 @@ def get_chunks(s, maxlength):
 
 chunks = get_chunks(explanation, 280)
 
-# Function to download the video and return the path of the downloaded file
-def download(link):
+# Função para baixar o vídeo e retornar o nome do arquivo baixado
+def download_video(link):
     try:
         youtube_object = YouTube(link)
         video_stream = youtube_object.streams.get_highest_resolution()
         if video_stream:
             video_filename = video_stream.default_filename
             video_stream.download()
-            return video_filename  # Return the path to the downloaded video file
+            return video_filename  # Retorna o nome do arquivo do vídeo baixado
+        else:
+            print("Nenhuma stream encontrada para o vídeo.")
+            return None
     except Exception as e:
-        print(f"Error downloading video: {e}")
-        return None  # Return None if download fails
-
+        print(f"Erro ao baixar o vídeo: {e}")
+        return None  # Retorna None se o download falhar
+	    
 # Check the type of media and post on Twitter and Instagram accordingly
 if type == 'image':
     # Post the image on Twitter
@@ -137,36 +140,39 @@ if type == 'image':
         bot.send_message(tele_user, 'apod com problema')
 
 elif type == 'video':
-    # Post the video on Twitter
-    try:
-        video_file = download(site)
-        media = api.media_upload(video_file)
-        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        # Salva o ID do tweet da imagem
-        tweet_id_imagem = tweet_imagem.data['id']
-    except:
-        urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
-        video = 'apodvideo.jpeg'
-        media = api.media_upload(video)
-        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        # Salva o ID do tweet da imagem
-        tweet_id_imagem = tweet_imagem.data['id']
+    # Tenta baixar o vídeo
+    video_file = download_video(site)
 
-    # Post the video on Instagram
-    try:
-        cl = Client(request_timeout=7)
-        cl.login(username, password)
-        #cl.clip_upload(video_file, insta_string)
-        print("Video published on Instagram")
+    if video_file:
+        # Posta o vídeo no Twitter
+        try:
+            media = api.media_upload(video_file)
+            tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
+	    # Salva o ID do tweet da imagem
+            tweet_id_imagem = tweet_imagem.data['id']
+        except Exception as e:
+            print(f"Erro ao postar vídeo no Twitter: {e}")
+    #except:
+     #   urllib.request.urlretrieve(thumbs, 'apodvideo.jpeg')
+      #  video = 'apodvideo.jpeg'
+       # media = api.media_upload(video)
+        #tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+        # Salva o ID do tweet da imagem
+       # tweet_id_imagem = tweet_imagem.data['id']
 
-    except Exception as e:
-        print(f"Error posting media on Instagram: {e}")
-        # Log or handle the error as needed
-        bot.send_message(tele_user, f'Error posting media on Instagram: {e}')
+        # Posta o vídeo no Instagram
+        try:
+            cl = Client(request_timeout=7)
+            cl.login(username, password)
+          #  cl.video_upload(video_file, insta_string)
+            print("Vídeo publicado no Instagram")
+        except Exception as e:
+            print(f"Erro ao postar vídeo no Instagram: {e}")
+            bot.send_message(tele_user, f'Erro ao postar mídia no Instagram: {e}')
 
 else:
-    print("Something went wrong with the media type.")
-    bot.send_message(tele_user, 'apod com problema')
+    print("Tipo de mídia inválido.")
+    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
 
 # Post each part of the explanation as a reply to the previous tweet
 tweet_ids_explicacao = []
