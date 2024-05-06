@@ -103,14 +103,18 @@ def get_chunks(s, maxlength):
 
 chunks = get_chunks(explanation, 280)
 
+# Function to download the video and return the path of the downloaded file
 def download(link):
-    youtubeObject = YouTube(link)
-    youtubeObject = youtubeObject.streams.get_highest_resolution()
     try:
-        youtubeObject.download()
-    except:
-        print("An error has occurred")
-    print("Download is completed successfully")
+        youtube_object = YouTube(link)
+        video_stream = youtube_object.streams.get_highest_resolution()
+        if video_stream:
+            video_filename = video_stream.default_filename
+            video_stream.download()
+            return video_filename  # Return the path to the downloaded video file
+    except Exception as e:
+        print(f"Error downloading video: {e}")
+        return None  # Return None if download fails
 
 # Check the type of media and post on Twitter and Instagram accordingly
 if type == 'image':
