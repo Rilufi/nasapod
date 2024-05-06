@@ -145,11 +145,14 @@ elif type == 'video':
     try:
         cl = Client(request_timeout=7)
         cl.login(username, password)
-        video = download(site)
-        cl.video_upload(video, insta_string)
+        video_file = download(site)
+        cl.video_upload(video_file, insta_string)
         print("Video published on Instagram")
+
     except Exception as e:
-        print(f"Error posting video on Instagram: {e}")
+        print(f"Error posting media on Instagram: {e}")
+        # Log or handle the error as needed
+        bot.send_message(tele_user, f'Error posting media on Instagram: {e}')
 
 else:
     print("Something went wrong with the media type.")
