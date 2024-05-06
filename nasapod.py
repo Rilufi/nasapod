@@ -8,6 +8,7 @@ import google.generativeai as genai
 from auth import api, client
 from instagrapi import Client
 import telebot
+from pytube import YouTube
 
 
 # Authentication
@@ -102,6 +103,14 @@ def get_chunks(s, maxlength):
 
 chunks = get_chunks(explanation, 280)
 
+def download(link):
+    youtubeObject = YouTube(link)
+    youtubeObject = youtubeObject.streams.get_highest_resolution()
+    try:
+        youtubeObject.download()
+    except:
+        print("An error has occurred")
+    print("Download is completed successfully")
 
 # Check the type of media and post on Twitter and Instagram accordingly
 if type == 'image':
@@ -136,6 +145,7 @@ elif type == 'video':
     try:
         cl = Client(request_timeout=7)
         cl.login(username, password)
+	video = download(site)
         cl.video_upload(video, insta_string)
         print("Video published on Instagram")
     except Exception as e:
