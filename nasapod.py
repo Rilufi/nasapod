@@ -157,7 +157,7 @@ elif type == 'video':
         try:
             cl = Client(request_timeout=7)
             cl.login(username, password)
-          #  cl.video_upload(video_file, insta_string)
+            cl.video_upload(video_file, insta_string)
             print("Vídeo publicado no Instagram")
         except Exception as e:
             print(f"Erro ao postar vídeo no Instagram: {e}")
