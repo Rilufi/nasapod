@@ -68,13 +68,15 @@ try:
 Fonte: {site}
 
 {hashtags}"""
+
+#se não conseguir traduzir, posta em inglês mesmo
 except AttributeError:
-	insta_string = f"""Foto Astronômica do Dia
+	insta_string = f"""Astronomy Picture of the Day
 {title}
 
 {explanation}
 
-Fonte: {site}
+Source: {site}
 
 {hashtags}"""
 	
