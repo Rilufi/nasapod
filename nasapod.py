@@ -49,7 +49,7 @@ def post_instagram_photo():
         print('Logado no Instagram')
     except:
         print("deslodog")
-        bot.send_message(tele_user, 'nasapod com problema pra logar')
+        bot.send_message(tele_user, 'apodinsta com problema pra logar')
         sys.exit()
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
