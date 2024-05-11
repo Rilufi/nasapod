@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+import sys
 import urllib.request
 import requests
 import tweepy
@@ -38,6 +39,18 @@ type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
+
+# Função pra logar no Instagram 
+def post_instagram_photo():
+    try:
+        # Realiza login na conta do Instagram
+        cl = Client(request_timeout=7)
+        cl.login(USERNAME, PASSWORD)
+        print('Logado no Instagram')
+    except:
+        print("deslodog")
+        bot.send_message(tele_user, 'nasapod com problema pra logar')
+        sys.exit()
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
@@ -133,13 +146,12 @@ if type == 'image':
 
     # Post the image on Instagram
     try:
-        cl = Client(request_timeout=7)
-        cl.login(username, password)
+        post_instagram_photo()
         cl.photo_upload(image, insta_string)
         print("Photo published on Instagram")
     except Exception as e:
         print(f"Error posting photo on Instagram: {e}")
-        bot.send_message(tele_user, 'apod com problema')
+        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
 
 elif type == 'video':
     # Tenta baixar o vídeo
@@ -163,7 +175,7 @@ elif type == 'video':
             print("Vídeo publicado no Instagram")
         except Exception as e:
             print(f"Erro ao postar vídeo no Instagram: {e}")
-            bot.send_message(tele_user, f'Erro ao postar mídia no Instagram: {e}')
+            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
 
 else:
     print("Tipo de mídia inválido.")
