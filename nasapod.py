@@ -52,7 +52,7 @@ def gerar_traducao(prompt):
             print(f"Nenhum candidato válido encontrado, tentando novamente... ({retries+1}/{max_retries})")
     
 # Combinar o título e a explicação em um único prompt
-prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\nTitle: {title}\nExplanation: {explanation}"
+prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
 
 try:
 	traducao_combinada = gerar_traducao(prompt_combinado)
