@@ -44,10 +44,9 @@ hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 def post_instagram_photo():
     try:
         # Realiza login na conta do Instagram
-        cl = Client(request_timeout=7)
+        global cl = Client(request_timeout=7)
         cl.login(username, password)
         print('Logado no Instagram')
-        return cl
     except Exception as e:
         print(f"deslonasa: {e}")
         bot.send_message(tele_user, f'apodinsta com problema pra logar: {e}')
