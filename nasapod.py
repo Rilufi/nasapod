@@ -45,7 +45,7 @@ def post_instagram_photo():
     try:
         # Realiza login na conta do Instagram
         cl = Client(request_timeout=7)
-        cl.login(USERNAME, PASSWORD)
+        cl.login(username, password)
         print('Logado no Instagram')
     except Exception as e:
         print(f"deslonasa: {e}")
