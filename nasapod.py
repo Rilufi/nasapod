@@ -47,9 +47,9 @@ def post_instagram_photo():
         cl = Client(request_timeout=7)
         cl.login(USERNAME, PASSWORD)
         print('Logado no Instagram')
-    except:
-        print("deslodog")
-        bot.send_message(tele_user, 'apodinsta com problema pra logar')
+    except Exception as e:
+        print(f"deslonasa: {e}")
+        bot.send_message(tele_user, f'apodinsta com problema pra logar: {e}')
         sys.exit()
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
