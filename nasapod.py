@@ -19,7 +19,7 @@ password = os.environ.get("PASSWORD")
 tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
-GOOGLE_API_KEY=os.environ["GOOGLE_API_KEY"]
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
@@ -28,10 +28,10 @@ model = genai.GenerativeModel('gemini-pro')
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
-      'api_key': api_key,
-      'hd': 'True',
-      'thumbs': 'True'
-  }
+    'api_key': api_key,
+    'hd': 'True',
+    'thumbs': 'True'
+}
 response = requests.get(URL_APOD, params=params).json()
 site = response.get('url')
 thumbs = response.get('thumbnail_url')
@@ -40,7 +40,7 @@ explanation = response.get('explanation')
 title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
-# Função pra logar no Instagram 
+# Função pra logar no Instagram
 def post_instagram_photo():
     try:
         # Realiza login na conta do Instagram
@@ -93,7 +93,7 @@ except AttributeError:
 Source: {site}
 
 {hashtags}"""
-    
+
 print(insta_string)
 
 mystring = f"""Astronomy Picture of the Day
@@ -146,6 +146,8 @@ def cortar_video(video_path, start_time, end_time, output_path):
         return None
 
 # Check the type of media and post on Twitter and Instagram accordingly
+tweet_id_imagem = None
+
 if type == 'image':
     # Post the image on Twitter
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
@@ -174,24 +176,24 @@ elif type == 'video':
         if video_file_cortado:
             video_file = video_file_cortado
 
-    # Posta o vídeo no Twitter
-    try:
-        media = api.media_upload(video_file)
-        tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        # Salva o ID do tweet do vídeo
-        tweet_id_imagem = tweet_video.data['id']
-    except Exception as e:
-        print(f"Erro ao postar vídeo no Twitter: {e}")
+        # Posta o vídeo no Twitter
+        try:
+            media = api.media_upload(video_file)
+            tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
+            # Salva o ID do tweet do vídeo
+            tweet_id_imagem = tweet_video.data['id']
+        except Exception as e:
+            print(f"Erro ao postar vídeo no Twitter: {e}")
 
-    # Posta o vídeo no Instagram
-    try:
-        cl = Client(request_timeout=7)
-        cl.login(username, password)
-        cl.video_upload(video_file, insta_string)
-        print("Vídeo publicado no Instagram")
-    except Exception as e:
-        print(f"Erro ao postar vídeo no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+        # Posta o vídeo no Instagram
+        try:
+            cl = Client(request_timeout=7)
+            cl.login(username, password)
+            cl.video_upload(video_file, insta_string)
+            print("Vídeo publicado no Instagram")
+        except Exception as e:
+            print(f"Erro ao postar vídeo no Instagram: {e}")
+            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
 
 else:
     print("Tipo de mídia inválido.")
@@ -201,13 +203,16 @@ else:
 tweet_ids_explicacao = []
 reply_to_id = tweet_id_imagem  # Start by replying to the tweet with the image and title
 
-for parte in chunks:
-    try:
-        response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
-        if 'id' in response.data:
-            tweet_ids_explicacao.append(str(response.data['id']))
-            reply_to_id = response.data['id']  # Update the ID for the next reply
-        else:
-            print(f"Error creating tweet: {response.data}")
-    except Exception as e:
-        print(f"Error creating tweet: {e}")
+if tweet_id_imagem:
+    for parte in chunks:
+        try:
+            response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
+            if 'id' in response.data:
+                tweet_ids_explicacao.append(str(response.data['id']))
+                reply_to_id = response.data['id']  # Update the ID for the next reply
+            else:
+                print(f"Error creating tweet: {response.data}")
+        except Exception as e:
+            print(f"Error creating tweet: {e}")
+else:
+    print("Erro: tweet_id_imagem não está definido.")
