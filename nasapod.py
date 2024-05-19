@@ -10,7 +10,7 @@ from auth import api, client
 from instagrapi import Client
 import telebot
 from pytube import YouTube
-
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -28,9 +28,9 @@ model = genai.GenerativeModel('gemini-pro')
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
-      'api_key':api_key,
-      'hd':'True',
-      'thumbs':'True'
+      'api_key': api_key,
+      'hd': 'True',
+      'thumbs': 'True'
   }
 response = requests.get(URL_APOD, params=params).json()
 site = response.get('url')
@@ -55,26 +55,26 @@ def post_instagram_photo():
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
-        response = model.generate_content(prompt)
-        # Verifique se a resposta contém candidatos e se a lista não está vazia
-        if response.candidates and len(response.candidates) > 0:
-            if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
-                return response.candidates[0].content.parts[0].text
-            else:
-                print("Nenhuma parte de conteúdo encontrada na resposta.")
+    response = model.generate_content(prompt)
+    # Verifique se a resposta contém candidatos e se a lista não está vazia
+    if response.candidates and len(response.candidates) > 0:
+        if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
+            return response.candidates[0].content.parts[0].text
         else:
-            print(f"Nenhum candidato válido encontrado, tentando novamente... ({retries+1}/{max_retries})")
-    
+            print("Nenhuma parte de conteúdo encontrada na resposta.")
+    else:
+        print("Nenhum candidato válido encontrado.")
+
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
 
 try:
-	traducao_combinada = gerar_traducao(prompt_combinado)
-	# Separe a tradução combinada em título e explicação
-	titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
+    traducao_combinada = gerar_traducao(prompt_combinado)
+    # Separe a tradução combinada em título e explicação
+    titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
 
-	# Use as traduções na string do Instagram
-	insta_string = f"""Foto Astronômica do Dia
+    # Use as traduções na string do Instagram
+    insta_string = f"""Foto Astronômica do Dia
 {titulo_traduzido}
 
 {explicacao_traduzida}
@@ -85,7 +85,7 @@ Fonte: {site}
 
 #se não conseguir traduzir, posta em inglês mesmo
 except AttributeError:
-	insta_string = f"""Astronomy Picture of the Day
+    insta_string = f"""Astronomy Picture of the Day
 {title}
 
 {explanation}
@@ -93,7 +93,7 @@ except AttributeError:
 Source: {site}
 
 {hashtags}"""
-	
+    
 print(insta_string)
 
 mystring = f"""Astronomy Picture of the Day
@@ -103,7 +103,6 @@ mystring = f"""Astronomy Picture of the Day
 Source: {site}
 
 {hashtags}"""
-
 
 myexstring = f"""{explanation}"""
 
@@ -134,7 +133,18 @@ def download_video(link):
     except Exception as e:
         print(f"Erro ao baixar o vídeo: {e}")
         return None  # Retorna None se o download falhar
-	    
+
+# Função para cortar o vídeo
+def cortar_video(video_path, start_time, end_time, output_path):
+    try:
+        with VideoFileClip(video_path) as video:
+            video_cortado = video.subclip(start_time, end_time)
+            video_cortado.write_videofile(output_path, codec="libx264")
+        return output_path
+    except Exception as e:
+        print(f"Erro ao cortar o vídeo: {e}")
+        return None
+
 # Check the type of media and post on Twitter and Instagram accordingly
 if type == 'image':
     # Post the image on Twitter
@@ -158,25 +168,30 @@ elif type == 'video':
     # Tenta baixar o vídeo
     video_file = download_video(site)
 
+    # Cortar o vídeo se for maior que 60 segundos
     if video_file:
-        # Posta o vídeo no Twitter
-        try:
-            media = api.media_upload(video_file)
-            tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
-	    # Salva o ID do tweet da imagem
-            tweet_id_imagem = tweet_video.data['id']
-        except Exception as e:
-            print(f"Erro ao postar vídeo no Twitter: {e}")
+        video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
+        if video_file_cortado:
+            video_file = video_file_cortado
 
-        # Posta o vídeo no Instagram
-        try:
-            cl = Client(request_timeout=7)
-            cl.login(username, password)
-            cl.video_upload(video_file, insta_string)
-            print("Vídeo publicado no Instagram")
-        except Exception as e:
-            print(f"Erro ao postar vídeo no Instagram: {e}")
-            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+    # Posta o vídeo no Twitter
+    try:
+        media = api.media_upload(video_file)
+        tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
+        # Salva o ID do tweet do vídeo
+        tweet_id_imagem = tweet_video.data['id']
+    except Exception as e:
+        print(f"Erro ao postar vídeo no Twitter: {e}")
+
+    # Posta o vídeo no Instagram
+    try:
+        cl = Client(request_timeout=7)
+        cl.login(username, password)
+        cl.video_upload(video_file, insta_string)
+        print("Vídeo publicado no Instagram")
+    except Exception as e:
+        print(f"Erro ao postar vídeo no Instagram: {e}")
+        bot.send_message(tele_user, 'apodinsta com problema pra postar video')
 
 else:
     print("Tipo de mídia inválido.")
