@@ -173,13 +173,15 @@ elif type == 'video':
     # Cortar o vídeo se for maior que 60 segundos
     if video_file:
         video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
+        video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
         if video_file_cortado:
             video_file = video_file_cortado
+            video_twitter = video_file_twitter
 
         # Posta o vídeo no Twitter
         try:
-            media = api.media_upload(video_file)
-            tweet_video = client.create_tweet(text=mystring, media_ids=[media.media_id])
+            media = api.media_upload(video_twitter)
+            tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
             # Salva o ID do tweet do vídeo
             tweet_id_imagem = tweet_video.data['id']
         except Exception as e:
