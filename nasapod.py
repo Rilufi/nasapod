@@ -104,7 +104,7 @@ try:
 
 Fonte: {site}
 
-{hashtags}"""
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
 except AttributeError:
     insta_string = f"""Astronomy Picture of the Day
