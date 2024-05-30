@@ -35,7 +35,7 @@ jobs:
       - name: Install packages ⚙
         run: |
           python -m pip install --upgrade pip
-          pip install threadspy
+          pip install threads-api
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: thread APOD 🐦📷
