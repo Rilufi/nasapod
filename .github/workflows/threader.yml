@@ -40,8 +40,12 @@ jobs:
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: thread APOD 🐦📷
         env:
+                  API_KEY: ${{ secrets.API_KEY }}
+
                   USERNAME: ${{ secrets.USERNAME }}
 
                   PASSWORD: ${{ secrets.PASSWORD }}
-                  
+
+                  GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
+
         run: python threader.py
