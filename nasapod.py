@@ -12,6 +12,8 @@ import telebot
 from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
+from threadspy import ThreadsAPI
+
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -22,6 +24,7 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
+thrd = ThreadsAPI(username=username, password=password)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
@@ -106,6 +109,14 @@ Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
+    thrd_string = f"""Foto Astronômica do Dia
+{titulo_traduzido}
+
+Fonte: {site}
+
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
+
 except AttributeError:
     insta_string = f"""Astronomy Picture of the Day
 {title}
@@ -116,7 +127,15 @@ Source: {site}
 
 {hashtags}"""
 
+    thrd_string = f"""Astronomy Picture of the Day
+{title}
+
+Source: {site}
+
+{hashtags}"""
+
 print(insta_string)
+
 
 mystring = f"""Astronomy Picture of the Day
 
@@ -171,9 +190,14 @@ def cortar_video(video_path, start_time, end_time, output_path):
 tweet_id_imagem = None
 
 if type == 'image':
-    # Post the image on Twitter
+    # Retrieve the image
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
+
+    # Post the image on Threads
+    thrd.publish(caption=thrd_string, image_path=image)
+    
+    # Post the image on Twitter
     media = api.media_upload(image)
     tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
     tweet_id_imagem = tweet_imagem.data['id']
@@ -186,7 +210,16 @@ if type == 'image':
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
 
 elif type == 'video':
+    # Retrieve the video
     video_file = download_video(site)
+    
+    # Retrieve the thumbs
+    urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    # Post the image on Threads
+    thrd.publish(caption=thrd_string, image_path=image)
+
 
     if video_file:
         video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
