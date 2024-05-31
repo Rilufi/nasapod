@@ -97,7 +97,7 @@ if type == 'image':
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
     # Post the image on Threads
-    api.publish(caption=mystring, image_path=image)
+    api.publish(caption=insta_string, image_path=image)
 
 else:
     print("Tipo de mídia inválido.")
