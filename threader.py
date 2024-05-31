@@ -91,48 +91,13 @@ Source: {site}
 myexstring = f"""{explanation}"""
 
 
-# Função para baixar o vídeo e retornar o nome do arquivo baixado
-def download_video(link):
-    try:
-        youtube_object = YouTube(link)
-        video_stream = youtube_object.streams.get_highest_resolution()
-        if video_stream:
-            video_filename = video_stream.default_filename
-            video_stream.download()
-            return video_filename  # Retorna o nome do arquivo do vídeo baixado
-        else:
-            print("Nenhuma stream encontrada para o vídeo.")
-            return None
-    except Exception as e:
-        print(f"Erro ao baixar o vídeo: {e}")
-        return None  # Retorna None se o download falhar
-
-# Função para cortar o vídeo
-def cortar_video(video_path, start_time, end_time, output_path):
-    try:
-        with VideoFileClip(video_path) as video:
-            video_cortado = video.subclip(start_time, end_time)
-            video_cortado.write_videofile(output_path, codec="libx264")
-        return output_path
-    except Exception as e:
-        print(f"Erro ao cortar o vídeo: {e}")
-        return None
-
-
 if type == 'image':
 
   # Post the image on Twitter
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
     # Post the image on Threads
-    try:
-        api.publish(caption=mystring, image_path=image)
-    except Exception as e:
-        print(f"Error posting photo on Instagram: {e}")
-
-
-elif type == 'video':
-    pass
+    api.publish(caption=mystring, image_path=image)
 
 else:
     print("Tipo de mídia inválido.")
