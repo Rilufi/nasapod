@@ -14,7 +14,6 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
 
-
 # Authentication
 api_key = os.environ.get("API_KEY")
 username = os.environ.get("USERNAME")
@@ -39,12 +38,12 @@ params = {
 response = requests.get(URL_APOD, params=params).json()
 site = response.get('url')
 thumbs = response.get('thumbnail_url')
-type = response.get('media_type')
+media_type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
-# Função pra logar no Instagram
+# Função para logar no Instagram
 def post_instagram_photo(image_path, caption):
     try:
         cl = Client()
@@ -98,9 +97,10 @@ prompt_combinado = f"Given the following scientific text from a reputable source
 
 try:
     traducao_combinada = gerar_traducao(prompt_combinado)
-    titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
+    if traducao_combinada:
+        titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
 
-    insta_string = f"""Foto Astronômica do Dia
+        insta_string = f"""Foto Astronômica do Dia
 {titulo_traduzido}
 
 {explicacao_traduzida}
@@ -109,15 +109,17 @@ Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
-    thrd_string = f"""Foto Astronômica do Dia
+        thrd_string = f"""Foto Astronômica do Dia
 {titulo_traduzido}
 
 Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
-
-except AttributeError:
+    else:
+        raise AttributeError("A tradução combinada não foi gerada.")
+except AttributeError as e:
+    print(f"Erro ao gerar a tradução: {e}")
     insta_string = f"""Astronomy Picture of the Day
 {title}
 
@@ -136,7 +138,6 @@ Source: {site}
 
 print(insta_string)
 
-
 mystring = f"""Astronomy Picture of the Day
 
 {title}
@@ -147,7 +148,7 @@ Source: {site}
 
 myexstring = f"""{explanation}"""
 
-# Cut the explanation into multiple tweets
+# Função para dividir o texto em múltiplos tweets
 def get_chunks(s, maxlength):
     start = 0
     end = 0
@@ -157,7 +158,7 @@ def get_chunks(s, maxlength):
         start = end + 1
     yield s[start:]
 
-chunks = get_chunks(explanation, 280)
+chunks = list(get_chunks(explanation, 280))
 
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
@@ -189,27 +190,35 @@ def cortar_video(video_path, start_time, end_time, output_path):
 # Check the type of media and post on Twitter and Instagram accordingly
 tweet_id_imagem = None
 
-if type == 'image':
+if media_type == 'image':
     # Retrieve the image
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
 
     # Post the image on Threads
-    thrd.publish(caption=thrd_string, image_path=image)
+    try:
+        thrd.publish(caption=thrd_string, image_path=image)
+        print("Foto publicada no Threads")
+    except Exception as e:
+        print(f"Erro ao postar foto no Threads: {e}")
+        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
     
     # Post the image on Twitter
-    media = api.media_upload(image)
-    tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-    tweet_id_imagem = tweet_imagem.data['id']
+    try:
+        media = api.media_upload(image)
+        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+        tweet_id_imagem = tweet_imagem.data['id']
+    except Exception as e:
+        print(f"Erro ao postar foto no Twitter: {e}")
 
     # Post the image on Instagram
     try:
         post_instagram_photo(image, insta_string)
     except Exception as e:
-        print(f"Error posting photo on Instagram: {e}")
+        print(f"Erro ao postar foto no Instagram: {e}")
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
 
-elif type == 'video':
+elif media_type == 'video':
     # Retrieve the video
     video_file = download_video(site)
     
@@ -218,8 +227,12 @@ elif type == 'video':
     image = "apodtoday.jpeg"
 
     # Post the image on Threads
-    thrd.publish(caption=thrd_string, image_path=image)
-
+    try:
+        thrd.publish(caption=thrd_string, image_path=image)
+        print("Thumbnail do vídeo publicada no Threads")
+    except Exception as e:
+        print(f"Erro ao postar thumbnail do vídeo no Threads: {e}")
+        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
 
     if video_file:
         video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
@@ -228,13 +241,16 @@ elif type == 'video':
             video_file = video_file_cortado
             video_twitter = video_file_twitter
 
+        # Post the video on Twitter
         try:
             media = api.media_upload(video_twitter)
             tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
             tweet_id_imagem = tweet_video.data['id']
+            print("Vídeo publicado no Twitter")
         except Exception as e:
             print(f"Erro ao postar vídeo no Twitter: {e}")
 
+        # Post the video on Instagram
         try:
             post_instagram_photo(video_file, insta_string)
         except Exception as e:
@@ -245,6 +261,7 @@ else:
     print("Tipo de mídia inválido.")
     bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
 
+# Publicar explicações no Twitter como uma thread
 tweet_ids_explicacao = []
 reply_to_id = tweet_id_imagem
 
@@ -255,6 +272,7 @@ if tweet_id_imagem:
             if 'id' in response.data:
                 tweet_ids_explicacao.append(str(response.data['id']))
                 reply_to_id = response.data['id']
+                print("Tweet publicado como parte da thread")
             else:
                 print(f"Error creating tweet: {response.data}")
         except Exception as e:
@@ -262,7 +280,14 @@ if tweet_id_imagem:
 else:
     print("Erro: tweet_id_imagem não está definido.")
 
-# Post the latest NASA image
+# Baixar e postar a última imagem da NASA no Instagram
 nasa_image_path, nasa_caption = baixar_e_traduzir_post()
 if nasa_image_path and nasa_caption:
-    post_instagram_photo(nasa_image_path, nasa_caption)
+    try:
+        post_instagram_photo(nasa_image_path, nasa_caption)
+    except Exception as e:
+        print(f"Erro ao postar a imagem da NASA no Instagram: {e}")
+        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da NASA')
+
+# Adicionar log de conclusão
+print("Script concluído.")
