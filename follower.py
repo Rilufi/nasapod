@@ -27,21 +27,25 @@ for option in options:
     chrome_options.add_argument(option)
 
 def main():
+    print("Iniciando o navegador")
     driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
     driver.get('https://www.instagram.com/')
+    print("Página do Instagram carregada")
     
     try:
-        # Esperar até que o campo de nome de usuário esteja presente
+        print("Procurando campo de nome de usuário")
         username_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, 'username'))
         )
         username_field.send_keys(credential_dict.get('username'))
+        print("Nome de usuário inserido")
         
-        # Esperar até que o campo de senha esteja presente
+        print("Procurando campo de senha")
         password_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, 'password'))
         )
         password_field.send_keys(credential_dict.get('password'), Keys.ENTER)
+        print("Senha inserida")
         
     except TimeoutException:
         print("Não foi possível encontrar os elementos de entrada.")
@@ -57,26 +61,35 @@ def find_page(driver):
     driver.get(url)
     driver.implicitly_wait(10)
     
+    print(f"Verificando se a página {page_name} está disponível")
     # Verificar se a página não está disponível
     try:
         driver.find_element(By.XPATH, '//span[text()="Sorry, this page isn\'t available."]')
     except NoSuchElementException:
+        print(f"Página {page_name} está disponível")
         return True
     else:
+        print(f"Página {page_name} não está disponível")
         return False
 
 def follow_all(driver):
     try:
-        # Esperar até que o botão de seguidores esteja presente
+        print("Procurando botão de seguidores")
         followers_button = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/followers/')]"))
         )
+        print("Botão de seguidores encontrado")
         followers_button.click()
         
-        # Esperar até que os seguidores estejam carregados
+        # Capturar a captura de tela após clicar no botão de seguidores
+        driver.save_screenshot('screenshot_after_click_followers.png')
+        print("Captura de tela salva: screenshot_after_click_followers.png")
+        
+        print("Procurando elementos de seguidores")
         followers = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'x1dm5mii')]"))
         )
+        print("Elementos de seguidores encontrados")
         
         for follower in followers:
             button = follower.find_element(By.TAG_NAME, 'button')
@@ -85,8 +98,9 @@ def follow_all(driver):
 
     except TimeoutException:
         print("Não foi possível encontrar o botão de seguidores ou os seguidores.")
+        driver.save_screenshot('screenshot_error.png')
+        print("Captura de tela salva: screenshot_error.png")
         driver.quit()
-
 
 if __name__ == "__main__":
     browser = main()
