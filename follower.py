@@ -22,7 +22,9 @@ options = [
     "--ignore-certificate-errors",
     "--disable-extensions",
     "--no-sandbox",
-    "--disable-dev-shm-usage"
+    "--disable-dev-shm-usage",
+    "--disable-blink-features=AutomationControlled",
+    "--disable-infobars",
 ]
 for option in options:
     chrome_options.add_argument(option)
@@ -35,30 +37,33 @@ def main():
 
     try:
         print("Procurando campo de nome de usuário")
-        username_field = WebDriverWait(driver, 10).until(
+        username_field = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.NAME, 'username'))
         )
         username_field.send_keys(credential_dict.get('username'))
         print("Nome de usuário inserido")
 
         print("Procurando campo de senha")
-        password_field = WebDriverWait(driver, 10).until(
+        password_field = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.NAME, 'password'))
         )
         password_field.send_keys(credential_dict.get('password'), Keys.ENTER)
         print("Senha inserida")
 
         # Esperar até que a página principal do Instagram seja carregada após o login
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/explore/')]"))
         )
         print("Login concluído com sucesso")
+        sleep(5)
+        driver.save_screenshot('screenshot_login.png')
 
     except TimeoutException:
         print("Não foi possível encontrar os elementos de entrada.")
         driver.save_screenshot('screenshot_login_error.png')
         print("Captura de tela salva: screenshot_login_error.png")
         driver.quit()
+        return None
 
     driver.implicitly_wait(10)
     sleep(5)
@@ -81,11 +86,10 @@ def find_page(driver):
         print(f"Página {page_name} não está disponível")
         return False
 
-
 def follow_all(driver):
     try:
         print("Procurando botão de seguidores")
-        followers_button = WebDriverWait(driver, 10).until(
+        followers_button = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/followers/')]"))
         )
         print("Botão de seguidores encontrado")
@@ -97,7 +101,7 @@ def follow_all(driver):
 
         # Esperar a lista de seguidores carregar completamente
         print("Esperando a lista de seguidores carregar")
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'x1dm5mii')]"))
         )
 
@@ -130,6 +134,7 @@ def follow_all(driver):
                     continue
 
             if count < 8:
+
                 # Enviar teclas TAB e PAGE_DOWN para descer a lista de seguidores
                 print("Pressionando Tab e depois Page Down para descer na lista de seguidores")
                 body = driver.find_element(By.TAG_NAME, 'body')
@@ -143,9 +148,9 @@ def follow_all(driver):
                 new_followers = driver.find_elements(By.XPATH, "//div[contains(@class, 'x1dm5mii')]")
                 new_followers_count = len(new_followers)
                 print(f"Foram carregados {new_followers_count - len(followers)} novos seguidores")
-                if new_followers_count == len(followers):
-                    print("Não há mais novos seguidores para carregar")
-                    break
+#                if new_followers_count == len(followers):
+#                    print("Não há mais novos seguidores para carregar")
+#                    break
 
         print('done')
 
@@ -157,9 +162,11 @@ def follow_all(driver):
 
 if __name__ == "__main__":
     browser = main()
-    valid_page = find_page(browser)
-    if valid_page:
-        follow_all(browser)
+    if browser:
+        valid_page = find_page(browser)
+        if valid_page:
+            follow_all(browser)
+        else:
+            print('Página inválida')
     else:
-        print('enter valid page')
-        find_page(browser)
+        print('Falha ao iniciar o navegador')
