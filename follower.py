@@ -66,11 +66,27 @@ def find_page(driver):
         return False
 
 def follow_all(driver):
-    followers_button = driver.find_element(By.XPATH, "//a[contains(@href, 'followers')]").click()
-    followers = driver.find_elements(By.XPATH, "//div[contains(@class, 'x1dm5mii')]")
-    for follower in followers:
-        button = follower.find_element(By.TAG_NAME, 'button').click()
-    print('done')
+    try:
+        # Esperar até que o botão de seguidores esteja presente
+        followers_button = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/followers/')]"))
+        )
+        followers_button.click()
+        
+        # Esperar até que os seguidores estejam carregados
+        followers = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'x1dm5mii')]"))
+        )
+        
+        for follower in followers:
+            button = follower.find_element(By.TAG_NAME, 'button')
+            button.click()
+        print('done')
+
+    except TimeoutException:
+        print("Não foi possível encontrar o botão de seguidores ou os seguidores.")
+        driver.quit()
+
 
 if __name__ == "__main__":
     browser = main()
