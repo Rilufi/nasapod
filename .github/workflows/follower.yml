@@ -1,7 +1,7 @@
 name: Follower
 
 on: push
- # schedule:
+# schedule:
 #    - cron: '0 * * * *' 
 
 jobs:
@@ -27,9 +27,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
-    - name: Seguir seguidores
+    - name: Run follower script
       run: |
         python follower.py
       env:
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
+
+    - name: Upload screenshots as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshots
+        path: |
+          screenshot_after_click_followers.png
+          screenshot_error.png
