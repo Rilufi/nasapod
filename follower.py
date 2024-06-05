@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from time import sleep, time
+from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.chrome.options import Options
@@ -93,18 +93,19 @@ def follow_all(driver):
         driver.save_screenshot('screenshot_after_click_followers.png')
         print("Captura de tela salva: screenshot_after_click_followers.png")
         
-        print("Procurando elementos de seguidores")
+        # Esperar a lista de seguidores carregar completamente
+        print("Esperando a lista de seguidores carregar")
         followers_list = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//ul"))
         )
         
-        followers = []
-        end_time = time() + 30  # espera de 30 segundos no total
-        while time() < end_time:
-            followers = driver.find_elements(By.XPATH, "//div[@role='dialog']//ul//div[contains(@class, '_ap3a _aaco _aacw _aad6 _aade')]")
-            if followers:
-                break
-            sleep(1)
+        # Esperar até que ao menos um seguidor esteja visível na lista
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//ul//li"))
+        )
+        
+        print("Procurando elementos de seguidores")
+        followers = driver.find_elements(By.XPATH, "//div[@role='dialog']//ul//li")
         
         if not followers:
             raise TimeoutException("Não foi possível encontrar elementos de seguidores")
@@ -113,7 +114,7 @@ def follow_all(driver):
         
         for follower in followers:
             try:
-                follow_button = follower.find_element(By.XPATH, ".//div[contains(text(), 'Seguir')]")
+                follow_button = follower.find_element(By.XPATH, ".//button[contains(text(), 'Seguir')]")
                 follow_button.click()
             except NoSuchElementException:
                 print("Botão de seguir não encontrado para um dos seguidores")
