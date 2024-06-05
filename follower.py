@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from time import sleep
+from time import sleep, time
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.chrome.options import Options
@@ -47,8 +47,16 @@ def main():
         password_field.send_keys(credential_dict.get('password'), Keys.ENTER)
         print("Senha inserida")
         
+        # Esperar até que a página principal do Instagram seja carregada após o login
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/explore/')]"))
+        )
+        print("Login concluído com sucesso")
+        
     except TimeoutException:
         print("Não foi possível encontrar os elementos de entrada.")
+        driver.save_screenshot('screenshot_login_error.png')
+        print("Captura de tela salva: screenshot_login_error.png")
         driver.quit()
     
     driver.implicitly_wait(10)
@@ -91,8 +99,8 @@ def follow_all(driver):
         )
         
         followers = []
-        end_time = time.time() + 30  # espera de 30 segundos no total
-        while time.time() < end_time:
+        end_time = time() + 30  # espera de 30 segundos no total
+        while time() < end_time:
             followers = driver.find_elements(By.XPATH, "//div[@role='dialog']//ul//div[contains(@class, '_ap3a _aaco _aacw _aad6 _aade')]")
             if followers:
                 break
