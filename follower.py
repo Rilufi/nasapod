@@ -86,14 +86,23 @@ def follow_all(driver):
         print("Captura de tela salva: screenshot_after_click_followers.png")
         
         print("Procurando elementos de seguidores")
+        followers_list = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//ul"))
+        )
+        
+        # Esperar até que os seguidores estejam carregados
         followers = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'x1dm5mii')]"))
+            EC.presence_of_all_elements_located((By.XPATH, "//div[@role='dialog']//ul//div[contains(@class, '_ap3a _aaco _aacw _aad6 _aade')]"))
         )
         print("Elementos de seguidores encontrados")
         
         for follower in followers:
-            button = follower.find_element(By.TAG_NAME, 'button')
-            button.click()
+            try:
+                follow_button = follower.find_element(By.XPATH, ".//div[contains(text(), 'Seguir')]")
+                follow_button.click()
+            except NoSuchElementException:
+                print("Botão de seguir não encontrado para um dos seguidores")
+        
         print('done')
 
     except TimeoutException:
