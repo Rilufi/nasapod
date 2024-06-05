@@ -1,5 +1,6 @@
-consumer_key = ''
-consumer_secret = ''
-access_token = ''
-access_token_secret = ''
-nasa_key = ''
+import os
+
+credential_dict ={
+    'username':os.environ.get("USERNAME"),
+    'password':os.environ.get("PASSWORD")
+}
