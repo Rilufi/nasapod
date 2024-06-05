@@ -15,7 +15,6 @@ chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).in
 
 chrome_options = Options()
 options = [
-    "--headless",
     "--disable-gpu",
     "--window-size=1920,1200",
     "--ignore-certificate-errors",
@@ -31,7 +30,7 @@ def main():
     driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
     driver.get('https://www.instagram.com/')
     print("Página do Instagram carregada")
-    
+
     try:
         print("Procurando campo de nome de usuário")
         username_field = WebDriverWait(driver, 10).until(
@@ -39,26 +38,26 @@ def main():
         )
         username_field.send_keys(credential_dict.get('username'))
         print("Nome de usuário inserido")
-        
+
         print("Procurando campo de senha")
         password_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, 'password'))
         )
         password_field.send_keys(credential_dict.get('password'), Keys.ENTER)
         print("Senha inserida")
-        
+
         # Esperar até que a página principal do Instagram seja carregada após o login
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/explore/')]"))
         )
         print("Login concluído com sucesso")
-        
+
     except TimeoutException:
         print("Não foi possível encontrar os elementos de entrada.")
         driver.save_screenshot('screenshot_login_error.png')
         print("Captura de tela salva: screenshot_login_error.png")
         driver.quit()
-    
+
     driver.implicitly_wait(10)
     sleep(5)
     return driver
@@ -68,7 +67,7 @@ def find_page(driver):
     url = f'https://www.instagram.com/{page_name}'
     driver.get(url)
     driver.implicitly_wait(10)
-    
+
     print(f"Verificando se a página {page_name} está disponível")
     # Verificar se a página não está disponível
     try:
@@ -88,41 +87,41 @@ def follow_all(driver):
         )
         print("Botão de seguidores encontrado")
         followers_button.click()
-        
+
         # Capturar a captura de tela após clicar no botão de seguidores
         driver.save_screenshot('screenshot_after_click_followers.png')
         print("Captura de tela salva: screenshot_after_click_followers.png")
-        
+
         # Esperar a lista de seguidores carregar completamente
         print("Esperando a lista de seguidores carregar")
-        followers_list = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//ul"))
-        )
-        
         # Esperar até que ao menos um seguidor esteja visível na lista
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//ul//li"))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'x1dm5mii')]"))
         )
-        
+
         print("Procurando elementos de seguidores")
-        followers = driver.find_elements(By.XPATH, "//div[@role='dialog']//ul//li")
-        
+        followers = driver.find_elements(By.XPATH, "//div[contains(@class, 'x1dm5mii')]")
+
         if not followers:
             raise TimeoutException("Não foi possível encontrar elementos de seguidores")
 
         print("Elementos de seguidores encontrados")
-        
-        for follower in followers:
+
+        # Seguir apenas os primeiros 8 seguidores
+        for follower in followers[:8]:
             try:
-                follow_button = follower.find_element(By.XPATH, ".//button[contains(text(), 'Seguir')]")
+                follow_button = follower.find_element(By.TAG_NAME, value='button')
                 follow_button.click()
+                print("Seguindo um seguidor")
+                sleep(2)  # Aguardar 2 segundos entre os cliques para evitar ser bloqueado pelo Instagram
             except NoSuchElementException:
                 print("Botão de seguir não encontrado para um dos seguidores")
-        
+                continue
+
         print('done')
 
     except TimeoutException:
-        print("Não foi possível encontrar o botão de seguidores ou os seguidores.")
+        print("Não foi possível encontrar a lista de seguidores.")
         driver.save_screenshot('screenshot_error.png')
         print("Captura de tela salva: screenshot_error.png")
         driver.quit()
