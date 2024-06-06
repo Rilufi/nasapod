@@ -33,9 +33,6 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 ## Uso
 O bot pode ser executado com o script principal que lida com todo o processo de buscar dados, processá-los e postá-los nas plataformas de mídia social.
 
-## Informações Adicionais
-Para informações adicionais sobre Python, pip e a API do Twitter, consulte meu outro projeto: [GitHub - Coronga](https://github.com/Rilufi/coronga).
-
 ## Verificar os resultados
 Para ver o bot em ação, confira [Nasobot no Twitter](https://twitter.com/nasobot) e [Apodinsta no Instagram](https://www.instagram.com/apodinsta/).
 
@@ -74,9 +71,6 @@ To post on Threads, provide your Threads credentials in the environment variable
 
 ## Usage
 The bot can be run with the main script which handles the entire process of fetching data, processing it, and posting it to social media platforms.
-
-## Additional Information
-For additional information about Python, pip, and the Twitter API, refer to my other project: [GitHub - Coronga](https://github.com/Rilufi/coronga).
 
 ## Check the results
 To see the bot in action, check out [Nasobot on Twitter](https://twitter.com/nasobot) and [Apodinsta on Instagram](https://www.instagram.com/apodinsta/).
