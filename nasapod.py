@@ -66,8 +66,8 @@ def gerar_traducao(prompt):
         print("Nenhum candidato válido encontrado.")
     return None
 
-# Função para baixar a última postagem do Instagram da NASA e traduzi-la
-def baixar_e_traduzir_post():
+# Função para baixar a última postagem do Instagram da NASA
+def baixar_post_nasa():
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
     cl = Client()
     cl.login(username, password)
@@ -77,20 +77,52 @@ def baixar_e_traduzir_post():
         if media_date == yesterday and media.media_type == 1:
             image_url = media.thumbnail_url
             caption = media.caption_text
-            prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
-            traducao_nasa = gerar_traducao(prompt_nasa) or caption
 
             image_path = "imagem_nasa.jpg"
             response = requests.get(image_url)
             if response.status_code == 200:
                 with open(image_path, 'wb') as f:
                     f.write(response.content)
-                return image_path, traducao_nasa
+                return image_path, caption
             else:
                 print("Erro ao baixar a imagem.")
                 return None, None
     print("Nenhuma mídia válida encontrada.")
     return None, None
+
+# Função para dividir o texto em múltiplos tweets
+def get_chunks(s, maxlength):
+    start = 0
+    end = 0
+    while start + maxlength < len(s) and end != -1:
+        end = s.rfind(" ", start, start + maxlength + 1)
+        yield s[start:end]
+        start = end + 1
+    yield s[start:]
+
+# Função para postar a imagem da NASA no Twitter com a legenda original
+def post_nasa_photo_on_twitter(image_path, caption):
+    try:
+        media = api.media_upload(image_path)
+        tweet = client.create_tweet(text=caption[:280], media_ids=[media.media_id])
+        tweet_id = tweet.data['id']
+        print("Foto da NASA publicada no Twitter")
+
+        # Postar o restante da legenda em uma thread
+        chunks = list(get_chunks(caption[280:], 280))
+        reply_to_id = tweet_id
+        for parte in chunks:
+            try:
+                response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
+                if 'id' in response.data:
+                    reply_to_id = response.data['id']
+                    print("Tweet publicado como parte da thread da NASA")
+                else:
+                    print(f"Error creating tweet: {response.data}")
+            except Exception as e:
+                print(f"Error creating tweet: {e}")
+    except Exception as e:
+        print(f"Erro ao postar foto da NASA no Twitter: {e}")
 
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
@@ -147,16 +179,6 @@ Source: {site}
 {hashtags}"""
 
 myexstring = f"""{explanation}"""
-
-# Função para dividir o texto em múltiplos tweets
-def get_chunks(s, maxlength):
-    start = 0
-    end = 0
-    while start + maxlength < len(s) and end != -1:
-        end = s.rfind(" ", start, start + maxlength + 1)
-        yield s[start:end]
-        start = end + 1
-    yield s[start:]
 
 chunks = list(get_chunks(explanation, 280))
 
@@ -281,12 +303,13 @@ else:
     print("Erro: tweet_id_imagem não está definido.")
 
 # Baixar e postar a última imagem da NASA no Instagram
-nasa_image_path, nasa_caption = baixar_e_traduzir_post()
+nasa_image_path, nasa_caption = baixar_post_nasa()
 if nasa_image_path and nasa_caption:
     try:
         post_instagram_photo(nasa_image_path, nasa_caption)
+        post_nasa_photo_on_twitter(nasa_image_path, nasa_caption)  # Postar no Twitter com a legenda original
     except Exception as e:
-        print(f"Erro ao postar a imagem da NASA no Instagram: {e}")
+        print(f"Erro ao postar a imagem da NASA no Instagram ou Twitter: {e}")
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da NASA')
 
 # Adicionar log de conclusão
