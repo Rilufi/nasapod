@@ -307,7 +307,7 @@ nasa_image_path, nasa_caption = baixar_post_nasa()
 if nasa_image_path and nasa_caption:
     try:
         post_instagram_photo(nasa_image_path, nasa_caption)
-        post_nasa_photo_on_twitter(image_path, caption)  # Postar no Twitter com a legenda original
+        post_nasa_photo_on_twitter(nasa_image_path, nasa_caption)  # Postar no Twitter com a legenda original
     except Exception as e:
         print(f"Erro ao postar a imagem da NASA no Instagram ou Twitter: {e}")
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da NASA')
