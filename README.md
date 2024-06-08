@@ -27,7 +27,7 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 
 ## O que o bot faz?
 - **Posta a Astronomy Picture of the Day**: Recupera a APOD da API da NASA e posta no Twitter/X e Instagram.
-- **Posta a foto do dia anterior do Instagram da NASA no Twitter**: Baixa a foto mais recente do Instagram da NASA e posta no Twitter com a legenda original.
+- **Reposta a foto do dia anterior da NASA no Instagram**: Baixa a foto mais recente do Instagram da NASA e posta no Instagram com a legenda traduzida.
 - **Manipula diferentes tipos de mídia**: Suporta a postagem de imagens e vídeos, incluindo o processamento de vídeos para limites de duração do Twitter.
 
 ## Uso
@@ -66,7 +66,7 @@ To post on Threads, provide your Threads credentials in the environment variable
 
 ## What does the bot do?
 - **Posts the Astronomy Picture of the Day**: Retrieves the APOD from the NASA API and posts it on Twitter/X and Instagram.
-- **Posts NASA's Instagram photo of the previous day on Twitter**: Downloads the latest photo from NASA's Instagram and posts it on Twitter with the original caption.
+- **Reposts NASA's Instagram photo of the previous day **: Downloads the latest photo from NASA's Instagram and posts it on Instagram with a translated caption.
 - **Handles different media types**: Supports posting images and videos, including video processing for Twitter's duration limits.
 
 ## Usage
