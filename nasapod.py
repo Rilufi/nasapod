@@ -58,10 +58,14 @@ def salvar_legenda_postada(legenda):
         file.write(legenda + "\n")
 
 # Função para logar no Instagram
-def post_instagram_photo(image_path, caption):
+def logar_instagram():
+    cl = Client()
+    cl.login(username, password)
+    return cl
+
+# Função para postar foto no Instagram
+def post_instagram_photo(cl, image_path, caption):
     try:
-        cl = Client()
-        cl.login(username, password)
         cl.photo_upload(image_path, caption)
         print("Foto publicada no Instagram")
     except Exception as e:
@@ -81,10 +85,8 @@ def gerar_traducao(prompt):
     return None
 
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
-def baixar_e_traduzir_post(username, legendas_postadas):
+def baixar_e_traduzir_post(cl, username, legendas_postadas):
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    cl = Client()
-    cl.login(username, password)
     medias = cl.user_medias(cl.user_id_from_username(username), 10)
     for media in medias:
         media_date = media.taken_at.strftime('%Y-%m-%d')
@@ -244,7 +246,8 @@ if media_type == 'image':
 
     # Post the image on Instagram
     try:
-        post_instagram_photo(image, insta_string)
+        instagram_client = logar_instagram()
+        post_instagram_photo(instagram_client, image, insta_string)
     except Exception as e:
         print(f"Erro ao postar foto no Instagram: {e}")
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
@@ -283,7 +286,7 @@ elif media_type == 'video':
 
         # Post the video on Instagram
         try:
-            post_instagram_photo(video_file, insta_string)
+            post_instagram_photo(instagram_client, video_file, insta_string)
         except Exception as e:
             print(f"Erro ao postar vídeo no Instagram: {e}")
             bot.send_message(tele_user, 'apodinsta com problema pra postar video')
@@ -316,10 +319,10 @@ legendas_postadas = carregar_legendas_postadas()
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
 for page in nasa_pages:
-    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(page, legendas_postadas)
+    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
     if nasa_image_path and nasa_caption:
         try:
-            post_instagram_photo(nasa_image_path, nasa_caption)
+            post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
             # Salvar a legenda original no arquivo
             salvar_legenda_postada(original_caption)
         except Exception as e:
