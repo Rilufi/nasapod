@@ -64,3 +64,11 @@ jobs:
                   GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
                   
         run: python nasapod.py
+
+      - name: Atualizar arquivo de legenda
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          git add legendas_postadas.txt
+          git commit -m "Atualizar arquivo de legenda [skip ci]"  # Ignorar a execução do workflow para este commit
+          git push
