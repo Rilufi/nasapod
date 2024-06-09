@@ -1,10 +1,8 @@
 # coding=utf-8
 import os
-import sys
 import urllib.request
 import requests
 import tweepy
-import time
 import google.generativeai as genai
 from auth import api, client
 from instagrapi import Client
@@ -28,20 +26,36 @@ thrd = ThreadsAPI(username=username, password=password)
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
 
-# Get the picture, explanation, and/or video thumbnail
-URL_APOD = "https://api.nasa.gov/planetary/apod"
-params = {
-    'api_key': api_key,
-    'hd': 'True',
-    'thumbs': 'True'
-}
-response = requests.get(URL_APOD, params=params).json()
-site = response.get('url')
-thumbs = response.get('thumbnail_url')
-media_type = response.get('media_type')
-explanation = response.get('explanation')
-title = response.get('title')
-hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
+# Páginas da NASA
+nasa_pages = [
+    "nasa",  # Página oficial da NASA
+    "nasahubble",  # Página do Telescópio Espacial Hubble
+    "nasaearth",  # Página de observação da Terra da NASA
+    "nasajpl",  # Página do Jet Propulsion Laboratory
+    "nasachandraxray",  # Página do Observatório de Raios-X Chandra
+    "iss",  # Página da Estação Espacial Internacional
+    "nasawebb", # Página do Telescópio James Webb
+    "nasakennedy", # Página do Kennedy Space Center
+    "nasaames", # Página do Ames Research Center
+    "nasagoddard", # Página do Goddard Space Center
+    "nasa_marshall", # Página do Marshall Space Center
+    "nasastennis" # Página do Stennis Space Center
+]
+
+# Caminho para o arquivo de legendas
+legendas_file = "legendas_postadas.txt"
+
+# Função para carregar legendas postadas
+def carregar_legendas_postadas():
+    if os.path.exists(legendas_file):
+        with open(legendas_file, "r", encoding="utf-8") as file:
+            return set(file.read().splitlines())
+    return set()
+
+# Função para salvar legenda postada
+def salvar_legenda_postada(legenda):
+    with open(legendas_file, "a", encoding="utf-8") as file:
+        file.write(legenda + "\n")
 
 # Função para logar no Instagram
 def post_instagram_photo(image_path, caption):
@@ -67,30 +81,85 @@ def gerar_traducao(prompt):
     return None
 
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
-def baixar_e_traduzir_post():
+def baixar_e_traduzir_post(username, legendas_postadas):
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
     cl = Client()
     cl.login(username, password)
-    medias = cl.user_medias(cl.user_id_from_username("nasa"), 10)
+    medias = cl.user_medias(cl.user_id_from_username(username), 10)
     for media in medias:
         media_date = media.taken_at.strftime('%Y-%m-%d')
         if media_date == yesterday and media.media_type == 1:
             image_url = media.thumbnail_url
             caption = media.caption_text
+            if caption in legendas_postadas:
+                print(f"Legenda já postada anteriormente: {caption}")
+                continue
             prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
             traducao_nasa = gerar_traducao(prompt_nasa) or caption
 
-            image_path = "imagem_nasa.jpg"
+            image_path = f"imagem_{username}.jpg"
             response = requests.get(image_url)
             if response.status_code == 200:
                 with open(image_path, 'wb') as f:
                     f.write(response.content)
-                return image_path, traducao_nasa
+                return image_path, traducao_nasa, caption
             else:
-                print("Erro ao baixar a imagem.")
-                return None, None
-    print("Nenhuma mídia válida encontrada.")
-    return None, None
+                print(f"Erro ao baixar a imagem de {username}.")
+                return None, None, None
+    print(f"Nenhuma mídia válida encontrada para {username}.")
+    return None, None, None
+
+# Função para baixar o vídeo e retornar o nome do arquivo baixado
+def download_video(link):
+    try:
+        youtube_object = YouTube(link)
+        video_stream = youtube_object.streams.get_highest_resolution()
+        if video_stream:
+            video_filename = video_stream.default_filename
+            video_stream.download()
+            return video_filename  # Retorna o nome do arquivo do vídeo baixado
+        else:
+            print("Nenhuma stream encontrada para o vídeo.")
+            return None
+    except Exception as e:
+        print(f"Erro ao baixar o vídeo: {e}")
+        return None  # Retorna None se o download falhar
+
+# Função para cortar o vídeo
+def cortar_video(video_path, start_time, end_time, output_path):
+    try:
+        with VideoFileClip(video_path) as video:
+            video_cortado = video.subclip(start_time, end_time)
+            video_cortado.write_videofile(output_path, codec="libx264")
+        return output_path
+    except Exception as e:
+        print(f"Erro ao cortar o vídeo: {e}")
+        return None
+
+# Função para dividir o texto em múltiplos tweets
+def get_chunks(s, maxlength):
+    start = 0
+    end = 0
+    while start + maxlength < len(s) and end != -1:
+        end = s.rfind(" ", start, start + maxlength + 1)
+        yield s[start:end]
+        start = end + 1
+    yield s[start:]
+
+# Get the picture, explanation, and/or video thumbnail
+URL_APOD = "https://api.nasa.gov/planetary/apod"
+params = {
+    'api_key': api_key,
+    'hd': 'True',
+    'thumbs': 'True'
+}
+response = requests.get(URL_APOD, params=params).json()
+site = response.get('url')
+thumbs = response.get('thumbnail_url')
+media_type = response.get('media_type')
+explanation = response.get('explanation')
+title = response.get('title')
+hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
 # Combinar o título e a explicação em um único prompt
 prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
@@ -148,46 +217,8 @@ Source: {site}
 
 myexstring = f"""{explanation}"""
 
-# Função para dividir o texto em múltiplos tweets
-def get_chunks(s, maxlength):
-    start = 0
-    end = 0
-    while start + maxlength < len(s) and end != -1:
-        end = s.rfind(" ", start, start + maxlength + 1)
-        yield s[start:end]
-        start = end + 1
-    yield s[start:]
-
 chunks = list(get_chunks(explanation, 280))
 
-# Função para baixar o vídeo e retornar o nome do arquivo baixado
-def download_video(link):
-    try:
-        youtube_object = YouTube(link)
-        video_stream = youtube_object.streams.get_highest_resolution()
-        if video_stream:
-            video_filename = video_stream.default_filename
-            video_stream.download()
-            return video_filename  # Retorna o nome do arquivo do vídeo baixado
-        else:
-            print("Nenhuma stream encontrada para o vídeo.")
-            return None
-    except Exception as e:
-        print(f"Erro ao baixar o vídeo: {e}")
-        return None  # Retorna None se o download falhar
-
-# Função para cortar o vídeo
-def cortar_video(video_path, start_time, end_time, output_path):
-    try:
-        with VideoFileClip(video_path) as video:
-            video_cortado = video.subclip(start_time, end_time)
-            video_cortado.write_videofile(output_path, codec="libx264")
-        return output_path
-    except Exception as e:
-        print(f"Erro ao cortar o vídeo: {e}")
-        return None
-
-# Check the type of media and post on Twitter and Instagram accordingly
 tweet_id_imagem = None
 
 if media_type == 'image':
@@ -280,14 +311,20 @@ if tweet_id_imagem:
 else:
     print("Erro: tweet_id_imagem não está definido.")
 
-# Baixar e postar a última imagem da NASA no Instagram
-nasa_image_path, nasa_caption = baixar_e_traduzir_post()
-if nasa_image_path and nasa_caption:
-    try:
-        post_instagram_photo(nasa_image_path, nasa_caption)
-    except Exception as e:
-        print(f"Erro ao postar a imagem da NASA no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da NASA')
+# Carregar legendas já postadas
+legendas_postadas = carregar_legendas_postadas()
+
+# Baixar e postar a última imagem de cada página da NASA no Instagram
+for page in nasa_pages:
+    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(page, legendas_postadas)
+    if nasa_image_path and nasa_caption:
+        try:
+            post_instagram_photo(nasa_image_path, nasa_caption)
+            # Salvar a legenda original no arquivo
+            salvar_legenda_postada(original_caption)
+        except Exception as e:
+            print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
+            bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
 
 # Adicionar log de conclusão
 print("Script concluído.")
