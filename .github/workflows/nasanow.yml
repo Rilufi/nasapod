@@ -4,7 +4,6 @@ name: Nasanow
 on: push
 
 
-
 jobs:
   tweet:
     name: APOD
@@ -38,15 +37,8 @@ jobs:
           pip install -r requirements.txt
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: tweet and insta APOD 🐦📷
+      - name: insta APOD 🐦📷
         env:
-                  CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-
-                  CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-
-                  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
-                  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
 
                   API_KEY: ${{ secrets.API_KEY }}
 
@@ -60,7 +52,7 @@ jobs:
 
                   GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
                   
-        run: python nasapod.py
+        run: python instasa.py
 
       - name: Atualizar arquivo de legenda
         run: |
