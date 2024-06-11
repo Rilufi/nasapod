@@ -223,4 +223,15 @@ legendas_postadas = carregar_legendas_postadas()
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
 for page in nasa_pages:
-    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas
+    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
+    if nasa_image_path and nasa_caption:
+        try:
+            post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
+            # Salvar a legenda original no arquivo
+            salvar_legenda_postada(original_caption)
+        except Exception as e:
+            print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
+            bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
+
+# Adicionar log de conclusão
+print("Script concluído.")
