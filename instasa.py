@@ -8,6 +8,7 @@ import telebot
 from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
+import openai
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -17,7 +18,9 @@ tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
@@ -70,14 +73,29 @@ def post_instagram_photo(cl, image_path, caption):
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
-    response = model.generate_content(prompt)
-    if response.candidates and len(response.candidates) > 0:
-        if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
-            return response.candidates[0].content.parts[0].text
+    try:
+        response = model.generate_content(prompt)
+        if response.candidates and len(response.candidates) > 0:
+            if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
+                return response.candidates[0].content.parts[0].text
+            else:
+                print("Nenhuma parte de conteúdo encontrada na resposta.")
         else:
-            print("Nenhuma parte de conteúdo encontrada na resposta.")
-    else:
-        print("Nenhum candidato válido encontrado.")
+            print("Nenhum candidato válido encontrado.")
+    except Exception as e:
+        print(f"Erro ao usar o modelo Gemini: {e}")
+    
+    # Se a tradução falhar, tentar com a API do ChatGPT
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=500
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        print(f"Erro ao usar o ChatGPT: {e}")
+    
     return None
 
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
