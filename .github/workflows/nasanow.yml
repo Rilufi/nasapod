@@ -5,7 +5,7 @@ on: push
 
 
 jobs:
-  tweet:
+  insta:
     name: APOD
     
     runs-on: ubuntu-latest
