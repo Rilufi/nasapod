@@ -11,7 +11,6 @@ from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
-import openai
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -22,8 +21,6 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
 thrd = ThreadsAPI(username=username, password=password)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
@@ -76,7 +73,7 @@ def post_instagram_photo(cl, image_path, caption):
         bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
-def gerar_traducao_gemini(prompt):
+def gerar_traducao(prompt):
     response = model.generate_content(prompt)
     if response.candidates and len(response.candidates) > 0:
         if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
@@ -87,28 +84,8 @@ def gerar_traducao_gemini(prompt):
         print("Nenhum candidato válido encontrado.")
     return None
 
-# Função para gerar conteúdo traduzido usando a API do ChatGPT
-def gerar_traducao_chatgpt(prompt):
-    try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=500
-        )
-        return response.choices[0].text.strip()
-    except Exception as e:
-        print(f"Erro ao gerar tradução com ChatGPT: {e}")
-        return None
-
-# Função para gerar conteúdo traduzido, utilizando fallback
-def gerar_traducao(prompt):
-    traducao = gerar_traducao_gemini(prompt)
-    if not traducao:
-        print("Tentando tradução com ChatGPT...")
-        traducao = gerar_traducao_chatgpt(prompt)
-    return traducao
-
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
+# Função para baixar e traduzir a última postagem do Instagram da NASA
 def baixar_e_traduzir_post(cl, username, legendas_postadas):
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
     medias = cl.user_medias(cl.user_id_from_username(username), 10)
@@ -121,19 +98,23 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
                 print(f"Legenda já postada anteriormente: {caption}")
                 continue
             prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
-            traducao_nasa = gerar_traducao(prompt_nasa) or caption
-
-            image_path = f"imagem_{username}.jpg"
-            response = requests.get(image_url)
-            if response.status_code == 200:
-                with open(image_path, 'wb') as f:
-                    f.write(response.content)
-                return image_path, traducao_nasa, caption
+            traducao_nasa = gerar_traducao(prompt_nasa)
+            if traducao_nasa:
+                image_path = f"imagem_{username}.jpg"
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    with open(image_path, 'wb') as f:
+                        f.write(response.content)
+                    return image_path, traducao_nasa, caption
+                else:
+                    print(f"Erro ao baixar a imagem de {username}.")
+                    return None, None, None
             else:
-                print(f"Erro ao baixar a imagem de {username}.")
+                print("Não foi possível traduzir a legenda.")
                 return None, None, None
     print(f"Nenhuma mídia válida encontrada para {username}.")
     return None, None, None
+
 
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
@@ -340,6 +321,14 @@ else:
 
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
+
+# Verificar se a tradução da APOD foi bem-sucedida antes de postar
+if traducao_combinada:
+    try:
+        post_instagram_photo(instagram_client, image, insta_string)
+    except Exception as e:
+        print(f"Erro ao postar a imagem da APOD no Instagram: {e}")
+        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da APOD')
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
 for page in nasa_pages:
