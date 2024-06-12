@@ -51,6 +51,8 @@ jobs:
                   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
                   GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
+
+                  OPENAI_API_KEY:  ${{ secrets.OPENAI_API_KEY }}
                   
         run: python instasa.py
 
