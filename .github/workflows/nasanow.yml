@@ -52,8 +52,6 @@ jobs:
 
                   GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
 
-                  OPENAI_API_KEY:  ${{ secrets.OPENAI_API_KEY }}
-                  
         run: python instasa.py
 
       - name: Atualizar arquivo de legenda
