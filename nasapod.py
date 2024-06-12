@@ -11,6 +11,7 @@ from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
+import openai
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -21,6 +22,8 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+openai.api_key = OPENAI_API_KEY
 thrd = ThreadsAPI(username=username, password=password)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
@@ -73,7 +76,7 @@ def post_instagram_photo(cl, image_path, caption):
         bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
-def gerar_traducao(prompt):
+def gerar_traducao_gemini(prompt):
     response = model.generate_content(prompt)
     if response.candidates and len(response.candidates) > 0:
         if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
@@ -83,6 +86,27 @@ def gerar_traducao(prompt):
     else:
         print("Nenhum candidato válido encontrado.")
     return None
+
+# Função para gerar conteúdo traduzido usando a API do ChatGPT
+def gerar_traducao_chatgpt(prompt):
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=500
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        print(f"Erro ao gerar tradução com ChatGPT: {e}")
+        return None
+
+# Função para gerar conteúdo traduzido, utilizando fallback
+def gerar_traducao(prompt):
+    traducao = gerar_traducao_gemini(prompt)
+    if not traducao:
+        print("Tentando tradução com ChatGPT...")
+        traducao = gerar_traducao_chatgpt(prompt)
+    return traducao
 
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
 def baixar_e_traduzir_post(cl, username, legendas_postadas):
