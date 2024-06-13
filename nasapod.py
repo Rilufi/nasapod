@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+import time
 import urllib.request
 import requests
 import tweepy
@@ -11,6 +12,7 @@ from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
+from random import randint
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -26,20 +28,20 @@ thrd = ThreadsAPI(username=username, password=password)
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
 
-# Páginas da NASA
-nasa_pages = [
-    "nasa",  # Página oficial da NASA
-    "nasahubble",  # Página do Telescópio Espacial Hubble
-    "nasaearth",  # Página de observação da Terra da NASA
-    "nasajpl",  # Página do Jet Propulsion Laboratory
-    "nasachandraxray",  # Página do Observatório de Raios-X Chandra
-    "iss",  # Página da Estação Espacial Internacional
-    "nasawebb", # Página do Telescópio James Webb
-    "nasakennedy", # Página do Kennedy Space Center
-    "nasaames", # Página do Ames Research Center
-    "nasagoddard", # Página do Goddard Space Center
-    "nasa_marshall", # Página do Marshall Space Center
-    "nasastennis" # Página do Stennis Space Center
+# User IDs da NASA (obtenha-os uma vez e reutilize)
+nasa_user_ids = [
+    528817151,  # Página oficial da NASA
+    178744053,  # Página do Telescópio Espacial Hubble
+    1822906088,  # Página de observação da Terra da NASA
+    2123060486,  # Página do Jet Propulsion Laboratory
+    295889392,  # Página do Observatório de Raios-X Chandra
+    250004703,  # Página da Estação Espacial Internacional
+    2490770335, # Página do Telescópio James Webb
+    358206989, # Página do Kennedy Space Center
+    2293841650, # Página do Ames Research Center
+    3309599688, # Página do Goddard Space Center
+    184465477, # Página do Marshall Space Center
+    3390995610 # Página do Stennis Space Center
 ]
 
 # Caminho para o arquivo de legendas
@@ -84,11 +86,28 @@ def gerar_traducao(prompt):
         print("Nenhum candidato válido encontrado.")
     return None
 
+# Função para lidar com erros 429 (Too Many Requests)
+def retry_on_429(func):
+    def wrapper(*args, **kwargs):
+        retries = 5
+        for i in range(retries):
+            try:
+                return func(*args, **kwargs)
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    print("Too Many Requests: Retrying after a delay")
+                    time.sleep(60)  # Espera 1 minuto antes de tentar novamente
+                else:
+                    raise
+        print("Max retries reached. Exiting.")
+        return None
+    return wrapper
+
 # Função para baixar a última postagem do Instagram da NASA e traduzi-la
-# Função para baixar e traduzir a última postagem do Instagram da NASA
-def baixar_e_traduzir_post(cl, username, legendas_postadas):
+@retry_on_429
+def baixar_e_traduzir_post(cl, user_id, legendas_postadas):
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    medias = cl.user_medias(cl.user_id_from_username(username), 10)
+    medias = cl.user_medias(user_id, 10)
     for media in medias:
         media_date = media.taken_at.strftime('%Y-%m-%d')
         if media_date == yesterday and media.media_type == 1:
@@ -100,21 +119,20 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
             prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
             traducao_nasa = gerar_traducao(prompt_nasa)
             if traducao_nasa:
-                image_path = f"imagem_{username}.jpg"
+                image_path = f"imagem_{user_id}.jpg"
                 response = requests.get(image_url)
                 if response.status_code == 200:
                     with open(image_path, 'wb') as f:
                         f.write(response.content)
                     return image_path, traducao_nasa, caption
                 else:
-                    print(f"Erro ao baixar a imagem de {username}.")
+                    print(f"Erro ao baixar a imagem do usuário {user_id}.")
                     return None, None, None
             else:
                 print("Não foi possível traduzir a legenda.")
                 return None, None, None
-    print(f"Nenhuma mídia válida encontrada para {username}.")
+    print(f"Nenhuma mídia válida encontrada para o usuário {user_id}.")
     return None, None, None
-
 
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
@@ -331,16 +349,18 @@ if traducao_combinada:
         bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da APOD')
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
-for page in nasa_pages:
-    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
+for user_id in nasa_user_ids:
+    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, user_id, legendas_postadas)
     if nasa_image_path and nasa_caption:
         try:
             post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
             # Salvar a legenda original no arquivo
             salvar_legenda_postada(original_caption)
+            # Esperar um tempo aleatório entre 30 a 90 segundos para evitar parecer um bot
+            time.sleep(randint(30, 90))
         except Exception as e:
-            print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
-            bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
+            print(f"Erro ao postar a imagem da NASA no Instagram: {e}")
+            bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da NASA")
 
 # Adicionar log de conclusão
 print("Script concluído.")
