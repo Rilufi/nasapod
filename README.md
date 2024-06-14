@@ -30,7 +30,7 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 - **Reposta a foto do dia anterior da NASA no Instagram**: Baixa a foto mais recente do Instagram de contas oficiais da NASA e posta no Instagram com a legenda traduzida.
 - **Manipula diferentes tipos de mídia**: Suporta a postagem de imagens e vídeos, incluindo o processamento de vídeos para limites de duração do Twitter.
 
-## Quais são as páginas da NASA?
+## Páginas oficiais da NASA no Instagram
 ```
   nasa               # Página oficial da NASA
   nasahubble         # Página do Telescópio Espacial Hubble
@@ -85,7 +85,7 @@ To post on Threads, provide your Threads credentials in the environment variable
 - **Reposts NASA's Instagram photo of the previous day **: Downloads the latest photo from NASA's official Instagram accounts and posts it on Instagram with a translated caption.
 - **Handles different media types**: Supports posting images and videos, including video processing for Twitter's duration limits.
 
-## NASA Official Instagram pages
+## NASA official Instagram pages
 ```
   nasa               # Official NASA page
   nasahubble         # Hubble Space Telescope page
