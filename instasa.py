@@ -22,18 +22,18 @@ model = genai.GenerativeModel('gemini-pro')
 
 # Páginas da NASA
 nasa_pages = [
-    528817151,  # Página oficial da NASA
+    528817151,   # Página oficial da NASA
     5951848929,  # Página do Telescópio Espacial Hubble
-    354812686,  # Página de observação da Terra da NASA
-    582986390,  # Página do Jet Propulsion Laboratory
+    354812686,   # Página de observação da Terra da NASA
+    582986390,   # Página do Jet Propulsion Laboratory
     1332348075,  # Página do Observatório de Raios-X Chandra
-    953293389,  # Página da Estação Espacial Internacional
-    549313808, # Página do Telescópio James Webb
-    549403870, # Página do Kennedy Space Center
-    182988865, # Página do Ames Research Center
-    3808579, # Página do Goddard Space Center
-    757149008, # Página do Marshall Space Center
-    694816689 # Página do Stennis Space Center
+    953293389,   # Página da Estação Espacial Internacional
+    549313808,   # Página do Telescópio James Webb
+    549403870,   # Página do Kennedy Space Center
+    182988865,   # Página do Ames Research Center
+    3808579,     # Página do Goddard Space Center
+    757149008,   # Página do Marshall Space Center
+    694816689    # Página do Stennis Space Center
 ]
 
 # Caminho para o arquivo de legendas
@@ -185,14 +185,6 @@ else:
 
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
-
-# Verificar se a tradução da APOD foi bem-sucedida antes de postar
-if traducao_combinada:
-    try:
-        post_instagram_photo(instagram_client, image, insta_string)
-    except Exception as e:
-        print(f"Erro ao postar a imagem da APOD no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da APOD')
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
 for page in nasa_pages:
