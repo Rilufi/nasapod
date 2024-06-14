@@ -28,18 +28,18 @@ model = genai.GenerativeModel('gemini-pro')
 
 # Páginas da NASA
 nasa_pages = [
-    "nasa",  # Página oficial da NASA
-    "nasahubble",  # Página do Telescópio Espacial Hubble
-    "nasaearth",  # Página de observação da Terra da NASA
-    "nasajpl",  # Página do Jet Propulsion Laboratory
-    "nasachandraxray",  # Página do Observatório de Raios-X Chandra
-    "iss",  # Página da Estação Espacial Internacional
-    "nasawebb", # Página do Telescópio James Webb
-    "nasakennedy", # Página do Kennedy Space Center
-    "nasaames", # Página do Ames Research Center
-    "nasagoddard", # Página do Goddard Space Center
-    "nasa_marshall", # Página do Marshall Space Center
-    "nasastennis" # Página do Stennis Space Center
+    528817151,   # Página oficial da NASA
+    5951848929,  # Página do Telescópio Espacial Hubble
+    354812686,   # Página de observação da Terra da NASA
+    582986390,   # Página do Jet Propulsion Laboratory
+    1332348075,  # Página do Observatório de Raios-X Chandra
+    953293389,   # Página da Estação Espacial Internacional
+    549313808,   # Página do Telescópio James Webb
+    549403870,   # Página do Kennedy Space Center
+    182988865,   # Página do Ames Research Center
+    3808579,     # Página do Goddard Space Center
+    757149008,   # Página do Marshall Space Center
+    694816689    # Página do Stennis Space Center
 ]
 
 # Caminho para o arquivo de legendas
@@ -87,7 +87,7 @@ def gerar_traducao(prompt):
 # Função para baixar e traduzir a última postagem do Instagram da NASA
 def baixar_e_traduzir_post(cl, username, legendas_postadas):
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    medias = cl.user_medias(cl.user_id_from_username(username), 5)
+    medias = cl.user_medias(username, 5)
     for media in medias:
         media_date = media.taken_at.strftime('%Y-%m-%d')
         if media_date == yesterday and media.media_type == 1:
@@ -113,7 +113,6 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
                 return None, None, None
     print(f"Nenhuma mídia válida encontrada para {username}.")
     return None, None, None
-
 
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
@@ -320,14 +319,6 @@ else:
 
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
-
-# Verificar se a tradução da APOD foi bem-sucedida antes de postar
-if traducao_combinada:
-    try:
-        post_instagram_photo(instagram_client, image, insta_string)
-    except Exception as e:
-        print(f"Erro ao postar a imagem da APOD no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem da APOD')
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
 for page in nasa_pages:
