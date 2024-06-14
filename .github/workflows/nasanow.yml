@@ -39,7 +39,6 @@ jobs:
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: insta APOD 🐦📷
         env:
-
                   API_KEY: ${{ secrets.API_KEY }}
 
                   USERNAME: ${{ secrets.USERNAME }}
