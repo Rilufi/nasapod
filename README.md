@@ -32,18 +32,18 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 
 ## Quais são as páginas da NASA?
 ```
-  nasa    # Página oficial da NASA
-  nasahubble    # Página do Telescópio Espacial Hubble
-  nasaearth    # Página de observação da Terra da NASA
-  nasajpl    # Página do Jet Propulsion Laboratory
+  nasa               # Página oficial da NASA
+  nasahubble         # Página do Telescópio Espacial Hubble
+  nasaearth          # Página de observação da Terra da NASA
+  nasajpl            # Página do Jet Propulsion Laboratory
   nasachandraxray    # Página do Observatório de Raios-X Chandra
-  iss    # Página da Estação Espacial Internacional
-  nasawebb   # Página do Telescópio James Webb
-  nasakennedy   # Página do Kennedy Space Center
-  nasaames   # Página do Ames Research Center
-  nasagoddard   # Página do Goddard Space Center
-  nasa_marshall   # Página do Marshall Space Center
-  nasastennis  # Página do Stennis Space Center
+  iss                # Página da Estação Espacial Internacional
+  nasawebb           # Página do Telescópio James Webb
+  nasakennedy        # Página do Kennedy Space Center
+  nasaames           # Página do Ames Research Center
+  nasagoddard        # Página do Goddard Space Center
+  nasa_marshall      # Página do Marshall Space Center
+  nasastennis        # Página do Stennis Space Center
 ```
 
 ## Uso
@@ -87,18 +87,18 @@ To post on Threads, provide your Threads credentials in the environment variable
 
 ## NASA Official Instagram pages
 ```
-  nasa    # Official NASA page
-  nasahubble    # Hubble Space Telescope page
-  nasaearth    # NASA Earth observation page
-  nasajpl    # Jet Propulsion Laboratory page
+  nasa               # Official NASA page
+  nasahubble         # Hubble Space Telescope page
+  nasaearth          # NASA Earth observation page
+  nasajpl            # Jet Propulsion Laboratory page
   nasachandraxray    # Chandra X-ray Observatory page
-  iss    # International Space Station page
-  nasawebb   # James Webb Telescope page
-  nasakennedy   # Kennedy Space Center page
-  nasaames   # Ames Research Center page
-  nasagoddard   # Goddard Space Center page
-  nasa_marshall   # Marshall Space Center page
-  nasastennis  # Stennis Space Center page
+  iss                # International Space Station page
+  nasawebb           # James Webb Telescope page
+  nasakennedy        # Kennedy Space Center page
+  nasaames           # Ames Research Center page
+  nasagoddard        # Goddard Space Center page
+  nasa_marshall      # Marshall Space Center page
+  nasastennis        # Stennis Space Center page
 ```
 
 ## Usage
