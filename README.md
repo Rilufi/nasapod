@@ -1,6 +1,6 @@
 # nasapod
 
-Bot em Python para postar a Astronomy Picture of the Day no Twitter/X e no Instagram usando a API da NASA. Também posta a foto do dia anterior da conta do Instagram da NASA no Twitter, e opcionalmente processa vídeos.
+Bot em Python para postar a Astronomy Picture of the Day no Twitter/X e no Instagram usando a API da NASA. Também posta a foto do dia anterior de contas oficiais do Instagram da NASA.
 
 ## Instalações
 Todos os pacotes necessários estão listados em `requirements.txt`. Você pode instalá-los usando:
@@ -31,6 +31,7 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 - **Manipula diferentes tipos de mídia**: Suporta a postagem de imagens e vídeos, incluindo o processamento de vídeos para limites de duração do Twitter.
 
 ## Páginas oficiais da NASA no Instagram
+
 ```
   nasa               # Página oficial da NASA
   nasahubble         # Página do Telescópio Espacial Hubble
@@ -47,7 +48,7 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 ```
 
 ## Uso
-O bot pode ser executado com o script principal que lida com todo o processo de buscar dados, processá-los e postá-los nas plataformas de mídia social.
+O bot pode ser executado com o script principal "nasapod.py" que lida com todo o processo de buscar dados, processá-los e postá-los nas plataformas de mídia social. Também existe um script opcional "instasa.py" que interage apenas com o Instagram.
 
 ## Verificar os resultados
 Para ver o bot em ação, confira [Nasobot no Twitter](https://twitter.com/nasobot) e [Apodinsta no Instagram](https://www.instagram.com/apodinsta/).
@@ -56,7 +57,7 @@ Para ver o bot em ação, confira [Nasobot no Twitter](https://twitter.com/nasob
 
 # nasapod
 
-Python bot to post the Astronomy Picture of the Day on Twitter/X and Instagram using the NASA API. It also posts the photo of the previous day from NASA's Instagram account on Twitter, and optionally processes videos.
+Python bot to post the Astronomy Picture of the Day on Twitter/X and Instagram using the NASA API. It also posts the photo of the previous day from NASA's official Instagram account.
 
 ## Installations
 All required packages are listed in `requirements.txt`. You can install them using:
@@ -86,6 +87,7 @@ To post on Threads, provide your Threads credentials in the environment variable
 - **Handles different media types**: Supports posting images and videos, including video processing for Twitter's duration limits.
 
 ## Official NASA Instagram pages
+
 ```
   nasa               # Official NASA page
   nasahubble         # Hubble Space Telescope page
@@ -102,7 +104,7 @@ To post on Threads, provide your Threads credentials in the environment variable
 ```
 
 ## Usage
-The bot can be run with the main script which handles the entire process of fetching data, processing it, and posting it to social media platforms.
+The bot can be run with the main script "nasapod.py" which handles the entire process of fetching data, processing it, and posting it to social media platforms. There's also an optional script "instasa.py" that interacts only with Instagram.
 
 ## Check the results
 To see the bot in action, check out [Nasobot on Twitter](https://twitter.com/nasobot) and [Apodinsta on Instagram](https://www.instagram.com/apodinsta/).
