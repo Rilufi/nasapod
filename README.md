@@ -30,6 +30,22 @@ Para postar no Threads, forneça suas credenciais do Threads nas variáveis de a
 - **Reposta a foto do dia anterior da NASA no Instagram**: Baixa a foto mais recente do Instagram de contas oficiais da NASA e posta no Instagram com a legenda traduzida.
 - **Manipula diferentes tipos de mídia**: Suporta a postagem de imagens e vídeos, incluindo o processamento de vídeos para limites de duração do Twitter.
 
+## Quais são as páginas da NASA?
+```
+  nasa    # Página oficial da NASA
+  nasahubble    # Página do Telescópio Espacial Hubble
+  nasaearth    # Página de observação da Terra da NASA
+  nasajpl    # Página do Jet Propulsion Laboratory
+  nasachandraxray    # Página do Observatório de Raios-X Chandra
+  iss    # Página da Estação Espacial Internacional
+  nasawebb   # Página do Telescópio James Webb
+  nasakennedy   # Página do Kennedy Space Center
+  nasaames   # Página do Ames Research Center
+  nasagoddard   # Página do Goddard Space Center
+  nasa_marshall   # Página do Marshall Space Center
+  nasastennis  # Página do Stennis Space Center
+```
+
 ## Uso
 O bot pode ser executado com o script principal que lida com todo o processo de buscar dados, processá-los e postá-los nas plataformas de mídia social.
 
@@ -68,6 +84,22 @@ To post on Threads, provide your Threads credentials in the environment variable
 - **Posts the Astronomy Picture of the Day**: Retrieves the APOD from the NASA API and posts it on Twitter/X and Instagram.
 - **Reposts NASA's Instagram photo of the previous day **: Downloads the latest photo from NASA's official Instagram accounts and posts it on Instagram with a translated caption.
 - **Handles different media types**: Supports posting images and videos, including video processing for Twitter's duration limits.
+
+## NASA Official Instagram pages
+```
+  nasa    # Official NASA page
+  nasahubble    # Hubble Space Telescope page
+  nasaearth    # NASA Earth observation page
+  nasajpl    # Jet Propulsion Laboratory page
+  nasachandraxray    # Chandra X-ray Observatory page
+  iss    # International Space Station page
+  nasawebb   # James Webb Telescope page
+  nasakennedy   # Kennedy Space Center page
+  nasaames   # Ames Research Center page
+  nasagoddard   # Goddard Space Center page
+  nasa_marshall   # Marshall Space Center page
+  nasastennis  # Stennis Space Center page
+```
 
 ## Usage
 The bot can be run with the main script which handles the entire process of fetching data, processing it, and posting it to social media platforms.
