@@ -85,7 +85,7 @@ To post on Threads, provide your Threads credentials in the environment variable
 - **Reposts NASA's Instagram photo of the previous day **: Downloads the latest photo from NASA's official Instagram accounts and posts it on Instagram with a translated caption.
 - **Handles different media types**: Supports posting images and videos, including video processing for Twitter's duration limits.
 
-## NASA official Instagram pages
+## Official NASA Instagram pages
 ```
   nasa               # Official NASA page
   nasahubble         # Hubble Space Telescope page
