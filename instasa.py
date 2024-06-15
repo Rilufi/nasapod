@@ -19,6 +19,9 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 
+# Choose a GenAI model (e.g., 'gemini-pro')
+model = genai.GenerativeModel('gemini-pro')
+
 # Páginas da NASA
 nasa_pages = [
     528817151,   # Página oficial da NASA
