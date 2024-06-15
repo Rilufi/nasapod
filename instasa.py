@@ -2,7 +2,6 @@
 import os
 import urllib.request
 import requests
-from auth import api
 from instagrapi import Client
 import telebot
 from pytube import YouTube
