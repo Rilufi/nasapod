@@ -2,10 +2,14 @@
 import os
 import urllib.request
 import requests
-import google.generativeai as genai
+from auth import api
 from instagrapi import Client
 import telebot
+from pytube import YouTube
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
+import random
+import time
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -15,10 +19,6 @@ tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
-genai.configure(api_key=GOOGLE_API_KEY)
-
-# Choose a GenAI model (e.g., 'gemini-pro')
-model = genai.GenerativeModel('gemini-pro')
 
 # Páginas da NASA
 nasa_pages = [
@@ -60,6 +60,7 @@ def logar_instagram():
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
     try:
+        time.sleep(random.uniform(30, 60))  # Espera aleatória antes de postar
         cl.photo_upload(image_path, caption)
         print("Foto publicada no Instagram")
     except Exception as e:
@@ -108,6 +109,33 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
     print(f"Nenhuma mídia válida encontrada para {username}.")
     return None, None, None
 
+# Função para baixar o vídeo e retornar o nome do arquivo baixado
+def download_video(link):
+    try:
+        youtube_object = YouTube(link)
+        video_stream = youtube_object.streams.get_highest_resolution()
+        if video_stream:
+            video_filename = video_stream.default_filename
+            video_stream.download()
+            return video_filename  # Retorna o nome do arquivo do vídeo baixado
+        else:
+            print("Nenhuma stream encontrada para o vídeo.")
+            return None
+    except Exception as e:
+        print(f"Erro ao baixar o vídeo: {e}")
+        return None  # Retorna None se o download falhar
+
+# Função para cortar o vídeo
+def cortar_video(video_path, start_time, end_time, output_path):
+    try:
+        with VideoFileClip(video_path) as video:
+            video_cortado = video.subclip(start_time, end_time)
+            video_cortado.write_videofile(output_path, codec="libx264")
+        return output_path
+    except Exception as e:
+        print(f"Erro ao cortar o vídeo: {e}")
+        return None
+
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
@@ -117,6 +145,7 @@ params = {
 }
 response = requests.get(URL_APOD, params=params).json()
 site = response.get('url')
+thumbs = response.get('thumbnail_url')
 media_type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
@@ -138,6 +167,7 @@ try:
 Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
     else:
         raise AttributeError("A tradução combinada não foi gerada.")
 except AttributeError as e:
@@ -153,36 +183,6 @@ Source: {site}
 
 print(insta_string)
 
-if media_type == 'image':
-    # Retrieve the image
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
-
-    # Post the image on Instagram
-    try:
-        instagram_client = logar_instagram()
-        post_instagram_photo(instagram_client, image, insta_string)
-    except Exception as e:
-        print(f"Erro ao postar foto no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
-
-elif media_type == 'video':
-    # Retrieve the video
-    video_file = download_video(site)
-
-    if video_file:
-        # Post the video on Instagram
-        try:
-            instagram_client = logar_instagram()
-            post_instagram_photo(instagram_client, video_file, insta_string)
-        except Exception as e:
-            print(f"Erro ao postar vídeo no Instagram: {e}")
-            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
-
-else:
-    print("Tipo de mídia inválido.")
-    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
-
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
 
@@ -194,6 +194,7 @@ for page in nasa_pages:
             post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
             # Salvar a legenda original no arquivo
             salvar_legenda_postada(original_caption)
+            time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
         except Exception as e:
             print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
             bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
