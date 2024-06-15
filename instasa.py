@@ -19,6 +19,7 @@ tele_user = os.environ.get("TELE_USER")
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+genai.configure(api_key=GOOGLE_API_KEY)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
@@ -170,7 +171,6 @@ try:
 Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
-
     else:
         raise AttributeError("A tradução combinada não foi gerada.")
 except AttributeError as e:
@@ -185,6 +185,54 @@ Source: {site}
 {hashtags}"""
 
 print(insta_string)
+
+mystring = f"""Astronomy Picture of the Day
+
+{title}
+
+Source: {site}
+
+{hashtags}"""
+
+myexstring = f"""{explanation}"""
+
+# Verificar o tipo de mídia e postar no Instagram
+if media_type == 'image':
+    # Retrieve the image
+    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    # Post the image on Instagram
+    try:
+        instagram_client = logar_instagram()
+        post_instagram_photo(instagram_client, image, insta_string)
+    except Exception as e:
+        print(f"Erro ao postar foto no Instagram: {e}")
+        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
+
+elif media_type == 'video':
+    # Retrieve the video
+    video_file = download_video(site)
+    
+    # Retrieve the thumbs
+    urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    if video_file:
+        video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
+        if video_file_cortado:
+            video_file = video_file_cortado
+
+        # Post the video on Instagram
+        try:
+            post_instagram_photo(instagram_client, video_file, insta_string)
+        except Exception as e:
+            print(f"Erro ao postar vídeo no Instagram: {e}")
+            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+
+else:
+    print("Tipo de mídia inválido.")
+    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
 
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
