@@ -2,6 +2,7 @@
 import os
 import urllib.request
 import requests
+import google.generativeai as genai
 from instagrapi import Client
 import telebot
 from pytube import YouTube
