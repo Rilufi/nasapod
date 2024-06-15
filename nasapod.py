@@ -11,6 +11,8 @@ from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
+import random
+import time
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -66,6 +68,7 @@ def logar_instagram():
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
     try:
+        time.sleep(random.uniform(30, 60))  # Espera aleatória antes de postar
         cl.photo_upload(image_path, caption)
         print("Foto publicada no Instagram")
     except Exception as e:
@@ -305,6 +308,7 @@ reply_to_id = tweet_id_imagem
 if tweet_id_imagem:
     for parte in chunks:
         try:
+            time.sleep(random.uniform(5, 15))  # Espera aleatória entre tweets
             response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
             if 'id' in response.data:
                 tweet_ids_explicacao.append(str(response.data['id']))
@@ -328,6 +332,7 @@ for page in nasa_pages:
             post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
             # Salvar a legenda original no arquivo
             salvar_legenda_postada(original_caption)
+            time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
         except Exception as e:
             print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
             bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
