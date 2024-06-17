@@ -65,6 +65,12 @@ def logar_instagram():
     cl.login(username, password)
     return cl
 
+try:
+    instagram_client = logar_instagram()
+except Exception as e:
+    print(f"Erro ao logar no Instagram: {e}")
+    bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
+
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
     try:
@@ -75,16 +81,23 @@ def post_instagram_photo(cl, image_path, caption):
         print(f"Erro ao postar foto no Instagram: {e}")
         bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
 
+# Função para postar vídeo no Instagram
+def post_instagram_video(cl, video_path, caption):
+    try:
+        time.sleep(random.uniform(30, 60))  # Espera aleatória antes de postar
+        cl.video_upload(video_path, caption)
+        print("Vídeo publicado no Instagram")
+    except Exception as e:
+        print(f"Erro ao postar vídeo no Instagram: {e}")
+        bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
+
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
     response = model.generate_content(prompt)
-    if response.candidates and len(response.candidates) > 0:
-        if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
-            return response.candidates[0].content.parts[0].text
-        else:
-            print("Nenhuma parte de conteúdo encontrada na resposta.")
-    else:
-        print("Nenhum candidato válido encontrado.")
+    if response and response.candidates:
+        content = response.candidates[0].content
+        return content
+    print("Nenhuma parte de conteúdo encontrada na resposta.")
     return None
 
 # Função para baixar e traduzir a última postagem do Instagram da NASA
@@ -125,6 +138,7 @@ def download_video(link):
         if video_stream:
             video_filename = video_stream.default_filename
             video_stream.download()
+            time.sleep(random.uniform(1, 5))  # Espera aleatória para evitar sobrecarga de rede
             return video_filename  # Retorna o nome do arquivo do vídeo baixado
         else:
             print("Nenhuma stream encontrada para o vídeo.")
@@ -137,6 +151,9 @@ def download_video(link):
 def cortar_video(video_path, start_time, end_time, output_path):
     try:
         with VideoFileClip(video_path) as video:
+            duration = video.duration
+            if start_time < 0 or end_time > duration:
+                raise ValueError("Os tempos de corte estão fora da duração do vídeo")
             video_cortado = video.subclip(start_time, end_time)
             video_cortado.write_videofile(output_path, codec="libx264")
         return output_path
@@ -175,7 +192,9 @@ prompt_combinado = f"Given the following scientific text from a reputable source
 try:
     traducao_combinada = gerar_traducao(prompt_combinado)
     if traducao_combinada:
-        titulo_traduzido, explicacao_traduzida = traducao_combinada.split('\n', 1)
+        partes_traduzidas = traducao_combinada.split('\n', 1)
+        titulo_traduzido = partes_traduzidas[0]
+        explicacao_traduzida = partes_traduzidas[1] if len(partes_traduzidas) > 1 else ""
 
         insta_string = f"""Foto Astronômica do Dia
 {titulo_traduzido}
@@ -246,7 +265,10 @@ if media_type == 'image':
     try:
         media = api.media_upload(image)
         tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        tweet_id_imagem = tweet_imagem.data['id']
+        if tweet_imagem and 'id' in tweet_imagem.data:
+            tweet_id_imagem = tweet_imagem.data['id']
+        else:
+            raise Exception("Falha ao obter ID do tweet.")
     except Exception as e:
         print(f"Erro ao postar foto no Twitter: {e}")
 
@@ -261,6 +283,7 @@ if media_type == 'image':
 elif media_type == 'video':
     # Retrieve the video
     video_file = download_video(site)
+    video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
     
     # Retrieve the thumbs
     urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
@@ -273,29 +296,30 @@ elif media_type == 'video':
     except Exception as e:
         print(f"Erro ao postar thumbnail do vídeo no Threads: {e}")
         bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
-
+    
     if video_file:
         video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
-        video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
         if video_file_cortado:
             video_file = video_file_cortado
-            video_twitter = video_file_twitter
-
-        # Post the video on Twitter
-        try:
-            media = api.media_upload(video_twitter)
-            tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
-            tweet_id_imagem = tweet_video.data['id']
-            print("Vídeo publicado no Twitter")
-        except Exception as e:
-            print(f"Erro ao postar vídeo no Twitter: {e}")
-
-        # Post the video on Instagram
-        try:
-            post_instagram_photo(instagram_client, video_file, insta_string)
-        except Exception as e:
-            print(f"Erro ao postar vídeo no Instagram: {e}")
-            bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+        if video_file_twitter:
+            # Post the video on Twitter
+            try:
+                media = api.media_upload(video_file_twitter)
+                tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
+                if tweet_video and 'id' in tweet_video.data:
+                    tweet_id_imagem = tweet_video.data['id']
+                    print("Vídeo publicado no Twitter")
+                else:
+                    raise Exception("Falha ao obter ID do tweet.")
+            except Exception as e:
+                print(f"Erro ao postar vídeo no Twitter: {e}")
+    
+            # Post the video on Instagram
+            try:
+                post_instagram_video(instagram_client, video_file, insta_string)
+            except Exception as e:
+                print(f"Erro ao postar vídeo no Instagram: {e}")
+                bot.send_message(tele_user, 'apodinsta com problema pra postar video')
 
 else:
     print("Tipo de mídia inválido.")
