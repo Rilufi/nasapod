@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
 import random
 import time
+import json
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -71,6 +72,15 @@ except Exception as e:
     print(f"Erro ao logar no Instagram: {e}")
     bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
 
+# Função para converter objetos não serializáveis em string
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if isinstance(obj, bytes):
+        return obj.decode()
+    raise TypeError("Type not serializable")
+
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
     try:
@@ -79,7 +89,7 @@ def post_instagram_photo(cl, image_path, caption):
         print("Foto publicada no Instagram")
     except Exception as e:
         print(f"Erro ao postar foto no Instagram: {e}")
-        bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
+        bot.send_message(tele_user, f"apodinsta com problema pra postar: {json.dumps(str(e), default=json_serial)}")
 
 # Função para postar vídeo no Instagram
 def post_instagram_video(cl, video_path, caption):
@@ -89,13 +99,13 @@ def post_instagram_video(cl, video_path, caption):
         print("Vídeo publicado no Instagram")
     except Exception as e:
         print(f"Erro ao postar vídeo no Instagram: {e}")
-        bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
+        bot.send_message(tele_user, f"apodinsta com problema pra postar: {json.dumps(str(e), default=json_serial)}")
 
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
     response = model.generate_content(prompt)
-    if response and response.candidates:
-        content = response.candidates[0].content
+    if response and response['candidates']:
+        content = response['candidates'][0]['content']
         return content
     print("Nenhuma parte de conteúdo encontrada na resposta.")
     return None
@@ -203,152 +213,31 @@ try:
 
 Fonte: {site}
 
-#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+#NASA #APOD #Astronomy #Space #Astrophotography
+"""
 
-        thrd_string = f"""Foto Astronômica do Dia
-{titulo_traduzido}
+        tweet_string = f"""{titulo_traduzido}
+{explicacao_traduzida}
 
 Fonte: {site}
 
-#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+#NASA #APOD #Astronomy #Space #Astrophotography
+"""
 
-    else:
-        raise AttributeError("A tradução combinada não foi gerada.")
-except AttributeError as e:
-    print(f"Erro ao gerar a tradução: {e}")
-    insta_string = f"""Astronomy Picture of the Day
-{title}
+        thread_string = f"""Foto Astronômica do Dia
+{titulo_traduzido}
 
-{explanation}
+{explicacao_traduzida}
 
-Source: {site}
+Fonte: {site}
+"""
 
-{hashtags}"""
-
-    thrd_string = f"""Astronomy Picture of the Day
-{title}
-
-Source: {site}
-
-{hashtags}"""
-
-print(insta_string)
-
-mystring = f"""Astronomy Picture of the Day
-
-{title}
-
-Source: {site}
-
-{hashtags}"""
-
-myexstring = f"""{explanation}"""
-
-chunks = list(get_chunks(explanation, 280))
-
-tweet_id_imagem = None
-
-if media_type == 'image':
-    # Retrieve the image
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
-
-    # Post the image on Threads
-    try:
-        thrd.publish(caption=thrd_string, image_path=image)
-        print("Foto publicada no Threads")
-    except Exception as e:
-        print(f"Erro ao postar foto no Threads: {e}")
-        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
-    
-    # Post the image on Twitter
-    try:
-        media = api.media_upload(image)
-        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        if tweet_imagem and 'id' in tweet_imagem.data:
-            tweet_id_imagem = tweet_imagem.data['id']
-        else:
-            raise Exception("Falha ao obter ID do tweet.")
-    except Exception as e:
-        print(f"Erro ao postar foto no Twitter: {e}")
-
-    # Post the image on Instagram
-    try:
-        instagram_client = logar_instagram()
-        post_instagram_photo(instagram_client, image, insta_string)
-    except Exception as e:
-        print(f"Erro ao postar foto no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
-
-elif media_type == 'video':
-    # Retrieve the video
-    video_file = download_video(site)
-    video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
-    
-    # Retrieve the thumbs
-    urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
-    image = "apodtoday.jpeg"
-
-    # Post the image on Threads
-    try:
-        thrd.publish(caption=thrd_string, image_path=image)
-        print("Thumbnail do vídeo publicada no Threads")
-    except Exception as e:
-        print(f"Erro ao postar thumbnail do vídeo no Threads: {e}")
-        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
-    
-    if video_file:
-        video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
-        if video_file_cortado:
-            video_file = video_file_cortado
-        if video_file_twitter:
-            # Post the video on Twitter
-            try:
-                media = api.media_upload(video_file_twitter)
-                tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
-                if tweet_video and 'id' in tweet_video.data:
-                    tweet_id_imagem = tweet_video.data['id']
-                    print("Vídeo publicado no Twitter")
-                else:
-                    raise Exception("Falha ao obter ID do tweet.")
-            except Exception as e:
-                print(f"Erro ao postar vídeo no Twitter: {e}")
-    
-            # Post the video on Instagram
-            try:
-                post_instagram_video(instagram_client, video_file, insta_string)
-            except Exception as e:
-                print(f"Erro ao postar vídeo no Instagram: {e}")
-                bot.send_message(tele_user, 'apodinsta com problema pra postar video')
-
-else:
-    print("Tipo de mídia inválido.")
-    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
-
-# Publicar explicações no Twitter como uma thread
-tweet_ids_explicacao = []
-reply_to_id = tweet_id_imagem
-
-if tweet_id_imagem:
-    for parte in chunks:
-        try:
-            time.sleep(random.uniform(5, 15))  # Espera aleatória entre tweets
-            response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
-            if 'id' in response.data:
-                tweet_ids_explicacao.append(str(response.data['id']))
-                reply_to_id = response.data['id']
-                print("Tweet publicado como parte da thread")
-            else:
-                print(f"Error creating tweet: {response.data}")
-        except Exception as e:
-            print(f"Error creating tweet: {e}")
-else:
-    print("Erro: tweet_id_imagem não está definido.")
-
-# Carregar legendas já postadas
-legendas_postadas = carregar_legendas_postadas()
+except Exception as e:
+    print(f"Erro ao gerar a tradução combinada: {e}")
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
+legendas_postadas = carregar_legendas_postadas()
+
 for page in nasa_pages:
     nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
     if nasa_image_path and nasa_caption:
@@ -360,6 +249,46 @@ for page in nasa_pages:
         except Exception as e:
             print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
             bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
+            bot.send_message(tele_user, f"Detalhes do erro: {json.dumps(str(e), default=json_serial)}")
 
-# Adicionar log de conclusão
+# Postar no Instagram
+if media_type == 'image':
+    urllib.request.urlretrieve(site, "img.png")
+    print("Imagem do site obtida com sucesso")
+    photo_path = "img.png"
+    post_instagram_photo(instagram_client, photo_path, insta_string)
+    bot.send_message(tele_user, "Imagem postada com sucesso no Instagram.")
+elif media_type == 'video':
+    video_filename = download_video(site)
+    if video_filename:
+        video_cortado_path = cortar_video(video_filename, 0, 120, "video_cortado.mp4")
+        if video_cortado_path:
+            post_instagram_video(instagram_client, video_cortado_path, insta_string)
+            bot.send_message(tele_user, "Vídeo postado com sucesso no Instagram.")
+
+# Postar no Twitter
+try:
+    if media_type == 'image':
+        media = api.media_upload("img.png")
+        api.update_status(status=tweet_string, media_ids=[media.media_id])
+    elif media_type == 'video':
+        media = api.media_upload("video_cortado.mp4")
+        api.update_status(status=tweet_string, media_ids=[media.media_id])
+    print("Postagem no Twitter realizada com sucesso")
+    bot.send_message(tele_user, "Postagem no Twitter realizada com sucesso.")
+except Exception as e:
+    print(f"Erro ao postar no Twitter: {e}")
+    bot.send_message(tele_user, f"Erro ao postar no Twitter: {e}")
+
+# Postar no Threads
+try:
+    thrd.login(username=username, password=password)
+    thrd.post_thread(thread_string)
+    print("Postagem no Threads realizada com sucesso")
+    bot.send_message(tele_user, "Postagem no Threads realizada com sucesso.")
+except Exception as e:
+    print(f"Erro ao postar no Threads: {e}")
+    bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
+
+# Log de conclusão
 print("Script concluído.")
