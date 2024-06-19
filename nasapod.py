@@ -104,10 +104,13 @@ def post_instagram_video(cl, video_path, caption):
 # Função para gerar conteúdo traduzido usando o modelo GenAI
 def gerar_traducao(prompt):
     response = model.generate_content(prompt)
-    if response and response['candidates']:
-        content = response['candidates'][0]['content']
-        return content
-    print("Nenhuma parte de conteúdo encontrada na resposta.")
+    if response.candidates and len(response.candidates) > 0:
+        if response.candidates[0].content.parts and len(response.candidates[0].content.parts) > 0:
+            return response.candidates[0].content.parts[0].text
+        else:
+            print("Nenhuma parte de conteúdo encontrada na resposta.")
+    else:
+        print("Nenhum candidato válido encontrado.")
     return None
 
 # Função para baixar e traduzir a última postagem do Instagram da NASA
