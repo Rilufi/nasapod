@@ -277,7 +277,7 @@ if media_type == 'image':
 
     # Post the image on Instagram
     try:
-        instagram_client = logar_instagram()
+       # instagram_client = logar_instagram()
         post_instagram_photo(instagram_client, image, insta_string)
     except Exception as e:
         print(f"Erro ao postar foto no Instagram: {e}")
