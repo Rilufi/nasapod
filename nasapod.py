@@ -59,17 +59,24 @@ def salvar_legenda_postada(legenda):
     with open(legendas_file, "a", encoding="utf-8") as file:
         file.write(legenda + "\n")
 
-# Função para logar no Instagram
+# Função para logar no Instagram com tentativas
 def logar_instagram():
     cl = Client()
-    cl.login(username, password)
-    return cl
+    for attempt in range(5):  # Tenta logar até 5 vezes
+        try:
+            cl.login(username, password)
+            return cl
+        except Exception as e:
+            print(f"Erro ao logar no Instagram (tentativa {attempt + 1}): {e}")
+            if "Please wait a few minutes before you try again" in str(e):
+                time.sleep(60)  # Espera 1 minuto antes de tentar novamente
+            else:
+                break
+    return None
 
-try:
-    instagram_client = logar_instagram()
-except Exception as e:
-    print(f"Erro ao logar no Instagram: {e}")
-    bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
+instagram_client = logar_instagram()
+if instagram_client is None:
+    bot.send_message(tele_user, "Erro ao logar no Instagram após várias tentativas. Verifique as credenciais e a conexão.")
 
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
@@ -190,26 +197,22 @@ title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
 # Combinar o título e a explicação em um único prompt
-prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
+prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n\n{explanation}"
 
+# Gerar tradução combinada usando o modelo
 try:
     traducao_combinada = gerar_traducao(prompt_combinado)
     if traducao_combinada:
-        partes_traduzidas = traducao_combinada.split('\n', 1)
-        titulo_traduzido = partes_traduzidas[0]
-        explicacao_traduzida = partes_traduzidas[1] if len(partes_traduzidas) > 1 else ""
-
         insta_string = f"""Foto Astronômica do Dia
-{titulo_traduzido}
+{title}
 
-{explicacao_traduzida}
+{traducao_combinada}
 
 Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
-
         thrd_string = f"""Foto Astronômica do Dia
-{titulo_traduzido}
+{title}
 
 Fonte: {site}
 
@@ -219,21 +222,21 @@ Fonte: {site}
         raise AttributeError("A tradução combinada não foi gerada.")
 except AttributeError as e:
     print(f"Erro ao gerar a tradução: {e}")
-    insta_string = f"""Astronomy Picture of the Day
+    insta_string = f"""Foto Astronômica do Dia
 {title}
 
 {explanation}
 
-Source: {site}
+Fonte: {site}
 
-{hashtags}"""
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
-    thrd_string = f"""Astronomy Picture of the Day
+    thrd_string = f"""Foto Astronômica do Dia
 {title}
 
-Source: {site}
+Fonte: {site}
 
-{hashtags}"""
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
 print(insta_string)
 
@@ -243,7 +246,7 @@ mystring = f"""Astronomy Picture of the Day
 
 Source: {site}
 
-{hashtags}"""
+#NASA #APOD #Astronomy #Space #Astrophotography"""
 
 myexstring = f"""{explanation}"""
 
@@ -276,11 +279,12 @@ if media_type == 'image':
         print(f"Erro ao postar foto no Twitter: {e}")
 
     # Post the image on Instagram
-    try:
-        post_instagram_photo(instagram_client, image, insta_string)
-    except Exception as e:
-        print(f"Erro ao postar foto no Instagram: {e}")
-        bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
+    if instagram_client:
+        try:
+            post_instagram_photo(instagram_client, image, insta_string)
+        except Exception as e:
+            print(f"Erro ao postar foto no Instagram: {e}")
+            bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
 
 elif media_type == 'video':
     # Retrieve the video
@@ -317,11 +321,12 @@ elif media_type == 'video':
                 print(f"Erro ao postar vídeo no Twitter: {e}")
     
             # Post the video on Instagram
-            try:
-                post_instagram_video(instagram_client, video_file, insta_string)
-            except Exception as e:
-                print(f"Erro ao postar vídeo no Instagram: {e}")
-                bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+            if instagram_client:
+                try:
+                    post_instagram_video(instagram_client, video_file, insta_string)
+                except Exception as e:
+                    print(f"Erro ao postar vídeo no Instagram: {e}")
+                    bot.send_message(tele_user, 'apodinsta com problema pra postar video')
 
 else:
     print("Tipo de mídia inválido.")
@@ -351,17 +356,18 @@ else:
 legendas_postadas = carregar_legendas_postadas()
 
 # Baixar e postar a última imagem de cada página da NASA no Instagram
-for page in nasa_pages:
-    nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
-    if nasa_image_path and nasa_caption:
-        try:
-            post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
-            # Salvar a legenda original no arquivo
-            salvar_legenda_postada(original_caption)
-            time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
-        except Exception as e:
-            print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
-            bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
+if instagram_client:
+    for page in nasa_pages:
+        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
+        if nasa_image_path and nasa_caption:
+            try:
+                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
+                # Salvar a legenda original no arquivo
+                salvar_legenda_postada(original_caption)
+                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
+            except Exception as e:
+                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
+                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
 
 # Adicionar log de conclusão
 print("Script concluído.")
