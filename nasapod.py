@@ -121,7 +121,7 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
             caption = media.caption_text
             if caption in legendas_postadas:
                 print(f"Legenda já postada anteriormente: {caption}")
-                continue
+                return None, None, None  # Adicionado para garantir que não poste novamente
             prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
             traducao_nasa = gerar_traducao(prompt_nasa)
             if traducao_nasa:
@@ -139,6 +139,23 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
                 return None, None, None
     print(f"Nenhuma mídia válida encontrada para {username}.")
     return None, None, None
+
+# Carregar legendas já postadas
+legendas_postadas = carregar_legendas_postadas()
+
+# Baixar e postar a última imagem de cada página da NASA no Instagram
+if instagram_client:
+    for page in nasa_pages:
+        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
+        if nasa_image_path and nasa_caption:
+            try:
+                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
+                # Salvar a legenda original no arquivo
+                salvar_legenda_postada(original_caption)
+                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
+            except Exception as e:
+                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
+                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
 
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
@@ -351,23 +368,3 @@ if tweet_id_imagem:
             print(f"Error creating tweet: {e}")
 else:
     print("Erro: tweet_id_imagem não está definido.")
-
-# Carregar legendas já postadas
-legendas_postadas = carregar_legendas_postadas()
-
-# Baixar e postar a última imagem de cada página da NASA no Instagram
-if instagram_client:
-    for page in nasa_pages:
-        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
-        if nasa_image_path and nasa_caption:
-            try:
-                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
-                # Salvar a legenda original no arquivo
-                salvar_legenda_postada(original_caption)
-                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
-            except Exception as e:
-                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
-                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
-
-# Adicionar log de conclusão
-print("Script concluído.")
