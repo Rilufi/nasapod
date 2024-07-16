@@ -58,26 +58,24 @@ def salvar_legenda_postada(legenda):
     with open(legendas_file, "a", encoding="utf-8") as file:
         file.write(legenda + "\n")
 
-# Função para logar no Instagram com verificação de desafio
+# Função para logar no Instagram com tentativas
 def logar_instagram():
     cl = Client()
-    session_file = 'instagram_session.json'
-    try:
-        if os.path.exists(session_file):
-            cl.load_settings(session_file)
-        cl.login(username, password)
-        cl.get_timeline_feed()
-        cl.dump_settings(session_file)
-    except Exception as e:
-        print(f"Erro ao logar no Instagram: {e}")
-        bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
-    return cl
+    for attempt in range(5):  # Tenta logar até 5 vezes
+        try:
+            cl.login(username, password)
+            return cl
+        except Exception as e:
+            print(f"Erro ao logar no Instagram (tentativa {attempt + 1}): {e}")
+            if "Please wait a few minutes before you try again" in str(e):
+                time.sleep(60)  # Espera 1 minuto antes de tentar novamente
+            else:
+                break
+    return None
 
-try:
-    instagram_client = logar_instagram()
-except Exception as e:
-    print(f"Erro ao logar no Instagram: {e}")
-    bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
+instagram_client = logar_instagram()
+if instagram_client is None:
+    bot.send_message(tele_user, "Erro ao logar no Instagram após várias tentativas. Verifique as credenciais e a conexão.")
 
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
