@@ -1,18 +1,18 @@
 name: Nasanow
 
+
 on: push
- # schedule:
-#    - cron: '0 10 * * *'
 
 jobs:
   tweet:
     name: APOD
+    
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎
         uses: actions/checkout@v3
-
+        
       - name: Keep this repo alive
         uses: gautamkrishnar/keepalive-workflow@master
 
@@ -35,40 +35,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check if instagram_session exists
-        id: session-check
-        run: echo "::set-output name=exists::$(if [ -f instagram_session.json ]; then echo 'true'; else echo 'false'; fi)"
-
-      - name: Download Instagram Session
-        if: steps.session-check.outputs.exists == 'true'
-        uses: actions/download-artifact@v3
-        with:
-          name: instagram_session
-          path: .
-
-      - name: Create empty session file if not exists
-        if: steps.session-check.outputs.exists == 'false'
-        run: echo '{}' > instagram_session.json
-
+      # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: tweet and insta APOD 🐦📷
         env:
-          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          API_KEY: ${{ secrets.API_KEY }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          TELE_USER: ${{ secrets.TELE_USER }}
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
-        run: python instasa.py
+                  CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
 
-      - name: Upload Instagram Session
-        uses: actions/upload-artifact@v3
-        with:
-          name: instagram_session
-          path: instagram_session.json
+                  CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+
+                  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+                  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+
+                  API_KEY: ${{ secrets.API_KEY }}
+
+                  USERNAME: ${{ secrets.USERNAME }}
+
+                  PASSWORD: ${{ secrets.PASSWORD }}
+
+                  TELE_USER: ${{ secrets.TELE_USER }}
+
+                  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+
+                  GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
+
+        run: python instasa.py
 
       - name: Atualizar arquivo de legenda
         run: |
