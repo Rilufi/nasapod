@@ -1,8 +1,8 @@
 name: Nasobot
 
 on: push
- # schedule:
-#    - cron: '0 10 * * *'
+  #schedule:
+   # - cron: '0 10 * * *'
 
 jobs:
   tweet:
@@ -35,11 +35,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check if instagram_session exists
+        id: session-check
+        run: echo "::set-output name=exists::$(if [ -f instagram_session.json ]; then echo 'true'; else echo 'false'; fi)"
+
       - name: Download Instagram Session
+        if: steps.session-check.outputs.exists == 'true'
         uses: actions/download-artifact@v3
         with:
           name: instagram_session
           path: .
+
+      - name: Create empty session file if not exists
+        if: steps.session-check.outputs.exists == 'false'
+        run: echo '{}' > instagram_session.json
 
       - name: tweet and insta APOD 🐦📷
         env:
