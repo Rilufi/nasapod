@@ -1,23 +1,18 @@
 name: Nasobot
 
-
-on:
-
-    schedule:
-
-        - cron: '0 10 * * *'
-
+on: push
+ # schedule:
+#    - cron: '0 10 * * *'
 
 jobs:
   tweet:
     name: APOD
-    
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎
         uses: actions/checkout@v3
-        
+
       - name: Keep this repo alive
         uses: gautamkrishnar/keepalive-workflow@master
 
@@ -40,30 +35,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Use HEREDOC for `run` to escape possible single and double quotes in the message.
+      - name: Download Instagram Session
+        uses: actions/download-artifact@v3
+        with:
+          name: instagram_session
+          path: .
+
       - name: tweet and insta APOD 🐦📷
         env:
-                  CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-
-                  CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-
-                  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
-                  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-
-                  API_KEY: ${{ secrets.API_KEY }}
-
-                  USERNAME: ${{ secrets.USERNAME }}
-
-                  PASSWORD: ${{ secrets.PASSWORD }}
-
-                  TELE_USER: ${{ secrets.TELE_USER }}
-
-                  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-
-                  GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
-
+          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          API_KEY: ${{ secrets.API_KEY }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          TELE_USER: ${{ secrets.TELE_USER }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
         run: python nasapod.py
+
+      - name: Upload Instagram Session
+        uses: actions/upload-artifact@v3
+        with:
+          name: instagram_session
+          path: instagram_session.json
 
       - name: Atualizar arquivo de legenda
         run: |
