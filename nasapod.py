@@ -207,72 +207,166 @@ params = {
     'hd': 'True',
     'thumbs': 'True'
 }
-response = requests.get(URL_APOD, params=params)
-data = response.json()
+response = requests.get(URL_APOD, params=params).json()
+site = response.get('url')
+thumbs = response.get('thumbnail_url')
+media_type = response.get('media_type')
+explanation = response.get('explanation')
+title = response.get('title')
+hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
-# Check if there's a URL for an image
-if "url" in data and data["url"].endswith((".jpg", ".jpeg", ".png")):
-    url_image = data["hdurl"]
-    urllib.request.urlretrieve(url_image, "image.jpg")
-    midia = "image.jpg"
-    tipo = "photo"
-    print("Imagem APOD obtida")
+# Combinar o título e a explicação em um único prompt
+prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n\n{explanation}"
+
+# Gerar tradução combinada usando o modelo
+try:
+    traducao_combinada = gerar_traducao(prompt_combinado)
+    if traducao_combinada:
+        insta_string = f"""Foto Astronômica do Dia
+{title}
+
+{traducao_combinada}
+
+Fonte: {site}
+
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+        thrd_string = f"""Foto Astronômica do Dia
+{title}
+
+Fonte: {site}
+
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
+    else:
+        raise AttributeError("A tradução combinada não foi gerada.")
+except AttributeError as e:
+    print(f"Erro ao gerar a tradução: {e}")
+    insta_string = f"""Foto Astronômica do Dia
+{title}
+
+{explanation}
+
+Fonte: {site}
+
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
+    thrd_string = f"""Foto Astronômica do Dia
+{title}
+
+Fonte: {site}
+
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
+print(insta_string)
+
+mystring = f"""Astronomy Picture of the Day
+
+{title}
+
+Source: {site}
+
+#NASA #APOD #Astronomy #Space #Astrophotography"""
+
+myexstring = f"""{explanation}"""
+
+chunks = list(get_chunks(explanation, 280))
+
+tweet_id_imagem = None
+
+if media_type == 'image':
+    # Retrieve the image
+    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    # Post the image on Threads
+    try:
+        thrd.publish(caption=thrd_string, image_path=image)
+        print("Foto publicada no Threads")
+    except Exception as e:
+        print(f"Erro ao postar foto no Threads: {e}")
+        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
+    
+    # Post the image on Twitter
+    try:
+        media = api.media_upload(image)
+        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+        if tweet_imagem and 'id' in tweet_imagem.data:
+            tweet_id_imagem = tweet_imagem.data['id']
+        else:
+            raise Exception("Falha ao obter ID do tweet.")
+    except Exception as e:
+        print(f"Erro ao postar foto no Twitter: {e}")
+
+    # Post the image on Instagram
+    if instagram_client:
+        try:
+            post_instagram_photo(instagram_client, image, insta_string)
+        except Exception as e:
+            print(f"Erro ao postar foto no Instagram: {e}")
+            bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
+
+elif media_type == 'video':
+    # Retrieve the video
+    video_file = download_video(site)
+    video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
+    
+    # Retrieve the thumbs
+    urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    # Post the image on Threads
+    try:
+        thrd.publish(caption=thrd_string, image_path=image)
+        print("Thumbnail do vídeo publicada no Threads")
+    except Exception as e:
+        print(f"Erro ao postar thumbnail do vídeo no Threads: {e}")
+        bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
+    
+    if video_file:
+        video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
+        if video_file_cortado:
+            video_file = video_file_cortado
+        if video_file_twitter:
+            # Post the video on Twitter
+            try:
+                media = api.media_upload(video_file_twitter)
+                tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
+                if tweet_video and 'id' in tweet_video.data:
+                    tweet_id_imagem = tweet_video.data['id']
+                    print("Vídeo publicado no Twitter")
+                else:
+                    raise Exception("Falha ao obter ID do tweet.")
+            except Exception as e:
+                print(f"Erro ao postar vídeo no Twitter: {e}")
+    
+            # Post the video on Instagram
+            if instagram_client:
+                try:
+                    post_instagram_video(instagram_client, video_file, insta_string)
+                except Exception as e:
+                    print(f"Erro ao postar vídeo no Instagram: {e}")
+                    bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+
 else:
-    url_image = None
+    print("Tipo de mídia inválido.")
+    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
 
-# If there's no image, check for a video thumbnail
-if not url_image and "thumbnail_url" in data:
-    url_image = data["thumbnail_url"]
-    urllib.request.urlretrieve(url_image, "image.jpg")
-    print("Miniatura de vídeo APOD obtida")
+# Publicar explicações no Twitter como uma thread
+tweet_ids_explicacao = []
+reply_to_id = tweet_id_imagem
 
-# Process the explanation
-apod_exp = data.get("explanation", "")
-if apod_exp:
-    prompt = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {apod_exp}"
-    traducao = gerar_traducao(prompt)
+if tweet_id_imagem:
+    for parte in chunks:
+        try:
+            time.sleep(random.uniform(5, 15))  # Espera aleatória entre tweets
+            response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
+            if 'id' in response.data:
+                tweet_ids_explicacao.append(str(response.data['id']))
+                reply_to_id = response.data['id']
+                print("Tweet publicado como parte da thread")
+            else:
+                print(f"Error creating tweet: {response.data}")
+        except Exception as e:
+            print(f"Error creating tweet: {e}")
 else:
-    traducao = None
-
-# Postar no Twitter
-if url_image and traducao:
-    try:
-        media = api.media_upload("image.jpg")
-        tweet_parts = list(get_chunks(traducao, 280))
-        tweet = tweet_parts.pop(0)
-        status = api.update_status(status=tweet, media_ids=[media.media_id])
-        while tweet_parts:
-            time.sleep(random.uniform(15, 30))  # Espera aleatória antes de postar
-            tweet = tweet_parts.pop(0)
-            status = api.update_status(status=tweet, in_reply_to_status_id=status.id, auto_populate_reply_metadata=True)
-        print("Postagem APOD feita no Twitter")
-    except Exception as e:
-        print(f"Erro ao postar no Twitter: {e}")
-        bot.send_message(tele_user, f"apodtw com problema pra postar: {e}")
-
-# Postar no Instagram
-if instagram_client and url_image and traducao:
-    try:
-        post_instagram_photo(instagram_client, "image.jpg", traducao)
-        print("Postagem APOD feita no Instagram")
-    except Exception as e:
-        print(f"Erro ao postar no Instagram: {e}")
-        bot.send_message(tele_user, f"apodinsta com problema pra postar: {e}")
-
-# Postar no Threads
-if url_image and traducao:
-    try:
-        thrd.post_thread(traducao, image_paths=["image.jpg"])
-        print("Postagem APOD feita no Threads")
-    except Exception as e:
-        print(f"Erro ao postar no Threads: {e}")
-        bot.send_message(tele_user, f"apodthreads com problema pra postar: {e}")
-
-# Postar vídeo no Instagram (Exemplo)
-link_video = "https://www.youtube.com/watch?v=example"  # URL do vídeo do YouTube
-video_filename = download_video(link_video)
-if video_filename:
-    video_path_cortado = cortar_video(video_filename, start_time=10, end_time=60, output_path="video_cortado.mp4")
-    if video_path_cortado and traducao:
-        post_instagram_video(instagram_client, video_path_cortado, traducao)
-        print("Vídeo APOD postado no Instagram")
+    print("Erro: tweet_id_imagem não está definido.")
