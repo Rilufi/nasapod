@@ -213,8 +213,6 @@ try:
 
 {traducao_combinada}
 
-Fonte: {site}
-
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
         thrd_string = f"""Foto Astronômica do Dia
 {title}
@@ -231,8 +229,6 @@ except AttributeError as e:
 {title}
 
 {explanation}
-
-Fonte: {site}
 
 #NASA #APOD #Astronomia #Espaço #Astrofotografia"""
 
