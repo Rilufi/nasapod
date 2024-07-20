@@ -1,8 +1,8 @@
 name: Nasobot
 
-on:
-  schedule:
-    - cron: '0 10 * * *'
+on: push
+#  schedule:
+ #   - cron: '0 10 * * *'
 
 jobs:
   tweet:
