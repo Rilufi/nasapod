@@ -145,20 +145,6 @@ def baixar_e_traduzir_post(cl, username, legendas_postadas):
 # Carregar legendas já postadas
 legendas_postadas = carregar_legendas_postadas()
 
-# Baixar e postar a última imagem de cada página da NASA no Instagram
-if instagram_client:
-    for page in nasa_pages:
-        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
-        if nasa_image_path and nasa_caption:
-            try:
-                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
-                # Salvar a legenda original no arquivo
-                salvar_legenda_postada(original_caption)
-                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
-            except Exception as e:
-                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
-                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
-
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
     try:
@@ -368,5 +354,20 @@ if tweet_id_imagem:
                 print(f"Error creating tweet: {response.data}")
         except Exception as e:
             print(f"Error creating tweet: {e}")
+
+# Baixar e postar a última imagem de cada página da NASA no Instagram
+if instagram_client:
+    for page in nasa_pages:
+        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
+        time.sleep(random.uniform(900, 1200))
+        if nasa_image_path and nasa_caption:
+            try:
+                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
+                # Salvar a legenda original no arquivo
+                salvar_legenda_postada(original_caption)
+                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
+            except Exception as e:
+                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
+                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
 else:
     print("Erro: tweet_id_imagem não está definido.")
