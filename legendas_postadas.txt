@@ -1299,3 +1299,10 @@ This image shows a hot-fire test at NASA’s Marshall Space Flight Center in Hun
 Image credit: NASA
 
 #NASAMarshall #NASA #3dprinting #RAMPT
+Measuring the distance to truly remote objects like galaxies, quasars, and galaxy clusters is a crucial task in astrophysics, particularly when it comes to studying the early universe, but it’s a difficult one to complete. We can only measure the distances to a few nearby objects like the Sun, planets, and some nearby stars directly. Beyond that, astronomers need to use various indirect methods; one of the most important examines Type Ia supernovae, and this is where the NASA/ESA Hubble Space Telescope excels.
+
+NGC 3810, the galaxy featured in this image, was the host of a Type Ia supernova in 2022. Type Ia supernovae are the result of a white dwarf exploding, and their peak brightness is very consistent. This attribute allows astronomers to use Type Ia supernovae to measure distances: we know how bright a Type Ia supernova should be, so we can tell how far away it must be by how dim it appears. One snag with this method is intergalactic dust, because intergalactic dust blocks some of the supernova’s light. Hubble’s unique capabilities offer them a clever way of doing this.Astronomers use Hubble to take images of the same Type Ia supernovae in ultraviolet light, which the dust almost completely blocks out, and in infrared light, which passes through dust nearly unaffected. By carefully noting how much light comes through at each wavelength, astronomers can determine how much dust lies between Hubble and the supernova, letting them confidently calibrate the relationship between a supernova’s brightness and its distance.
+
+Credit: ESA/Hubble & NASA, D. Sand, R. J. Foley
+
+#NASAMarshall #NASA #astrophysics #NASA #galaxy #ESA #NASAGoddard
