@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from threadspy import ThreadsAPI
 import random
 import time
+from sys import exit
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -71,7 +72,8 @@ def logar_instagram():
         cl.dump_settings(session_file)
     except Exception as e:
         print(f"Erro ao logar no Instagram: {e}")
-        bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
+        bot.send_message(tele_user, f"apodinsta erro ao logar no Instagram: {e}")
+        exit()
     return cl
 
 try:
