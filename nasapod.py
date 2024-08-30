@@ -27,7 +27,7 @@ GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
 thrd = ThreadsAPI(username=username, password=password)
 BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
-BSKY_PASSWORD = '5mru-qs5t-jdzz-oia4'  # os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
+BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
 
 # Inicializando o cliente do Bluesky
 client = Client()
