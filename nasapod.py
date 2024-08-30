@@ -14,6 +14,7 @@ from threadspy import ThreadsAPI
 import random
 import time
 from sys import exit
+from atproto import Client
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -25,6 +26,12 @@ bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
 thrd = ThreadsAPI(username=username, password=password)
+BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
+BSKY_PASSWORD = '5mru-qs5t-jdzz-oia4'  # os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
+
+# Inicializando o cliente do Bluesky
+client = Client()
+client.login(BSKY_HANDLE, BSKY_PASSWORD)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
@@ -255,6 +262,11 @@ myexstring = f"""{explanation}"""
 
 chunks = list(get_chunks(explanation, 280))
 
+bs_string = f"""Astronomy Picture of the Day
+
+{title}"""
+
+
 tweet_id_imagem = None
 
 if media_type == 'image':
@@ -262,6 +274,25 @@ if media_type == 'image':
     urllib.request.urlretrieve(site, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
 
+    # Post the image on BS
+    with open(image, 'rb') as f:
+        img_data = f.read()
+
+    # Cut the text into chunks without splitting words
+    parts = get_chunks(explanation, 300)
+
+    # Inicializa a variável para armazenar o ID do post anterior (se aplicável)
+    parent_post_id = None
+
+    # Posta a primeira parte e mantém o ID
+    response = client.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
+    parent_post_id = response['uri']
+
+    # Posta cada parte subsequente como uma resposta ao post anterior (se possível)
+    for part in parts:
+        response = client.send_post(text=part)
+
+    
     # Post the image on Threads
     try:
         thrd.publish(caption=thrd_string, image_path=image)
@@ -298,6 +329,24 @@ elif media_type == 'video':
     urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
     image = "apodtoday.jpeg"
 
+    # Post the image on BS
+    with open(image, 'rb') as f:
+        img_data = f.read()
+
+    # Cut the text into chunks without splitting words
+    parts = get_chunks(explanation, 300)
+
+    # Inicializa a variável para armazenar o ID do post anterior (se aplicável)
+    parent_post_id = None
+
+    # Posta a primeira parte e mantém o ID
+    response = client.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
+    parent_post_id = response['uri']
+
+    # Posta cada parte subsequente como uma resposta ao post anterior (se possível)
+    for part in parts:
+        response = client.send_post(text=part)
+        
     # Post the image on Threads
     try:
         thrd.publish(caption=thrd_string, image_path=image)
