@@ -260,13 +260,14 @@ Source: {site}
 
 myexstring = f"""{explanation}"""
 
-chunks = list(get_chunks(explanation, 280))
-
 bs_string = f"""Astronomy Picture of the Day
 
-{title}"""
+{title}
+
+Source: {site}"""
 
 
+chunks = list(get_chunks(explanation, 280))
 tweet_id_imagem = None
 
 if media_type == 'image':
