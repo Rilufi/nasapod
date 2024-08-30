@@ -30,8 +30,8 @@ BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
 BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
 
 # Inicializando o cliente do Bluesky
-client = Client()
-client.login(BSKY_HANDLE, BSKY_PASSWORD)
+blsk = Client()
+blsk.login(BSKY_HANDLE, BSKY_PASSWORD)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
@@ -286,12 +286,12 @@ if media_type == 'image':
     parent_post_id = None
 
     # Posta a primeira parte e mantém o ID
-    response = client.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
+    response = blsk.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
     parent_post_id = response['uri']
 
     # Posta cada parte subsequente como uma resposta ao post anterior (se possível)
     for part in parts:
-        response = client.send_post(text=part)
+        response = blsk.send_post(text=part)
 
     
     # Post the image on Threads
@@ -341,12 +341,12 @@ elif media_type == 'video':
     parent_post_id = None
 
     # Posta a primeira parte e mantém o ID
-    response = client.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
+    response = blsk.send_image(text=bs_string, image=img_data, image_alt='Astronomy image (ALT)')
     parent_post_id = response['uri']
 
     # Posta cada parte subsequente como uma resposta ao post anterior (se possível)
     for part in parts:
-        response = client.send_post(text=part)
+        response = blsk.send_post(text=part)
         
     # Post the image on Threads
     try:
