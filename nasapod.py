@@ -330,6 +330,27 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
 
     print("Thread postada com sucesso no Bluesky!")
 
+def post_thread_with_image(pds_url: str, handle: str, password: str, long_text: str, image_path: str, alt_text: str):
+    session = bsky_login_session(pds_url, handle, password)
+    access_token = session["accessJwt"]
+    did = session["did"]
+
+    # Corta o texto em chunks
+    chunks = split_text(long_text)
+    
+    # Posta o primeiro chunk com a imagem
+    embed = upload_image(pds_url, access_token, image_path, alt_text)
+    uri, cid = post_chunk(pds_url, access_token, did, chunks[0], embed=embed)
+
+    # Posta o restante dos chunks como thread
+    reply_to = get_reply_refs(pds_url, uri)
+
+    for chunk in chunks[1:]:
+        uri, cid = post_chunk(pds_url, access_token, did, chunk, reply_to)
+        reply_to = get_reply_refs(pds_url, uri)
+
+    print("Thread com imagem postada com sucesso!")
+
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
@@ -400,6 +421,8 @@ bs_string = f"""Astronomy Picture of the Day
 {title}"""
 
 
+alt_text = "Astronomy Picture of the Day"
+
 chunks = list(get_chunks(explanation, 280))
 tweet_id_imagem = None
 
@@ -413,7 +436,6 @@ if media_type == 'image':
         initial_text = bs_string
         long_text = explanation
         image_path = image
-        alt_text = "Astronomy Picture of the Day"
         post_thread(pds_url, handle, password, initial_text, long_text, image_path, alt_text)
     except Exception as e:
         print(f"Erro ao postar foto no Bluesky: {e}")
@@ -460,7 +482,6 @@ elif media_type == 'video':
         initial_text = bs_string
         long_text = explanation
         image_path = image
-        alt_text = "Astronomy Picture of the Day"
         post_thread(pds_url, handle, password, initial_text, long_text, image_path, alt_text)
     except Exception as e:
         print(f"Erro ao postar foto no Bluesky: {e}")
@@ -522,7 +543,7 @@ if tweet_id_imagem:
             print(f"Error creating tweet: {e}")
 
 
-# Baixar e postar a última imagem de cada página da NASA no Instagram
+# Baixar e postar a última imagem de cada página da NASA no Instagram e Bluesky
 if instagram_client:
     for page in nasa_pages:
         nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
@@ -530,6 +551,7 @@ if instagram_client:
         if nasa_image_path and nasa_caption:
             try:
                 post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
+                post_thread_with_image(pds_url, handle, password, original_caption, nasa_image_path, alt_text)
                 # Salvar a legenda original no arquivo
                 salvar_legenda_postada(original_caption)
                 time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
