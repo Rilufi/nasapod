@@ -327,4 +327,4 @@ for username in nasa_pages:
         post_thread_with_image(pds_url, handle, password, caption, image_path, alt_text)
 #        time.sleep(random.uniform(60, 120))
     else:
-      print(f"Erro ao postar a imagem da {username} no Instagram: {e}")
+      print(f"Erro ao postar a imagem da {username} no Instagram")#: {e}")
