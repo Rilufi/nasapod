@@ -315,16 +315,16 @@ alt_text = "Astronomy Picture of the Day"
 post_thread(pds_url, handle, password, initial_text, long_text, image_path, alt_text)
 
 # Processa cada página da NASA
-for username in nasa_pages:
-    url_perfil = f'https://www.instagram.com/{username}/'
-    image_path, caption = baixar_post(url_perfil, legendas_postadas)    
+#for username in nasa_pages:
+ #   url_perfil = f'https://www.instagram.com/{username}/'
+  #  image_path, caption = baixar_post(url_perfil, legendas_postadas)    
  #   time.sleep(random.uniform(900, 1200))
 
     # Salvar a legenda se a imagem e legenda foram baixadas
-    if caption and caption not in legendas_postadas:
-        salvar_legenda_postada(caption)
-        print(f"Imagem e legenda de {username} salvas com sucesso.")
-        post_thread_with_image(pds_url, handle, password, caption, image_path, alt_text)
+   # if caption and caption not in legendas_postadas:
+    #    salvar_legenda_postada(caption)
+     #   print(f"Imagem e legenda de {username} salvas com sucesso.")
+      #  post_thread_with_image(pds_url, handle, password, caption, image_path, alt_text)
 #        time.sleep(random.uniform(60, 120))
-    else:
-      print(f"Erro ao postar a imagem da {username} no Instagram")#: {e}")
+    #else:
+     # print(f"Erro ao postar a imagem da {username} no Instagram")#: {e}")
