@@ -106,8 +106,8 @@ legendas_postadas = carregar_legendas_postadas()
 
 
 # Inicializando o cliente do Bluesky
-BSKY_HANDLE = # os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
-BSKY_PASSWORD = # os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
+BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
+BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
 
 api_key = os.environ.get("API_KEY")
 
