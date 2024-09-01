@@ -38,19 +38,7 @@ jobs:
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: tweet and insta APOD 🐦📷
         env:
-                  CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-
-                  CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-
-                  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
-                  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-
                   API_KEY: ${{ secrets.API_KEY }}
-
-                  USERNAME: ${{ secrets.USERNAME }}
-
-                  PASSWORD: ${{ secrets.PASSWORD }}
 
                   TELE_USER: ${{ secrets.TELE_USER }}
 
@@ -58,7 +46,11 @@ jobs:
 
                   GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
 
-        run: python instasa.py
+                  BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}          
+ 
+                  BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
+
+        run: python blueskasa.py
 
       - name: Atualizar arquivo de legenda
         run: |
