@@ -1,10 +1,7 @@
 name: Nasanow
 
-on:
-  workflow_run:
-    workflows: ["Nasapod"]
-    types:
-      - failed
+on: push
+
 jobs:
   tweet:
     name: APOD
