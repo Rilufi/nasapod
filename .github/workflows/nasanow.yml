@@ -1,6 +1,8 @@
 name: Nasanow
 
-on: push
+on: 
+  schedule:
+    - cron: '0 10 * * *'
 
 jobs:
   tweet:
