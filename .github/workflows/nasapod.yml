@@ -1,9 +1,9 @@
 name: Nasapod
 
-on:
+on: push
 
-  schedule:
-    - cron: '0 10 * * *'
+#  schedule:
+#    - cron: '0 10 * * *'
 
 
 jobs:
