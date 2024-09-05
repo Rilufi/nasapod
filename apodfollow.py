@@ -70,7 +70,7 @@ if __name__ == "__main__":
       "#NASA",
       "#cosmos",
       "#galaxy",
-      "#stargazing",
+      "#astrophotography",
       "#science",
       "#telescope",
       "#cosmology"
@@ -96,8 +96,8 @@ if __name__ == "__main__":
                 if author_name == BOT_NAME:
                     continue
 
-                # Find images containing 'cat' or 'dog' in their alt descriptions
-                images = find_images_with_keywords(post, ['space', 'astronomy'])
+                # Find images containing astronomy related content in their alt descriptions
+                images = find_images_with_keywords(post, ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope'])
 
                 if images:
                     print(f"Post URI: {uri}")
@@ -113,4 +113,4 @@ if __name__ == "__main__":
                     repost_post(client, uri, cid)
                     follow_user(client, author_did)
                 else:
-                    print("Nenhuma imagem relevante encontrada com 'cat' ou 'dog'.\n")
+                    print("Nenhuma imagem relevante encontrada com conteúdo astronômico.\n")
