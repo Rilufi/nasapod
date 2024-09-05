@@ -62,8 +62,8 @@ if __name__ == "__main__":
     # Login to Bluesky
     client = bsky_login_session(PDS_URL, BSKY_HANDLE, BSKY_PASSWORD)
 
-    # Define the hashtags to search for (without #)
-  hashtags = [
+    # Define the hashtags to search for
+    hashtags = [
       "#astronomy",
       "#space",
       "#universe",
