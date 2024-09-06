@@ -1,7 +1,8 @@
 name: Apodsky
 
-on: push
-
+on:
+  schedule:
+    - cron: '0 * * * *'
 
 jobs:
   tweet:
