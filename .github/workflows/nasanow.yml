@@ -1,8 +1,8 @@
 name: Nasanow
 
-on: 
-  schedule:
-    - cron: '0 10 * * *'
+on: push
+ # schedule:
+ #   - cron: '0 10 * * *'
 
 jobs:
   tweet:
@@ -37,7 +37,7 @@ jobs:
           pip install -r requirements.txt
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: tweet and insta APOD 🐦📷
+      - name: skeet APOD 🐦📷
         env:
                   API_KEY: ${{ secrets.API_KEY }}
 
