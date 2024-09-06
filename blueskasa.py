@@ -10,6 +10,8 @@ import json
 import os
 from datetime import datetime, timedelta
 import time
+import pillow
+
 
 # Páginas da NASA (IDs são substituídos por nomes de usuário para scraping)
 nasa_pages = [
@@ -144,7 +146,34 @@ else:
     print("sei la, deu ruim")
     
 
+# Function to resize image for Bluesky
+def resize_bluesky(image_path, max_file_size=1 * 1024 * 1024):
+    """
+    Redimensiona e comprime uma imagem para ficar dentro do limite de tamanho aceito pela rede social Bluesky.
+    Substitui a imagem original se necessário.
 
+    :param image_path: Caminho da imagem original.
+    :param max_file_size: Tamanho máximo permitido da imagem em bytes (default: 1 MB).
+    """
+    # Abre a imagem usando o Pillow
+    img = Image.open(image_path)
+
+    # Redimensiona a imagem mantendo a proporção se necessário
+    if os.path.getsize(image_path) > max_file_size:
+        # Define o tamanho máximo para redimensionar
+        img.thumbnail((1600, 1600))  # Redimensiona para caber dentro de 1600x1600 pixels
+
+        # Reduz a qualidade gradualmente para atingir o tamanho desejado
+        quality = 95
+        while os.path.getsize(image_path) > max_file_size and quality > 10:
+            img.save(image_path, quality=quality)
+            quality -= 5
+            img = Image.open(image_path)  # Recarrega a imagem para verificar o tamanho
+
+        print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+    else:
+        img.save(image_path)
+        print("Imagem já está dentro do limite de tamanho do Bluesky.")
 
 def bsky_login_session(pds_url: str, handle: str, password: str) -> Dict:
     resp = requests.post(
@@ -312,6 +341,7 @@ long_text = explanation
 image_path = image_path
 alt_text = "Astronomy Picture of the Day"
 
+resize_bluesky(image_path)
 post_thread(pds_url, handle, password, initial_text, long_text, image_path, alt_text)
 
 # Processa cada página da NASA
