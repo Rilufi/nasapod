@@ -10,7 +10,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import time
-import pillow
+from PIL import Image
 
 
 # Páginas da NASA (IDs são substituídos por nomes de usuário para scraping)
