@@ -11,3 +11,4 @@ pytube
 threads-py
 beautifulsoup4
 lxml
+pillow
