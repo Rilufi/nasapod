@@ -21,8 +21,15 @@ def load_interactions():
     """Loads interactions from a JSON file."""
     if os.path.exists(INTERACTIONS_FILE):
         with open(INTERACTIONS_FILE, 'r') as file:
-            return json.load(file)
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                # O arquivo está vazio ou corrompido; inicializar com valores padrão
+                print(f"O arquivo {INTERACTIONS_FILE} está vazio ou corrompido. Inicializando com valores padrão.")
+                return {"likes": [], "reposts": [], "follows": []}
+    # Se o arquivo não existir, retorna interações padrão
     return {"likes": [], "reposts": [], "follows": []}
+
 
 def save_interactions(interactions):
     """Saves interactions to a JSON file."""
