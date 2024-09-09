@@ -242,8 +242,8 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
     print("Thread postada com sucesso no Bluesky!")
 
 pds_url = "https://bsky.social"
-handle = BSKY_HANDLE
-password = BSKY_PASSWORD
+handle = os.environ.get("BSKY_HANDLE")
+password = os.environ.get("BSKY_PASSWORD")
 initial_text = mystring
 long_text = explanation
 image_path = image_path
