@@ -21,11 +21,20 @@ params = {
     'thumbs': 'True'
 }
 response = requests.get(URL_APOD, params=params).json()
-site = response.get('url')
 thumbs = response.get('thumbnail_url')
 media_type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
+
+# Função para gerar a URL do APOD do dia
+def get_apod_url() -> str:
+    today = datetime.now()
+    yymmdd = today.strftime("%y%m%d")  # Formato yymmdd
+    apod_url = f"https://apod.nasa.gov/apod/ap{yymmdd}.html"
+    return apod_url
+
+# URL do APOD
+site = get_apod_url()
 
 # Modifica o mystring para incluir o link como hipertexto
 mystring = f"""Astronomy Picture of the Day
