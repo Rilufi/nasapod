@@ -10,6 +10,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import time
+from atproto import Client
 
 
 # Configurações do Bluesky
