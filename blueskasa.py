@@ -1,19 +1,49 @@
 import requests
 import urllib.request
-import re
-import json
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple
-import os
 from PIL import Image
+import os
 
-# Inicializando o cliente do Bluesky
-BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
-BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
+# Função para gerar a URL do APOD do dia
+def get_apod_url() -> str:
+    today = datetime.now()
+    yymmdd = today.strftime("%y%m%d")  # Formato yymmdd
+    apod_url = f"https://apod.nasa.gov/apod/ap{yymmdd}.html"
+    return apod_url
 
+# URL do APOD
+site = get_apod_url()
+
+# Função para baixar a imagem
+def download_image(url: str, file_path: str):
+    try:
+        urllib.request.urlretrieve(url, file_path)
+        print(f"Imagem baixada com sucesso: {file_path}")
+    except Exception as e:
+        print(f"Erro ao baixar imagem: {e}")
+
+# Função para redimensionar a imagem para o Bluesky
+def resize_bluesky(image_path, max_file_size=1 * 1024 * 1024):
+    try:
+        img = Image.open(image_path)
+    except IOError:
+        print(f"Não foi possível abrir a imagem: {image_path}")
+        return
+
+    if os.path.getsize(image_path) > max_file_size:
+        img.thumbnail((1600, 1600))
+        quality = 95
+        while os.path.getsize(image_path) > max_file_size and quality > 10:
+            img.save(image_path, quality=quality)
+            quality -= 5
+            img = Image.open(image_path)
+
+        print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+    else:
+        img.save(image_path)
+        print("Imagem já está dentro do limite de tamanho do Bluesky.")
+
+# Obtenção dos dados da APOD
 api_key = os.environ.get("API_KEY")
-
-# Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
 params = {
     'api_key': api_key,
@@ -26,14 +56,7 @@ media_type = response.get('media_type')
 explanation = response.get('explanation')
 title = response.get('title')
 
-# Função para gerar a URL do APOD do dia
-def get_apod_url() -> str:
-    today = datetime.now()
-    yymmdd = today.strftime("%y%m%d")  # Formato yymmdd
-    apod_url = f"https://apod.nasa.gov/apod/ap{yymmdd}.html"
-    return apod_url
-
-# URL do APOD
+# URL do APOD do dia
 site = get_apod_url()
 
 # Modifica o mystring para incluir o link como hipertexto
@@ -61,36 +84,19 @@ def create_link_facets(text: str, link_text: str, url: str) -> List[Dict]:
 # Gera as facets para o link da APOD
 facets = create_link_facets(mystring, site, site)
 
+# Baixar e processar a imagem
 if media_type == 'image':
-    # Retrieve the image
-    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    download_image(site, 'apodtoday.jpeg')
     image_path = "apodtoday.jpeg"
 
 elif media_type == 'video':
-    # Retrieve the image
-    urllib.request.urlretrieve(thumbs, 'apodtoday.jpeg')
+    download_image(thumbs, 'apodtoday.jpeg')
     image_path = "apodtoday.jpeg"
 
 else:
-    print("sei la, deu ruim")
-    
+    print("Tipo de mídia não suportado")
 
-# Function to resize image for Bluesky
-def resize_bluesky(image_path, max_file_size=1 * 1024 * 1024):
-    img = Image.open(image_path)
-
-    if os.path.getsize(image_path) > max_file_size:
-        img.thumbnail((1600, 1600))
-        quality = 95
-        while os.path.getsize(image_path) > max_file_size and quality > 10:
-            img.save(image_path, quality=quality)
-            quality -= 5
-            img = Image.open(image_path)
-
-        print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
-    else:
-        img.save(image_path)
-        print("Imagem já está dentro do limite de tamanho do Bluesky.")
+resize_bluesky(image_path)
 
 def bsky_login_session(pds_url: str, handle: str, password: str) -> Dict:
     resp = requests.post(
