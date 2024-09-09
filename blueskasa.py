@@ -60,6 +60,7 @@ params = {
     'thumbs': 'True'
 }
 response = requests.get(URL_APOD, params=params).json()
+site = response.get('url')
 thumbs = response.get('thumbnail_url')
 media_type = response.get('media_type')
 explanation = response.get('explanation')
