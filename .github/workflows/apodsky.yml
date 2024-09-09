@@ -1,8 +1,8 @@
 name: Apodsky
 
-on:
-  schedule:
-    - cron: '0 * * * *'
+on: push
+#  schedule:
+#    - cron: '0 * * * *'
 
 jobs:
   tweet:
@@ -39,8 +39,16 @@ jobs:
           pip install bs4 atproto requests
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: Run all cat scripts 🐦
+      - name: Run all star scripts 🐦
         env:
           BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}
           BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
         run: python apodfollow.py
+
+      - name: Atualizar arquivo de legenda
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          git add interactions.json
+          git commit -m "Atualizar arquivo de legenda [skip ci]"  # Ignorar a execução do workflow para este commit
+          git push
