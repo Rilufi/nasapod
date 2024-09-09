@@ -1,9 +1,16 @@
-from typing import Dict, List
 import requests
 import urllib.request
-from PIL import Image
+import re
+import json
+from datetime import datetime, timezone
+from typing import Dict, List, Tuple
+import requests
+from bs4 import BeautifulSoup
+import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
+from PIL import Image
 
 # Função para gerar a URL do APOD do dia
 def get_apod_url() -> str:
