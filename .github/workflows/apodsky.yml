@@ -39,7 +39,7 @@ jobs:
           pip install bs4 atproto requests
 
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: Run all star scripts 🐦
+      - name: Run all star scripts 🪐‎
         env:
           BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}
           BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
