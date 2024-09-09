@@ -50,7 +50,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str]) -> Dict:
     hashtag_query = " OR ".join(hashtags)
     url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
     headers = {"Authorization": f"Bearer {session._access_jwt}"}  # Usando _access_jwt obtido do client
-    params = {"q": hashtag_query, "limit": 100}  # Ajuste o limite conforme necessário
+    params = {"q": hashtag_query, "limit": 50}  # Ajuste o limite conforme necessário
 
     response = requests.get(url, headers=headers, params=params)
     response.raise_for_status()
