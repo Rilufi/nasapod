@@ -2,7 +2,7 @@ import requests
 import urllib.request
 from PIL import Image
 import os
-import datetime
+from datetime import datetime
 
 # Função para gerar a URL do APOD do dia
 def get_apod_url() -> str:
