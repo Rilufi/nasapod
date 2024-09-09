@@ -1,3 +1,4 @@
+from typing import Dict, List
 import requests
 import urllib.request
 from PIL import Image
