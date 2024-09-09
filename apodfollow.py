@@ -1,8 +1,16 @@
-import os
-from typing import Dict, List
 import requests
-from atproto import Client
+import urllib.request
+import re
 import json
+from datetime import datetime, timezone
+from typing import Dict, List, Tuple
+import requests
+from bs4 import BeautifulSoup
+import json
+import os
+from datetime import datetime, timedelta
+import time
+from PIL import Image
 
 
 # Configurações do Bluesky
