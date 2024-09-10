@@ -25,10 +25,8 @@ def load_interactions() -> Dict:
             try:
                 return json.load(file)
             except json.JSONDecodeError:
-                # O arquivo está vazio ou corrompido; inicializar com valores padrão
                 print(f"O arquivo {INTERACTIONS_FILE} está vazio ou corrompido. Inicializando com valores padrão.")
                 return {"likes": [], "reposts": [], "follows": []}
-    # Se o arquivo não existir, retorna interações padrão
     return {"likes": [], "reposts": [], "follows": []}
 
 def save_interactions(interactions: Dict):
@@ -48,7 +46,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     """Searches for posts containing the given hashtags within a specific time range."""
     hashtag_query = " OR ".join(hashtags)
     url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
-    headers = {"Authorization": f"Bearer {session._access_jwt}"}  # Usando _access_jwt obtido do client
+    headers = {"Authorization": f"Bearer {session._access_jwt}"}
     params = {
         "q": hashtag_query,
         "limit": 20,  # Ajuste o limite conforme necessário
@@ -63,9 +61,17 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
 
 def find_images_with_keywords(post: Dict, keywords: List[str]) -> List[Dict]:
     """Finds images in the post with alt text containing any of the specified keywords."""
-    images = post.get('media', {}).get('images', [])
-    filtered_images = [image for image in images if any(keyword in image.get('alt', '').lower() for keyword in keywords)]
-    return filtered_images
+    images_with_keywords = []
+    embed = post.get('record', {}).get('embed')
+
+    if embed and embed.get('$type') == 'app.bsky.embed.images':
+        images = embed.get('images', [])
+        for image in images:
+            alt_text = image.get('alt', '').lower()
+            if any(keyword in alt_text for keyword in keywords):
+                images_with_keywords.append(image)
+
+    return images_with_keywords
 
 def like_post(client: Client, uri: str, cid: str, interactions: Dict):
     """Likes a post given its URI and CID, if not already liked."""
@@ -117,7 +123,6 @@ if __name__ == "__main__":
         try:
             search_results = search_posts_by_hashtags(client, [hashtag], since, until)
             
-            # Print detailed information about the search results
             print(f"Resultados da pesquisa para {hashtag}:")
             if not search_results.get('posts'):
                 print("Nenhum resultado encontrado.")
@@ -133,7 +138,7 @@ if __name__ == "__main__":
                     if author_name == BOT_NAME:
                         continue
 
-                    # Find images containing astronomy related content in their alt descriptions
+                    # Find images containing keywords in their alt descriptions
                     images = find_images_with_keywords(post, ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope'])
                     
                     if images:
