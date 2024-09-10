@@ -1,17 +1,9 @@
-import requests
-import urllib.request
-import re
-import json
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple
-import requests
-from bs4 import BeautifulSoup
-import json
 import os
-from datetime import datetime, timedelta
-import time
+import requests
+import json
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List
 from atproto import Client
-
 
 # Configurações do Bluesky
 BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
@@ -39,7 +31,6 @@ def load_interactions():
     # Se o arquivo não existir, retorna interações padrão
     return {"likes": [], "reposts": [], "follows": []}
 
-
 def save_interactions(interactions):
     """Saves interactions to a JSON file."""
     with open(INTERACTIONS_FILE, 'w') as file:
@@ -53,12 +44,18 @@ def bsky_login_session(pds_url: str, handle: str, password: str) -> Client:
     print("Autenticação bem-sucedida.")
     return client
 
-def search_posts_by_hashtags(session: Client, hashtags: List[str]) -> Dict:
-    """Searches for posts containing the given hashtags."""
+def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, until: str) -> Dict:
+    """Searches for posts containing the given hashtags within a specific time range."""
     hashtag_query = " OR ".join(hashtags)
     url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
     headers = {"Authorization": f"Bearer {session._access_jwt}"}  # Usando _access_jwt obtido do client
-    params = {"q": hashtag_query, "limit": 20}  # Ajuste o limite conforme necessário
+    params = {
+        "q": hashtag_query,
+        "limit": 20,  # Ajuste o limite conforme necessário
+        "since": since,
+        "until": until,
+        "sort": "latest"
+    }
 
     response = requests.get(url, headers=headers, params=params)
     response.raise_for_status()
@@ -94,57 +91,63 @@ if __name__ == "__main__":
 
     # Define the hashtags to search for
     hashtags = [
-      "#astronomy",
-      "#space",
-      "#universe",
-      "#NASA",
-      "#cosmos",
-      "#galaxy",
-      "#astrophotography",
-      "#science",
-      "#telescope",
-      "#cosmology"
-  ]
+        "#astronomy", "#space", "#universe", "#NASA", 
+        "#cosmos", "#galaxy", "#astrophotography", 
+        "#science", "#telescope", "#cosmology"
+    ]
+
+    # Calcula as datas de ontem e hoje no formato ISO com timezone-aware completo
+    today = datetime.now(timezone.utc)
+    yesterday = today - timedelta(days=1)
+    since = yesterday.isoformat()  # YYYY-MM-DDTHH:MM:SS+00:00
+    until = today.isoformat()      # YYYY-MM-DDTHH:MM:SS+00:00
 
     # Define the number of actions to perform per hour
     actions_per_hour = HOURLY_LIMIT
     action_counter = 0
 
-    # Search for posts
+    # Search for posts within the specified time range
     for hashtag in hashtags:
-        search_results = search_posts_by_hashtags(client, [hashtag])
-        
-        # Print detailed information about the search results
-        print(f"Resultados da pesquisa para {hashtag}:")
-        if not search_results.get('posts'):
-            print("Nenhum resultado encontrado.")
-        else:
-            for post in search_results["posts"]:
-                uri = post.get('uri')
-                cid = post.get('cid')
-                author = post.get('author', {})
-                author_name = author.get('displayName', 'Unknown')
-                author_did = author.get('did', '')
+        try:
+            search_results = search_posts_by_hashtags(client, [hashtag], since, until)
+            
+            # Print detailed information about the search results
+            print(f"Resultados da pesquisa para {hashtag}:")
+            if not search_results.get('posts'):
+                print("Nenhum resultado encontrado.")
+            else:
+                for post in search_results["posts"]:
+                    uri = post.get('uri')
+                    cid = post.get('cid')
+                    author = post.get('author', {})
+                    author_name = author.get('displayName', 'Unknown')
+                    author_did = author.get('did', '')
 
-                # Evitar interagir com posts do próprio bot
-                if author_name == BOT_NAME:
-                    continue
+                    # Evitar interagir com posts do próprio bot
+                    if author_name == BOT_NAME:
+                        continue
 
-                # Curtir, repostar e seguir o autor do post se ainda não interagido
-                if action_counter < actions_per_hour:
-                    like_post(client, uri, cid, interactions)
-                    action_counter += 1
-                if action_counter < actions_per_hour:
-                    repost_post(client, uri, cid, interactions)
-                    action_counter += 1
-                if action_counter < actions_per_hour:
-                    follow_user(client, author_did, interactions)
-                    action_counter += 1
+                    # Curtir, repostar e seguir o autor do post se ainda não interagido
+                    if action_counter < actions_per_hour:
+                        like_post(client, uri, cid, interactions)
+                        action_counter += 1
+                    if action_counter < actions_per_hour:
+                        repost_post(client, uri, cid, interactions)
+                        action_counter += 1
+                    if action_counter < actions_per_hour:
+                        follow_user(client, author_did, interactions)
+                        action_counter += 1
 
-                # Verifica se o limite de ações foi atingido
-                if action_counter >= actions_per_hour:
-                    print("Limite de ações por hora atingido.")
-                    break
+                    # Verifica se o limite de ações foi atingido
+                    if action_counter >= actions_per_hour:
+                        print("Limite de ações por hora atingido.")
+                        break
+
+            if action_counter >= actions_per_hour:
+                break
+        except requests.exceptions.HTTPError as e:
+            print(f"Erro ao buscar posts para {hashtag}: {e}")
 
     # Salva as interações para a próxima execução
     save_interactions(interactions)
+    print("Concluído.")
