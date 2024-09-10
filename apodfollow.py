@@ -18,7 +18,7 @@ HOURLY_LIMIT = DAILY_LIMIT // 24  # Limite de ações por hora
 # Arquivo para armazenar interações
 INTERACTIONS_FILE = 'interactions.json'
 
-def load_interactions():
+def load_interactions() -> Dict:
     """Loads interactions from a JSON file."""
     if os.path.exists(INTERACTIONS_FILE):
         with open(INTERACTIONS_FILE, 'r') as file:
@@ -31,7 +31,7 @@ def load_interactions():
     # Se o arquivo não existir, retorna interações padrão
     return {"likes": [], "reposts": [], "follows": []}
 
-def save_interactions(interactions):
+def save_interactions(interactions: Dict):
     """Saves interactions to a JSON file."""
     with open(INTERACTIONS_FILE, 'w') as file:
         json.dump(interactions, file)
@@ -61,21 +61,27 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     response.raise_for_status()
     return response.json()
 
-def like_post(client: Client, uri: str, cid: str, interactions):
+def find_images_with_keywords(post: Dict, keywords: List[str]) -> List[Dict]:
+    """Finds images in the post with alt text containing any of the specified keywords."""
+    images = post.get('media', {}).get('images', [])
+    filtered_images = [image for image in images if any(keyword in image.get('alt', '').lower() for keyword in keywords)]
+    return filtered_images
+
+def like_post(client: Client, uri: str, cid: str, interactions: Dict):
     """Likes a post given its URI and CID, if not already liked."""
     if uri not in interactions["likes"]:
         client.like(uri=uri, cid=cid)
         interactions["likes"].append(uri)
         print(f"Post curtido: {uri}")
 
-def repost_post(client: Client, uri: str, cid: str, interactions):
+def repost_post(client: Client, uri: str, cid: str, interactions: Dict):
     """Reposts a post given its URI and CID, if not already reposted."""
     if uri not in interactions["reposts"]:
         client.repost(uri=uri, cid=cid)
         interactions["reposts"].append(uri)
         print(f"Post repostado: {uri}")
 
-def follow_user(client: Client, did: str, interactions):
+def follow_user(client: Client, did: str, interactions: Dict):
     """Follows a user given their DID, if not already followed."""
     if did not in interactions["follows"]:
         client.follow(did)
@@ -126,6 +132,18 @@ if __name__ == "__main__":
                     # Evitar interagir com posts do próprio bot
                     if author_name == BOT_NAME:
                         continue
+
+                    # Find images containing astronomy related content in their alt descriptions
+                    images = find_images_with_keywords(post, ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope'])
+                    
+                    if images:
+                        print(f"Post URI: {uri}")
+                        print(f"Post CID: {cid}")
+                        print(f"Author: {author_name}")
+                        for image in images:
+                            print(f"Image ALT: {image.get('alt', 'No ALT')}")
+                            print(f"Image URL: {image.get('url', 'No URL')}")
+                        print("-----\n")
 
                     # Curtir, repostar e seguir o autor do post se ainda não interagido
                     if action_counter < actions_per_hour:
