@@ -49,7 +49,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     headers = {"Authorization": f"Bearer {session._access_jwt}"}
     params = {
         "q": hashtag_query,
-        "limit": 20,  # Ajuste o limite conforme necessário
+        "limit": 20,
         "since": since,
         "until": until,
         "sort": "latest"
@@ -72,6 +72,11 @@ def find_images_with_keywords(post: Dict, keywords: List[str]) -> List[Dict]:
                 images_with_keywords.append(image)
 
     return images_with_keywords
+
+def post_contains_hashtags(post: Dict, hashtags: List[str]) -> bool:
+    """Verifica se o conteúdo do post contém alguma das hashtags especificadas."""
+    content = post.get('record', {}).get('text', '').lower()
+    return any(hashtag.lower() in content for hashtag in hashtags)
 
 def like_post(client: Client, uri: str, cid: str, interactions: Dict):
     """Likes a post given its URI and CID, if not already liked."""
@@ -101,12 +106,13 @@ if __name__ == "__main__":
     # Login to Bluesky
     client = bsky_login_session(PDS_URL, BSKY_HANDLE, BSKY_PASSWORD)
 
-    # Define the hashtags to search for
+    # Define the hashtags and keywords to search for
     hashtags = [
         "#astronomy", "#space", "#universe", "#NASA", 
         "#cosmos", "#galaxy", "#astrophotography", 
         "#science", "#telescope", "#cosmology"
     ]
+    keywords = ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope']
 
     # Calcula as datas de ontem e hoje no formato ISO com timezone-aware completo
     today = datetime.now(timezone.utc)
@@ -138,28 +144,30 @@ if __name__ == "__main__":
                     if author_name == BOT_NAME:
                         continue
 
-                    # Find images containing keywords in their alt descriptions
-                    images = find_images_with_keywords(post, ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope'])
-                    
-                    if images:
-                        print(f"Post URI: {uri}")
-                        print(f"Post CID: {cid}")
-                        print(f"Author: {author_name}")
-                        for image in images:
-                            print(f"Image ALT: {image.get('alt', 'No ALT')}")
-                            print(f"Image URL: {image.get('url', 'No URL')}")
-                        print("-----\n")
+                    # Verifica se a hashtag está presente no texto do post
+                    if post_contains_hashtags(post, hashtags):
+                        # Find images containing keywords in their alt descriptions
+                        images = find_images_with_keywords(post, keywords)
+                        
+                        if images:
+                            print(f"Post URI: {uri}")
+                            print(f"Post CID: {cid}")
+                            print(f"Author: {author_name}")
+                            for image in images:
+                                print(f"Image ALT: {image.get('alt', 'No ALT')}")
+                                print(f"Image URL: {image.get('url', 'No URL')}")
+                            print("-----\n")
 
-                    # Curtir, repostar e seguir o autor do post se ainda não interagido
-                    if action_counter < actions_per_hour:
-                        like_post(client, uri, cid, interactions)
-                        action_counter += 1
-                    if action_counter < actions_per_hour:
-                        repost_post(client, uri, cid, interactions)
-                        action_counter += 1
-                    if action_counter < actions_per_hour:
-                        follow_user(client, author_did, interactions)
-                        action_counter += 1
+                            # Curtir, repostar e seguir o autor do post se ainda não interagido
+                            if action_counter < actions_per_hour:
+                                like_post(client, uri, cid, interactions)
+                                action_counter += 1
+                            if action_counter < actions_per_hour:
+                                repost_post(client, uri, cid, interactions)
+                                action_counter += 1
+                            if action_counter < actions_per_hour:
+                                follow_user(client, author_did, interactions)
+                                action_counter += 1
 
                     # Verifica se o limite de ações foi atingido
                     if action_counter >= actions_per_hour:
