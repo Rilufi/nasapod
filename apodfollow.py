@@ -49,7 +49,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     headers = {"Authorization": f"Bearer {session._access_jwt}"}
     params = {
         "q": hashtag_query,
-        "limit": 20,
+        "limit": 50,
         "since": since,
         "until": until,
         "sort": "latest"
