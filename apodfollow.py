@@ -78,6 +78,11 @@ def post_contains_hashtags(post: Dict, hashtags: List[str]) -> bool:
     content = post.get('record', {}).get('text', '').lower()
     return any(hashtag.lower() in content for hashtag in hashtags)
 
+def post_contains_ignored_hashtags(post: Dict, ignored_hashtags: List[str]) -> bool:
+    """Verifica se o post contém hashtags que devem ser ignoradas."""
+    content = post.get('record', {}).get('text', '').lower()
+    return any(ignored_hashtag in content for ignored_hashtag in ignored_hashtags)
+
 def like_post(client: Client, uri: str, cid: str, interactions: Dict):
     """Likes a post given its URI and CID, if not already liked."""
     if uri not in interactions["likes"]:
@@ -113,6 +118,9 @@ if __name__ == "__main__":
         "#science", "#telescope", "#cosmology"
     ]
     keywords = ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope']
+    
+    # Hashtags a serem ignoradas
+    ignored_hashtags = ['#furry', '#furryart']
 
     # Calcula as datas de ontem e hoje no formato ISO com timezone-aware completo
     today = datetime.now(timezone.utc)
@@ -142,6 +150,11 @@ if __name__ == "__main__":
 
                     # Evitar interagir com posts do próprio bot
                     if author_name == BOT_NAME:
+                        continue
+
+                    # Verifica se o post contém hashtags a serem ignoradas
+                    if post_contains_ignored_hashtags(post, ignored_hashtags):
+                        print(f"Post ignorado devido às hashtags: {uri}")
                         continue
 
                     # Verifica se a hashtag está presente no texto do post
