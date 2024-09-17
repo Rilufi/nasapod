@@ -49,7 +49,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     headers = {"Authorization": f"Bearer {session._access_jwt}"}
     params = {
         "q": hashtag_query,
-        "limit": 50,
+        "limit": 100,
         "since": since,
         "until": until,
         "sort": "latest"
@@ -113,11 +113,11 @@ if __name__ == "__main__":
 
     # Define the hashtags and keywords to search for
     hashtags = [
-        "#astronomy", "#space", "#universe", "#NASA", 
-        "#cosmos", "#galaxy", "#astrophotography", 
-        "#science", "#telescope", "#cosmology"
+        "#astronomy", "#space", "#universe", "#NASA", "#astrophysics",
+        "#cosmos", "#galaxy", "#astrophotography", "#hubble", "#universe",
+        "#science", "#telescope", "#cosmology", "#nightsky", "#milkyway"
     ]
-    keywords = ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope']
+    keywords = ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope', 'nightsky', 'sky', 'earth', 'planets', 'NASA']
     
     # Hashtags a serem ignoradas
     ignored_hashtags = ['#furry', '#furryart']
