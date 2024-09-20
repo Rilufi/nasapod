@@ -1,0 +1,4 @@
+typing
+google-generativeai
+pillow
+requests
