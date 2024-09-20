@@ -1,8 +1,10 @@
 name: Blueskasa
 
-on: push
-#  schedule:
- #   - cron: '0 * * * *'
+on:
+  workflow_run:
+    workflows: ["Apodfollow"]
+    types:
+      - completed
 
 jobs:
   tweet:
