@@ -18,7 +18,7 @@ BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 API_KEY = os.environ.get("API_KEY")
-MODEL = genai.GenerativeModel('gemini-pro')
+MODEL = genai.GenerativeModel('gemini-1.5-flash')
 
 # Configurações do Bluesky
 PDS_URL = "https://bsky.social"
