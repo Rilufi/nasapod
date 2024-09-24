@@ -386,7 +386,7 @@ def main():
         # Definir o site com base na data formatada
         site = f"https://apod.nasa.gov/apod/ap{formato2}.html"
 
-    # Criar o texto inicial
+# Criar o texto inicial
     if iniciar_com:
         mystring = f"""Astronomy Picture of the Day
 
@@ -401,6 +401,20 @@ Source: {site}
 
 Source: {site}
 """
+
+print("Texto a ser enviado:", mystring)
+
+# Recuperar a imagem ou thumbnail
+print("Media Type:", media_type)
+print("URL da Imagem:", url)
+print("Thumbnail:", thumbs)
+
+# Verificar facets
+print("Facets de hashtags e link:", all_facets)
+
+# Verificar alt_text
+print("Alt Text gerado:", alt_text)
+
 
     # Recuperar a imagem ou thumbnail
     if media_type == 'image':
