@@ -64,8 +64,6 @@ jobs:
           TELE_USER: ${{ secrets.TELE_USER }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
-          BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}          
-          BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
         run: python nasapod.py
 
       - name: Upload Instagram Session
