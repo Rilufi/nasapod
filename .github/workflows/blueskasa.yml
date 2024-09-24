@@ -1,10 +1,10 @@
 name: Blueskasa
 
-on: push
- # workflow_run:
- #   workflows: ["Apodfollow"]
- #   types:
-#      - completed
+on:
+  workflow_run:
+    workflows: ["Apodfollow"]
+    types:
+      - completed
 
 jobs:
   tweet:
