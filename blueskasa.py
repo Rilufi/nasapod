@@ -330,7 +330,7 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
 def main():
     hora = obter_hora_sao_paulo()
 
-    if hora == '7':
+    if hora == '07':
         data = datetime.now().strftime("%Y-%m-%d")
         iniciar_com = "Astronomy Picture of the Day"
 
