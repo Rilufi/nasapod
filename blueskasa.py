@@ -330,43 +330,60 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
 def main():
     hora = obter_hora_sao_paulo()
 
-    if hora == '07':
+    if hora == '11':
         data = datetime.now().strftime("%Y-%m-%d")
         iniciar_com = "Astronomy Picture of the Day"
+
+        # Formato especial para o horário das 7, sem a inclusão da data no request da API
+        URL_APOD = "https://api.nasa.gov/planetary/apod"
+        params = {
+            'api_key': API_KEY,
+            'hd': 'True',
+            'thumbs': 'True',
+        }
+
+        response = retry_request(requests.get, URL_APOD, params=params)
+        apod_data = response.json()
+
+        # Se 'count' estiver presente, a resposta será uma lista
+        if isinstance(apod_data, list):
+            apod_data = apod_data[0]
+
+        url = apod_data.get('url')
+        thumbs = apod_data.get('thumbnail_url')
+        media_type = apod_data.get('media_type')
+        explanation = apod_data.get('explanation')
+        title = apod_data.get('title')
+
+        # Usar o site com a data atual no formato específico
+        formato2 = datetime.now().strftime("%y%m%d")
+        site = f"https://apod.nasa.gov/apod/ap{formato2}.html"
+
     else:
         data = gerar_data_aleatoria()
         iniciar_com = ""  # Iniciar diretamente com o título
 
-    formato1, formato2 = formatar_data(data)
+        formato1, formato2 = formatar_data(data)
 
-    # Buscar APOD
-    URL_APOD = "https://api.nasa.gov/planetary/apod"
-    params = {
-        'api_key': API_KEY,
-        'hd': 'True',
-        'thumbs': 'True',
-    }
+        # Buscar APOD para outras horas que não sejam 07
+        URL_APOD = "https://api.nasa.gov/planetary/apod"
+        params = {
+            'api_key': API_KEY,
+            'hd': 'True',
+            'thumbs': 'True',
+            'date': formato1
+        }
 
-    if hora != '07':
-        params['date'] = formato1
+        response = retry_request(requests.get, URL_APOD, params=params)
+        apod_data = response.json()
 
-    response = retry_request(requests.get, URL_APOD, params=params)
-    apod_data = response.json()
+        url = apod_data.get('url')
+        thumbs = apod_data.get('thumbnail_url')
+        media_type = apod_data.get('media_type')
+        explanation = apod_data.get('explanation')
+        title = apod_data.get('title')
 
-    # Se 'count' estiver presente, a resposta será uma lista
-    if isinstance(apod_data, list):
-        apod_data = apod_data[0]
-
-    url = apod_data.get('url')
-    thumbs = apod_data.get('thumbnail_url')
-    media_type = apod_data.get('media_type')
-    explanation = apod_data.get('explanation')
-    title = apod_data.get('title')
-
-    # Definir o site com base na data
-    if hora == '07':
-        site = "https://apod.nasa.gov/apod/aptoday.html"
-    else:
+        # Definir o site com base na data formatada
         site = f"https://apod.nasa.gov/apod/ap{formato2}.html"
 
     # Criar o texto inicial
