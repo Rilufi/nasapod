@@ -408,12 +408,6 @@ Source: {site}
     print("Media Type:", media_type)
     print("URL da Imagem:", url)
     print("Thumbnail:", thumbs)
-    
-    # Verificar facets
-    print("Facets de hashtags e link:", all_facets)
-    
-    # Verificar alt_text
-    print("Alt Text gerado:", alt_text)
 
     # Recuperar a imagem ou thumbnail
     if media_type == 'image':
@@ -455,6 +449,16 @@ Source: {site}
     # Combinar todas as facets
     all_facets = hashtag_facets + link_facets
 
+
+    # Verificar facets
+    print("Facets de hashtags e link:", all_facets)
+    
+    # Verificar alt_text
+    print("Alt Text gerado:", alt_text)
+
+    # Verificar full_text
+    print("Full Text gerado:",full_text)
+    
     # Redimensionar a imagem se necessário
     resize_bluesky('apodtoday.jpeg')
 
