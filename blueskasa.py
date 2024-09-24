@@ -386,11 +386,9 @@ def main():
         # Definir o site com base na data formatada
         site = f"https://apod.nasa.gov/apod/ap{formato2}.html"
 
-    # Criar o texto inicial
+    # Criar o texto inicial "Astronomy Picture of the Day"
     if iniciar_com:
         mystring = f"""Astronomy Picture of the Day
-
-{iniciar_com}
 
 Title: {title}
 
@@ -402,12 +400,6 @@ Source: {site}
 Source: {site}
 """
 
-    print("Texto a ser enviado:", mystring)
-
-    # Recuperar a imagem ou thumbnail
-    print("Media Type:", media_type)
-    print("URL da Imagem:", url)
-    print("Thumbnail:", thumbs)
 
     # Recuperar a imagem ou thumbnail
     if media_type == 'image':
@@ -430,15 +422,15 @@ Source: {site}
     prompt = f"Based on the following explanation and image, create engaging astronomy related hashtags and a descriptive alt text. Separate the hashtags from the alt text with 'ALT-TEXT:'.\n\nExplanation: {explanation}"
     hashtags, alt_text = gemini_image(prompt, 'apodtoday.jpeg')
 
-    # Atualizar o texto com hashtags
+    # Atualizar o texto completo com ou sem hashtags, dependendo do horário
     if iniciar_com:
-        full_text = f"""{mystring}
-
-{hashtags}"""
+        # Postagem das 11h não incluirá hashtags
+        full_text = mystring
     else:
+        # Postagens em outros horários incluirão hashtags
         full_text = f"""{mystring}
-
-{hashtags}"""
+    
+    {hashtags}"""
 
     # Criar facets para hashtags
     hashtag_facets = find_hashtags(full_text)
@@ -448,16 +440,6 @@ Source: {site}
 
     # Combinar todas as facets
     all_facets = hashtag_facets + link_facets
-
-
-    # Verificar facets
-    print("Facets de hashtags e link:", all_facets)
-    
-    # Verificar alt_text
-    print("Alt Text gerado:", alt_text)
-
-    # Verificar full_text
-    print("Full Text gerado:",full_text)
     
     # Redimensionar a imagem se necessário
     resize_bluesky('apodtoday.jpeg')
