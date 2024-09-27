@@ -31,7 +31,7 @@ def retry_request(func, *args, retries=5, backoff_factor=1, **kwargs):
             response.raise_for_status()
             return response
         except requests.exceptions.RequestException as e:
-            wait = backoff_factor * (2 ** attempt)
+            wait = backoff_factor * (5 ** attempt)
             print(f"Erro: {e}. Retentando em {wait} segundos...")
             time.sleep(wait)
     print("Todas as tentativas falharam.")
