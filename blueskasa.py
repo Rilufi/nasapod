@@ -35,7 +35,7 @@ def retry_request(func, *args, retries=5, backoff_factor=1, **kwargs):
             print(f"Erro: {e}. Retentando em {wait} segundos...")
             time.sleep(wait)
     print("Todas as tentativas falharam.")
-    sys.exit(1)
+    sys.exit(0)
 
 # Função para obter o fuso horário e a hora atual em SP
 def obter_hora_sao_paulo() -> str:
