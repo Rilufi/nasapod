@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Define the hashtags and keywords to search for
     hashtags = [
         "#astronomy", "#space", "#universe", "#NASA", "#astrophysics",
-        "#cosmos", "#galaxy", "#astrophotography", "#hubble", "#universe",
+        "#galaxy", "#astrophotography", "#hubble", "#universe",
         "#science", "#telescope", "#cosmology", "#nightsky", "#milkyway"
     ]
     keywords = ['space', 'astronomy', 'galaxy', 'nebula', 'moon', 'sun', 'star', 'stars', 'constellation', 'telescope', 'nightsky', 'sky', 'earth', 'planets', 'NASA']
