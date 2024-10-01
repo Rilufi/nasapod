@@ -430,7 +430,7 @@ Source: {site}
         # Postagens em outros horários incluirão hashtags
         full_text = f"""{mystring}
     
-    {hashtags}"""
+{hashtags}"""
 
     # Criar facets para hashtags
     hashtag_facets = find_hashtags(full_text)
