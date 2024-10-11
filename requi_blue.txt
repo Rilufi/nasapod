@@ -2,3 +2,7 @@ typing
 google-generativeai
 pillow
 requests
+tweepy
+pyTelegramBotAPI
+moviepy>=1.0.3
+pytube
