@@ -1,10 +1,9 @@
 name: Blueskasa
 
 on:
-  workflow_run:
-    workflows: ["Apodfollow"]
-    types:
-      - completed
+  workflow_dispatch:
+  schedule:
+   - cron: '0 * * * *'
 
 jobs:
   tweet:
@@ -41,16 +40,15 @@ jobs:
       # Use HEREDOC for `run` to escape possible single and double quotes in the message.
       - name: skeet APOD 🐦📷
         env:
-                  API_KEY: ${{ secrets.API_KEY }}
-
-                  TELE_USER: ${{ secrets.TELE_USER }}
-
-                  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-
-                  GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
-
-                  BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}          
- 
-                  BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
+          API_KEY: ${{ secrets.API_KEY }}
+          TELE_USER: ${{ secrets.TELE_USER }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
+          BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}          
+          BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
+          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
 
         run: python blueskasa.py
