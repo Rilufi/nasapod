@@ -11,6 +11,41 @@ from typing import Dict, List, Tuple
 from PIL import Image
 import google.generativeai as genai
 import time
+import tweepy
+from pytube import YouTube
+from moviepy.video.io.VideoFileClip import VideoFileClip
+
+# Autenticação via Tweepy API v2 (Client)
+client = tweepy.Client(
+    consumer_key=os.environ.get("CONSUMER_KEY"),
+    consumer_secret=os.environ.get("CONSUMER_SECRET"),
+    access_token=os.environ.get("ACCESS_TOKEN"),
+    access_token_secret=os.environ.get("ACCESS_TOKEN_SECRET"),
+    wait_on_rate_limit=False
+)
+
+# Autenticação via Tweepy API v1.1 (API)
+CONSUMER_KEY = os.environ["CONSUMER_KEY"]
+CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
+ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
+ACCESS_TOKEN_SECRET = os.environ["ACCESS_TOKEN_SECRET"]
+
+auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+api = tweepy.API(auth, wait_on_rate_limit=False)
+
+# Função para dividir o texto em partes menores sem cortar palavras
+def get_chunks(text, max_length):
+    words = text.split(' ')
+    chunk = ''
+    for word in words:
+        if len(chunk) + len(word) + 1 <= max_length:
+            chunk += ' ' + word if chunk else word
+        else:
+            yield chunk
+            chunk = word
+    if chunk:
+        yield chunk
 
 # Inicializando o cliente do Bluesky e Google
 BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
@@ -130,6 +165,34 @@ def gemini_image(prompt: str, image_path: str) -> Tuple[str, str]:
         print(f"Erro ao gerar hashtags e alt_text com Gemini: {e}")
         return "", ""
 
+def resize_twitter(image_path, max_file_size=5 * 1024 * 1024):
+    """
+    Redimensiona e comprime uma imagem para ficar dentro do limite de tamanho aceito pela rede social Bluesky.
+    Substitui a imagem original se necessário.
+
+    :param image_path: Caminho da imagem original.
+    :param max_file_size: Tamanho máximo permitido da imagem em bytes (default: 1 MB).
+    """
+    # Abre a imagem usando o Pillow
+    img = Image.open(image_path)
+
+    # Redimensiona a imagem mantendo a proporção se necessário
+    if os.path.getsize(image_path) > max_file_size:
+        # Define o tamanho máximo para redimensionar
+        img.thumbnail((1600, 1600))  # Redimensiona para caber dentro de 1600x1600 pixels
+
+        # Reduz a qualidade gradualmente para atingir o tamanho desejado
+        quality = 95
+        while os.path.getsize(image_path) > max_file_size and quality > 10:
+            img.save(image_path, quality=quality)
+            quality -= 5
+            img = Image.open(image_path)  # Recarrega a imagem para verificar o tamanho
+
+        print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+    else:
+        img.save(image_path+'_twitter')
+        print("Imagem já está dentro do limite de tamanho do Bluesky.")
+
 # Função para redimensionar a imagem para Bluesky
 def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> None:
     try:
@@ -140,7 +203,7 @@ def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> Non
             while os.path.getsize(image_path) > max_file_size and quality > 10:
                 img.save(image_path, quality=quality)
                 quality -= 5
-                img = Image.open(image_path)
+                img = Image.open(image_path+'_bluesky')
             print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
         else:
             img.save(image_path)
@@ -326,6 +389,20 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
         print(f"Erro ao postar thread: {e}")
         sys.exit(1)
 
+# Função para cortar o vídeo
+def cortar_video(video_path, start_time, end_time, output_path):
+    try:
+        with VideoFileClip(video_path) as video:
+            duration = video.duration
+            if start_time < 0 or end_time > duration:
+                raise ValueError("Os tempos de corte estão fora da duração do vídeo")
+            video_cortado = video.subclip(start_time, end_time)
+            video_cortado.write_videofile(output_path, codec="libx264")
+        return output_path
+    except Exception as e:
+        print(f"Erro ao cortar o vídeo: {e}")
+        return None
+
 # Função principal
 def main():
     hora = obter_hora_sao_paulo()
@@ -406,6 +483,9 @@ Source: {site}
         image_url = url
     elif media_type == 'video':
         image_url = thumbs
+        # Retrieve the video for twitter
+        video_file = download_video(site)
+        video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
     else:
         print("Tipo de mídia não suportado.")
         sys.exit(1)
@@ -442,6 +522,7 @@ Source: {site}
     all_facets = hashtag_facets + link_facets
     
     # Redimensionar a imagem se necessário
+    resize_twitter('apodtoday.jpeg')
     resize_bluesky('apodtoday.jpeg')
 
     # Postar no Bluesky
@@ -451,10 +532,63 @@ Source: {site}
         password=BSKY_PASSWORD,
         initial_text=full_text,
         long_text=explanation,
-        image_path='apodtoday.jpeg',
+        image_path='apodtoday_bluesky.jpeg',
         alt_text=alt_text,
         facets=all_facets
     )
+    
+    chunks = list(get_chunks(explanation, 280))
+    tweet_id_imagem = None
+    
+    if media_type == 'image'
+    # Post the image on Twitter
+        try:
+            media = api.media_upload('apodtoday_twitter.jpeg')
+            tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+            if tweet_imagem and 'id' in tweet_imagem.data:
+                tweet_id_imagem = tweet_imagem.data['id']
+            else:
+                raise Exception("Falha ao obter ID do tweet.")
+        except Exception as e:
+            print(f"Erro ao postar foto no Twitter: {e}")
+    
+
+    elif media_type == 'video':
+            if video_file_twitter:
+                # Post the video on Twitter
+                try:
+                    media = api.media_upload(video_file_twitter)
+                    tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
+                    if tweet_video and 'id' in tweet_video.data:
+                        tweet_id_imagem = tweet_video.data['id']
+                        print("Vídeo publicado no Twitter")
+                    else:
+                        raise Exception("Falha ao obter ID do tweet.")
+                except Exception as e:
+                    print(f"Erro ao postar vídeo no Twitter: {e}")
+    
+    else:
+        print("Tipo de mídia inválido.")
+        bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
+    
+    # Publicar explicações no Twitter como uma thread
+    tweet_ids_explicacao = []
+    reply_to_id = tweet_id_imagem
+    
+    if tweet_id_imagem:
+        for parte in chunks:
+            try:
+                time.sleep(random.uniform(5, 15))  # Espera aleatória entre tweets
+                response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
+                if 'id' in response.data:
+                    tweet_ids_explicacao.append(str(response.data['id']))
+                    reply_to_id = response.data['id']
+                    print("Tweet publicado como parte da thread")
+                else:
+                    print(f"Error creating tweet: {response.data}")
+            except Exception as e:
+                print(f"Error creating tweet: {e}")
+
 
 if __name__ == "__main__":
     main()
