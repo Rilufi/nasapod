@@ -540,7 +540,7 @@ Source: {site}
     chunks = list(get_chunks(explanation, 280))
     tweet_id_imagem = None
     
-    if media_type == 'image'
+    if media_type == 'image':
     # Post the image on Twitter
         try:
             media = api.media_upload('apodtoday_twitter.jpeg')
