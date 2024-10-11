@@ -2,7 +2,7 @@ name: Apodfollow
 
 on:
   workflow_run:
-    workflows: ["Apodfollow"]
+    workflows: ["Blueskasa"]
     types:
       - completed
 
