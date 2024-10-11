@@ -184,13 +184,13 @@ def resize_twitter(image_path, max_file_size=5 * 1024 * 1024):
         # Reduz a qualidade gradualmente para atingir o tamanho desejado
         quality = 95
         while os.path.getsize(image_path) > max_file_size and quality > 10:
-            img.save(image_path, quality=quality)
+            img.save('twitter_'+image_path, quality=quality)
             quality -= 5
-            img = Image.open(image_path)  # Recarrega a imagem para verificar o tamanho
+            img = Image.open('twitter_'+image_path)  # Recarrega a imagem para verificar o tamanho
 
         print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
     else:
-        img.save(image_path+'_twitter')
+        img.save('twitter_'+image_path)
         print("Imagem já está dentro do limite de tamanho do Bluesky.")
 
 # Função para redimensionar a imagem para Bluesky
@@ -201,12 +201,12 @@ def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> Non
             img.thumbnail((1600, 1600))
             quality = 95
             while os.path.getsize(image_path) > max_file_size and quality > 10:
-                img.save(image_path, quality=quality)
+                img.save('bluesky_'+image_path, quality=quality)
                 quality -= 5
-                img = Image.open(image_path+'_bluesky')
+                img = Image.open('bluesky_'+image_path)
             print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
         else:
-            img.save(image_path)
+            img.save('bluesky_'+image_path)
             print("Imagem já está dentro do limite de tamanho do Bluesky.")
     except Exception as e:
         print(f"Erro ao redimensionar a imagem: {e}")
@@ -532,7 +532,7 @@ Source: {site}
         password=BSKY_PASSWORD,
         initial_text=full_text,
         long_text=explanation,
-        image_path='apodtoday_bluesky.jpeg',
+        image_path='bluesky_apodtoday.jpeg',
         alt_text=alt_text,
         facets=all_facets
     )
@@ -543,7 +543,7 @@ Source: {site}
     if media_type == 'image':
     # Post the image on Twitter
         try:
-            media = api.media_upload('apodtoday_twitter.jpeg')
+            media = api.media_upload('twitter_apodtoday.jpeg')
             tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
             if tweet_imagem and 'id' in tweet_imagem.data:
                 tweet_id_imagem = tweet_imagem.data['id']
