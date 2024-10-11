@@ -544,7 +544,7 @@ Source: {site}
     # Post the image on Twitter
         try:
             media = api.media_upload('twitter_apodtoday.jpeg')
-            tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
+            tweet_imagem = client.create_tweet(text=full_text, media_ids=[media.media_id])
             if tweet_imagem and 'id' in tweet_imagem.data:
                 tweet_id_imagem = tweet_imagem.data['id']
             else:
@@ -558,7 +558,7 @@ Source: {site}
                 # Post the video on Twitter
                 try:
                     media = api.media_upload(video_file_twitter)
-                    tweet_video = client.create_tweet(text=mystring, media_category="tweet_video", media_ids=[media.media_id])
+                    tweet_video = client.create_tweet(text=full_text, media_category="tweet_video", media_ids=[media.media_id])
                     if tweet_video and 'id' in tweet_video.data:
                         tweet_id_imagem = tweet_video.data['id']
                         print("Vídeo publicado no Twitter")
