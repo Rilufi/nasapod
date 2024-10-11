@@ -1,8 +1,11 @@
 name: Apodfollow
 
 on:
-  schedule:
-   - cron: '0 * * * *'
+  workflow_run:
+    workflows: ["Apodfollow"]
+    types:
+      - completed
+
 
 jobs:
   tweet:
