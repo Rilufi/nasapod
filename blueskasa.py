@@ -467,7 +467,7 @@ def main():
     if iniciar_com:
         mystring = f"""Astronomy Picture of the Day
 
-Title: {title}
+{title}
 
 Source: {site}
 """
