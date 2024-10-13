@@ -389,6 +389,23 @@ def post_thread(pds_url: str, handle: str, password: str, initial_text: str, lon
         print(f"Erro ao postar thread: {e}")
         sys.exit(1)
 
+# Função para baixar o vídeo e retornar o nome do arquivo baixado
+def download_video(link):
+    try:
+        youtube_object = YouTube(link)
+        video_stream = youtube_object.streams.get_highest_resolution()
+        if video_stream:
+            video_filename = video_stream.default_filename
+            video_stream.download()
+            time.sleep(random.uniform(1, 5))  # Espera aleatória para evitar sobrecarga de rede
+            return video_filename  # Retorna o nome do arquivo do vídeo baixado
+        else:
+            print("Nenhuma stream encontrada para o vídeo.")
+            return None
+    except Exception as e:
+        print(f"Erro ao baixar o vídeo: {e}")
+        return None  # Retorna None se o download falhar
+
 # Função para cortar o vídeo
 def cortar_video(video_path, start_time, end_time, output_path):
     try:
