@@ -270,17 +270,6 @@ if media_type == 'image':
     except Exception as e:
         print(f"Erro ao postar foto no Threads: {e}")
         bot.send_message(tele_user, f"Erro ao postar no Threads: {e}")
-    
-    # Post the image on Twitter
-    try:
-        media = api.media_upload(image)
-        tweet_imagem = client.create_tweet(text=mystring, media_ids=[media.media_id])
-        if tweet_imagem and 'id' in tweet_imagem.data:
-            tweet_id_imagem = tweet_imagem.data['id']
-        else:
-            raise Exception("Falha ao obter ID do tweet.")
-    except Exception as e:
-        print(f"Erro ao postar foto no Twitter: {e}")
 
     # Post the image on Instagram
     if instagram_client:
@@ -335,39 +324,3 @@ elif media_type == 'video':
 else:
     print("Tipo de mídia inválido.")
     bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
-
-# Publicar explicações no Twitter como uma thread
-tweet_ids_explicacao = []
-reply_to_id = tweet_id_imagem
-
-if tweet_id_imagem:
-    for parte in chunks:
-        try:
-            time.sleep(random.uniform(5, 15))  # Espera aleatória entre tweets
-            response = client.create_tweet(text=str(parte), in_reply_to_tweet_id=reply_to_id)
-            if 'id' in response.data:
-                tweet_ids_explicacao.append(str(response.data['id']))
-                reply_to_id = response.data['id']
-                print("Tweet publicado como parte da thread")
-            else:
-                print(f"Error creating tweet: {response.data}")
-        except Exception as e:
-            print(f"Error creating tweet: {e}")
-
-
-# Baixar e postar a última imagem de cada página da NASA no Instagram e Bluesky
-if instagram_client:
-    for page in nasa_pages:
-        nasa_image_path, nasa_caption, original_caption = baixar_e_traduzir_post(instagram_client, page, legendas_postadas)
-        time.sleep(random.uniform(900, 1200))
-        if nasa_image_path and nasa_caption:
-            try:
-                post_instagram_photo(instagram_client, nasa_image_path, nasa_caption)
-                # Salvar a legenda original no arquivo
-                salvar_legenda_postada(original_caption)
-                time.sleep(random.uniform(60, 120))  # Espera aleatória entre posts
-            except Exception as e:
-                print(f"Erro ao postar a imagem da {page} no Instagram: {e}")
-                bot.send_message(tele_user, f"apodinsta com problema pra postar imagem da {page}")
-else:
-    print("Erro: tweet_id_imagem não está definido.")
