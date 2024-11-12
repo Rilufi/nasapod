@@ -1,9 +1,10 @@
 name: Nasapod
 
-on: push
+on:
+  workflow_dispatch:
 
-#  schedule:
-#    - cron: '0 10 * * *'
+  schedule:
+    - cron: '0 10 * * *'
 
 
 jobs:
@@ -13,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Keep this repo alive
         uses: gautamkrishnar/keepalive-workflow@master
@@ -24,7 +25,7 @@ jobs:
           python-version: 3.x
 
       - name: Cache Python packages 💾
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -52,30 +53,18 @@ jobs:
         if: steps.session-check.outputs.exists == 'false'
         run: echo '{}' > instagram_session.json
 
-      - name: tweet and insta APOD 🐦📷
+      - name: insta APOD 🐦📷
         env:
-          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
           API_KEY: ${{ secrets.API_KEY }}
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           TELE_USER: ${{ secrets.TELE_USER }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
-        run: python nasapod.py
+        run: python instasa.py
 
       - name: Upload Instagram Session
         uses: actions/upload-artifact@v3
         with:
           name: instagram_session
           path: instagram_session.json
-
-      - name: Atualizar arquivo de legenda
-        run: |
-          git config --global user.email "github-actions@example.com"
-          git config --global user.name "GitHub Actions"
-          git add legendas_postadas.txt
-          git commit -m "Atualizar arquivo de legenda [skip ci]"  # Ignorar a execução do workflow para este commit
-          git push
