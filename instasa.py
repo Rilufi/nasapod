@@ -1,17 +1,15 @@
-from instagrapi import Client
-from instagrapi.exceptions import ChallengeRequired, TwoFactorRequired, LoginRequired
+# coding=utf-8
 import os
-import random
-import time
+import urllib.request
 import requests
+import google.generativeai as genai
+from instagrapi import Client
 import telebot
 from pytube import YouTube
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from datetime import datetime, timedelta
-import google.generativeai as genai
-import tweepy
-from auth import api, client
-from threadspy import ThreadsAPI
+import random
+import time
+from sys import exit
 
 # Authentication
 api_key = os.environ.get("API_KEY")
@@ -27,55 +25,27 @@ thrd = ThreadsAPI(username=username, password=password)
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
 
-# Páginas da NASA
-nasa_pages = [
-    528817151,   # Página oficial da NASA
-    5951848929,  # Página do Telescópio Espacial Hubble
-    354812686,   # Página de observação da Terra da NASA
-    582986390,   # Página do Jet Propulsion Laboratory
-    1332348075,  # Página do Observatório de Raios-X Chandra
-    953293389,   # Página da Estação Espacial Internacional
-    549313808,   # Página do Telescópio James Webb
-    549403870,   # Página do Kennedy Space Center
-    182988865,   # Página do Ames Research Center
-    3808579,     # Página do Goddard Space Center
-    757149008,   # Página do Marshall Space Center
-    694816689    # Página do Stennis Space Center
-]
-
-# Caminho para o arquivo de legendas
-legendas_file = "legendas_postadas.txt"
-
-# Função para carregar legendas postadas
-def carregar_legendas_postadas():
-    if os.path.exists(legendas_file):
-        with open(legendas_file, "r", encoding="utf-8") as file:
-            return set(file.read().splitlines())
-    return set()
-
-# Função para salvar legenda postada
-def salvar_legenda_postada(legenda):
-    with open(legendas_file, "a", encoding="utf-8") as file:
-        file.write(legenda + "\n")
-
-# Função para logar no Instagram com tentativas
+# Função para logar no Instagram com verificação de desafio
 def logar_instagram():
     cl = Client()
-    for attempt in range(5):  # Tenta logar até 5 vezes
-        try:
-            cl.login(username, password)
-            return cl
-        except Exception as e:
-            print(f"Erro ao logar no Instagram (tentativa {attempt + 1}): {e}")
-            if "Please wait a few minutes before you try again" in str(e):
-                time.sleep(60)  # Espera 1 minuto antes de tentar novamente
-            else:
-                break
-    return None
+    session_file = 'instagram_session.json'
+    try:
+        if os.path.exists(session_file):
+            cl.load_settings(session_file)
+        cl.login(username, password)
+        cl.get_timeline_feed()
+        cl.dump_settings(session_file)
+    except Exception as e:
+        print(f"Erro ao logar no Instagram: {e}")
+        bot.send_message(tele_user, f"apodinsta erro ao logar no Instagram: {e}")
+        exit()
+    return cl
 
-instagram_client = logar_instagram()
-if instagram_client is None:
-    bot.send_message(tele_user, "Erro ao logar no Instagram após várias tentativas. Verifique as credenciais e a conexão.")
+try:
+    instagram_client = logar_instagram()
+except Exception as e:
+    print(f"Erro ao logar no Instagram: {e}")
+    bot.send_message(tele_user, f"Erro ao logar no Instagram: {e}")
 
 # Função para postar foto no Instagram
 def post_instagram_photo(cl, image_path, caption):
@@ -109,36 +79,6 @@ def gerar_traducao(prompt):
         print("Nenhum candidato válido encontrado.")
     return None
 
-# Função para baixar e traduzir a última postagem do Instagram da NASA
-def baixar_e_traduzir_post(cl, username, legendas_postadas):
-    yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    medias = cl.user_medias(username, 5)
-    for media in medias:
-        media_date = media.taken_at.strftime('%Y-%m-%d')
-        if media_date == yesterday and media.media_type == 1:
-            image_url = media.thumbnail_url
-            caption = media.caption_text
-            if caption in legendas_postadas:
-                print(f"Legenda já postada anteriormente: {caption}")
-                return None, None, None  # Adicionado para garantir que não poste novamente
-            prompt_nasa = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning: {caption}"
-            traducao_nasa = gerar_traducao(prompt_nasa)
-            if traducao_nasa:
-                image_path = f"imagem_{username}.jpg"
-                response = requests.get(image_url)
-                if response.status_code == 200:
-                    with open(image_path, 'wb') as f:
-                        f.write(response.content)
-                    return image_path, traducao_nasa, caption
-                else:
-                    print(f"Erro ao baixar a imagem de {username}.")
-                    return None, None, None
-            else:
-                print("Não foi possível traduzir a legenda.")
-                return None, None, None
-    print(f"Nenhuma mídia válida encontrada para {username}.")
-    return None, None, None
-
 # Função para baixar o vídeo e retornar o nome do arquivo baixado
 def download_video(link):
     try:
@@ -170,15 +110,6 @@ def cortar_video(video_path, start_time, end_time, output_path):
         print(f"Erro ao cortar o vídeo: {e}")
         return None
 
-# Função para dividir o texto em múltiplos tweets
-def get_chunks(s, maxlength):
-    start = 0
-    end = 0
-    while start + maxlength < len(s) and end != -1:
-        end = s.rfind(" ", start, start + maxlength + 1)
-        yield s[start:end]
-        start = end + 1
-    yield s[start:]
 
 # Get the picture, explanation, and/or video thumbnail
 URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -196,44 +127,60 @@ title = response.get('title')
 hashtags = "#NASA #APOD #Astronomy #Space #Astrophotography"
 
 # Combinar o título e a explicação em um único prompt
-prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning:\n{title}\n{explanation}"
+prompt_combinado = f"Given the following scientific text from a reputable source (NASA) in English, translate it accurately and fluently into grammatically correct Brazilian Portuguese while preserving the scientific meaning and based on the following text, create engaging astronomy related hashtags:\n{title}\n\n{explanation}"
 
+# Gerar tradução combinada usando o modelo
 try:
-    # Verifique se a legenda já foi postada
-    legendas_postadas = carregar_legendas_postadas()
-    if explanation not in legendas_postadas:
-        # Obtenha a tradução
-        traducao = gerar_traducao(prompt_combinado)
+    traducao_combinada = gerar_traducao(prompt_combinado)
+    if traducao_combinada:
+        insta_string = f"""Foto Astronômica do Dia
+{title}
 
-        # Faça o download da imagem ou vídeo
-        if media_type == 'video':
-            video_filename = download_video(site)
-            if video_filename:
-                # Se o vídeo for maior que 1 minuto, corte-o
-                with VideoFileClip(video_filename) as video:
-                    if video.duration > 60:
-                        video_filename = cortar_video(video_filename, 0, 60, "cortado_" + video_filename)
-
-                # Poste o vídeo no Instagram
-                post_instagram_video(instagram_client, video_filename, traducao + "\n\n" + hashtags)
-        else:
-            image_path = "apod_image.jpg"
-            response = requests.get(site)
-            with open(image_path, 'wb') as f:
-                f.write(response.content)
-            
-            # Poste a imagem no Instagram
-            post_instagram_photo(instagram_client, image_path, traducao + "\n\n" + hashtags)
-
-        # Salve a legenda como postada
-        salvar_legenda_postada(explanation)
-        bot.send_message(tele_user, f"Foto Astronômica do Dia publicada: {title}")
+{traducao_combinada}"""
 
     else:
-        print(f"Legenda já postada anteriormente: {explanation}")
+        raise AttributeError("A tradução combinada não foi gerada.")
+except AttributeError as e:
+    print(f"Erro ao gerar a tradução: {e}")
+    insta_string = f"""Foto Astronômica do Dia
+{title}
 
-except Exception as e:
-    print(f"Erro ao executar o script: {e}")
-    bot.send_message(tele_user, f"Erro ao executar o script: {e}")
+{explanation}
 
-print("Script concluído.")
+#NASA #APOD #Astronomia #Espaço #Astrofotografia"""
+
+print(insta_string)
+
+
+if media_type == 'image':
+    # Retrieve the image
+    urllib.request.urlretrieve(site, 'apodtoday.jpeg')
+    image = "apodtoday.jpeg"
+
+    # Post the image on Instagram
+    if instagram_client:
+        try:
+            post_instagram_photo(instagram_client, image, insta_string)
+        except Exception as e:
+            print(f"Erro ao postar foto no Instagram: {e}")
+            bot.send_message(tele_user, 'apodinsta com problema pra postar imagem')
+
+elif media_type == 'video':
+    # Retrieve the video
+    video_file = download_video(site)
+    
+    if video_file:
+        video_file_cortado = cortar_video(video_file, 0, 60, "video_cortado.mp4")
+        if video_file_cortado:
+            video_file = video_file_cortado
+            # Post the video on Instagram
+            if instagram_client:
+                try:
+                    post_instagram_video(instagram_client, video_file, insta_string)
+                except Exception as e:
+                    print(f"Erro ao postar vídeo no Instagram: {e}")
+                    bot.send_message(tele_user, 'apodinsta com problema pra postar video')
+
+else:
+    print("Tipo de mídia inválido.")
+    bot.send_message(tele_user, 'Problema com o tipo de mídia no APOD')
