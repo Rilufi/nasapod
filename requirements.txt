@@ -1,14 +1,7 @@
 -i https://pypi.org/simple
-tweepy
-geopy
-geopandas
-matplotlib
 instagrapi
 pyTelegramBotAPI
 google-generativeai
 moviepy>=1.0.3
 pytube
-threads-py
-beautifulsoup4
-lxml
 pillow
