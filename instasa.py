@@ -20,7 +20,6 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
-thrd = ThreadsAPI(username=username, password=password)
 
 # Choose a GenAI model (e.g., 'gemini-pro')
 model = genai.GenerativeModel('gemini-pro')
