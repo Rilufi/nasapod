@@ -8,7 +8,7 @@ import urllib.request
 import requests
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Tuple
-from PIL import Image
+from PIL import Image, ImageSequence
 import google.generativeai as genai
 import time
 import tweepy
@@ -165,49 +165,96 @@ def gemini_image(prompt: str, image_path: str) -> Tuple[str, str]:
         print(f"Erro ao gerar hashtags e alt_text com Gemini: {e}")
         return "", ""
 
-def resize_twitter(image_path, max_file_size=5 * 1024 * 1024):
-    """
-    Redimensiona e comprime uma imagem para ficar dentro do limite de tamanho aceito pela rede social Bluesky.
-    Substitui a imagem original se necessário.
+def resize_twitter(image_path):
+    try:
+        # Abre a imagem
+        img = Image.open(image_path)
+        
+        # Verifica se a imagem é um GIF
+        if img.format == 'GIF':
+            # Redimensiona GIF animado
+            frames = []
+            for frame in ImageSequence.Iterator(img):
+                # Redimensiona cada quadro
+                frame = frame.convert('RGBA')  # Converte para RGBA para evitar problemas
+                resized_frame = frame.resize((800, 800), Image.ANTIALIAS)  # Ajuste o tamanho desejado
+                frames.append(resized_frame)
+            
+            # Salva como novo GIF
+            frames[0].save(
+                'twitter_' + image_path,
+                save_all=True,
+                append_images=frames[1:],
+                loop=img.info.get('loop', 0),
+                duration=img.info.get('duration', 100),
+                optimize=True
+            )
+            print(f"GIF redimensionado salvo como 'twitter_{image_path}'")
+        
+        else:
+            # Converte para RGB se necessário
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Salva imagem como JPEG
+            img.save('twitter_' + image_path, format='JPEG')
+            print(f"Imagem salva como 'twitter_{image_path}'")
+    
+    except Exception as e:
+        print(f"Erro ao redimensionar a imagem: {e}")
 
-    :param image_path: Caminho da imagem original.
-    :param max_file_size: Tamanho máximo permitido da imagem em bytes (default: 1 MB).
-    """
-    # Abre a imagem usando o Pillow
-    img = Image.open(image_path)
-
-    # Redimensiona a imagem mantendo a proporção se necessário
-    if os.path.getsize(image_path) > max_file_size:
-        # Define o tamanho máximo para redimensionar
-        img.thumbnail((1600, 1600))  # Redimensiona para caber dentro de 1600x1600 pixels
-
-        # Reduz a qualidade gradualmente para atingir o tamanho desejado
-        quality = 95
-        while os.path.getsize(image_path) > max_file_size and quality > 10:
-            img.save('twitter_'+image_path, quality=quality)
-            quality -= 5
-            img = Image.open('twitter_'+image_path)  # Recarrega a imagem para verificar o tamanho
-
-        print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
-    else:
-        img.save('twitter_'+image_path)
-        print("Imagem já está dentro do limite de tamanho do Bluesky.")
 
 # Função para redimensionar a imagem para Bluesky
 def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> None:
     try:
         img = Image.open(image_path)
-        if os.path.getsize(image_path) > max_file_size:
-            img.thumbnail((1600, 1600))
-            quality = 95
-            while os.path.getsize(image_path) > max_file_size and quality > 10:
-                img.save('bluesky_'+image_path, quality=quality)
-                quality -= 5
-                img = Image.open('bluesky_'+image_path)
-            print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+
+        # Verifica se o arquivo é um GIF
+        if img.format == 'GIF':
+            if os.path.getsize(image_path) > max_file_size:
+                frames = []
+                for frame in ImageSequence.Iterator(img):
+                    frame = frame.convert('RGBA')  # Converte para RGBA para evitar erros
+                    frame.thumbnail((1600, 1600))  # Redimensiona os quadros
+                    frames.append(frame)
+
+                # Reduz a qualidade (tamanho) do GIF
+                quality = 95
+                output_path = 'bluesky_' + image_path
+                while os.path.getsize(image_path) > max_file_size and quality > 10:
+                    frames[0].save(
+                        output_path,
+                        save_all=True,
+                        append_images=frames[1:],
+                        loop=img.info.get('loop', 0),
+                        duration=img.info.get('duration', 100),
+                        optimize=True,
+                        quality=quality,
+                    )
+                    quality -= 5
+                    # Atualiza o tamanho após salvar
+                    img = Image.open(output_path)
+
+                print(f"GIF redimensionado e comprimido para o limite do Bluesky de {max_file_size} bytes.")
+            else:
+                img.save('bluesky_' + image_path, save_all=True)
+                print("GIF já está dentro do limite de tamanho do Bluesky.")
+
+        # Para outros formatos
         else:
-            img.save('bluesky_'+image_path)
-            print("Imagem já está dentro do limite de tamanho do Bluesky.")
+            if os.path.getsize(image_path) > max_file_size:
+                img.thumbnail((1600, 1600))
+                quality = 95
+                output_path = 'bluesky_' + image_path
+                while os.path.getsize(image_path) > max_file_size and quality > 10:
+                    img.save(output_path, quality=quality)
+                    quality -= 5
+                    img = Image.open(output_path)
+                print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+            else:
+                img.save('bluesky_' + image_path)
+                print("Imagem já está dentro do limite de tamanho do Bluesky.")
+
     except Exception as e:
         print(f"Erro ao redimensionar a imagem: {e}")
 
