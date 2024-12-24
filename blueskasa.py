@@ -8,7 +8,7 @@ import urllib.request
 import requests
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Tuple
-from PIL import Image, ImageSequence
+from PIL import Image, ImageSequence, UnidentifiedImageError
 import google.generativeai as genai
 import time
 import tweepy
@@ -167,98 +167,44 @@ def gemini_image(prompt: str, image_path: str) -> Tuple[str, str]:
         return "", ""
 
 def resize_twitter(image_path):
+    """Redimensiona imagens ou GIFs para o formato suportado pelo Twitter."""
     try:
-        # Abre a imagem
-        img = Image.open(image_path)
-        
-        # Verifica se a imagem é um GIF
-        if img.format == 'GIF':
-            # Redimensiona GIF animado
-            frames = []
-            for frame in ImageSequence.Iterator(img):
-                # Redimensiona cada quadro
-                frame = frame.convert('RGBA')  # Converte para RGBA para evitar problemas
-                resized_frame = frame.resize((800, 800), Image.ANTIALIAS)  # Ajuste o tamanho desejado
-                frames.append(resized_frame)
-            
-            # Salva como novo GIF
-            frames[0].save(
-                'twitter_' + image_path,
-                save_all=True,
-                append_images=frames[1:],
-                loop=img.info.get('loop', 0),
-                duration=img.info.get('duration', 100),
-                optimize=True
-            )
-            print(f"GIF redimensionado salvo como 'twitter_{image_path}'")
-        
-        else:
-            # Converte para RGB se necessário
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            
-            # Salva imagem como JPEG
-            img.save('twitter_' + image_path, format='JPEG')
-            print(f"Imagem salva como 'twitter_{image_path}'")
-    
+        with Image.open(image_path) as img:
+            if img.format == "GIF":
+                # Caso seja um GIF, verifica e otimiza sem perder a animação
+                print("Redimensionando GIF para o Twitter.")
+                img.save("twitter_apodtoday.gif", save_all=True, optimize=True)
+                return "twitter_apodtoday.gif"
+            else:
+                img.thumbnail((1200, 675))  # Resolução padrão para Twitter
+                img.save("twitter_apodtoday.jpeg", format="JPEG")
+                return "twitter_apodtoday.jpeg"
+    except UnidentifiedImageError:
+        print(f"Erro: Arquivo {image_path} não é uma imagem válida.")
+        raise
     except Exception as e:
-        print(f"Erro ao redimensionar a imagem: {e}")
+        print(f"Erro ao redimensionar imagem: {e}")
+        raise
 
 
 # Função para redimensionar a imagem para Bluesky
 def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> None:
     try:
-        img = Image.open(image_path)
-
-        # Verifica se o arquivo é um GIF
-        if img.format == 'GIF':
-            if os.path.getsize(image_path) > max_file_size:
-                frames = []
-                for frame in ImageSequence.Iterator(img):
-                    frame = frame.convert('RGBA')  # Converte para RGBA para evitar erros
-                    frame.thumbnail((1600, 1600))  # Redimensiona os quadros
-                    frames.append(frame)
-
-                # Reduz a qualidade (tamanho) do GIF
-                quality = 95
-                output_path = 'bluesky_' + image_path
-                while os.path.getsize(image_path) > max_file_size and quality > 10:
-                    frames[0].save(
-                        output_path,
-                        save_all=True,
-                        append_images=frames[1:],
-                        loop=img.info.get('loop', 0),
-                        duration=img.info.get('duration', 100),
-                        optimize=True,
-                        quality=quality,
-                    )
-                    quality -= 5
-                    # Atualiza o tamanho após salvar
-                    img = Image.open(output_path)
-
-                print(f"GIF redimensionado e comprimido para o limite do Bluesky de {max_file_size} bytes.")
-            else:
-                img.save('bluesky_' + image_path, save_all=True)
-                print("GIF já está dentro do limite de tamanho do Bluesky.")
-
-        # Para outros formatos
+        if os.path.getsize(image_path) > max_file_size:
+            img.thumbnail((1600, 1600))
+            quality = 95
+            output_path = 'bluesky_' + image_path
+            while os.path.getsize(image_path) > max_file_size and quality > 10:
+                img.save(output_path, quality=quality)
+                quality -= 5
+                img = Image.open(output_path)
+            print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
         else:
-            if os.path.getsize(image_path) > max_file_size:
-                img.thumbnail((1600, 1600))
-                quality = 95
-                output_path = 'bluesky_' + image_path
-                while os.path.getsize(image_path) > max_file_size and quality > 10:
-                    img.save(output_path, quality=quality)
-                    quality -= 5
-                    img = Image.open(output_path)
-                print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
-            else:
-                img.save('bluesky_' + image_path)
-                print("Imagem já está dentro do limite de tamanho do Bluesky.")
-
+            img.save('bluesky_' + image_path)
+            print("Imagem já está dentro do limite de tamanho do Bluesky.")
     except Exception as e:
         print(f"Erro ao redimensionar a imagem: {e}")
-
+        
 # Função para criar sessão de login no Bluesky
 def bsky_login_session(pds_url: str, handle: str, password: str) -> Dict:
     try:
@@ -546,6 +492,25 @@ Source: {site}
     # Recuperar a imagem ou thumbnail
     if media_type == 'image':
         image_url = url
+        # Baixar a imagem
+        try:
+            urllib.request.urlretrieve(image_url, 'apodtoday.jpeg')
+            print(f"Imagem baixada: {image_url}")
+            resize_twitter('apodtoday.jpeg')
+        except Exception as e:
+            print(f"Erro ao baixar a imagem: {e}")
+            sys.exit(1)
+    elif url.endswith(".gif"):
+        image_url = url
+        media_type = "gif"
+        # Baixar o gif
+        try:
+            urllib.request.urlretrieve(image_url, 'apodtoday.gif')
+            print(f"Imagem baixada: {image_url}")
+            resize_twitter('apodtoday.gif')
+        except Exception as e:
+            print(f"Erro ao baixar o gif: {e}")
+            sys.exit(1)
     elif media_type == 'video':
         image_url = thumbs
         # Retrieve the video for twitter
@@ -553,14 +518,6 @@ Source: {site}
         video_file_twitter = cortar_video(video_file, 0, 140, "video_twitter.mp4")
     else:
         print("Tipo de mídia não suportado.")
-        sys.exit(1)
-
-    # Baixar a imagem
-    try:
-        urllib.request.urlretrieve(image_url, 'apodtoday.jpeg')
-        print(f"Imagem baixada: {image_url}")
-    except Exception as e:
-        print(f"Erro ao baixar a imagem: {e}")
         sys.exit(1)
 
     # Gerar hashtags e alt_text usando Gemini
@@ -585,30 +542,44 @@ Source: {site}
 
     # Combinar todas as facets
     all_facets = hashtag_facets + link_facets
-    
-    # Redimensionar a imagem se necessário
-    resize_twitter('apodtoday.jpeg')
-    resize_bluesky('apodtoday.jpeg')
 
-    # Postar no Bluesky
-    post_thread(
-        pds_url=PDS_URL,
-        handle=BSKY_HANDLE,
-        password=BSKY_PASSWORD,
-        initial_text=full_text,
-        long_text=explanation,
-        image_path='bluesky_apodtoday.jpeg',
-        alt_text=alt_text,
-        facets=all_facets
-    )
+    if url.endswith(".gif"):
+        pass
+    else:
+        # Redimensionar a imagem se necessário
+        resize_bluesky('apodtoday.jpeg')
     
-    chunks = list(get_chunks(explanation, 280))
-    tweet_id_imagem = None
+        # Postar no Bluesky
+        post_thread(
+            pds_url=PDS_URL,
+            handle=BSKY_HANDLE,
+            password=BSKY_PASSWORD,
+            initial_text=full_text,
+            long_text=explanation,
+            image_path='bluesky_apodtoday.jpeg',
+            alt_text=alt_text,
+            facets=all_facets
+        )
+        
+        chunks = list(get_chunks(explanation, 280))
+        tweet_id_imagem = None
     
     if media_type == 'image':
     # Post the image on Twitter
         try:
             media = api.media_upload('twitter_apodtoday.jpeg')
+            tweet_imagem = client.create_tweet(text=full_text, media_ids=[media.media_id])
+            if tweet_imagem and 'id' in tweet_imagem.data:
+                tweet_id_imagem = tweet_imagem.data['id']
+            else:
+                raise Exception("Falha ao obter ID do tweet.")
+        except Exception as e:
+            print(f"Erro ao postar foto no Twitter: {e}")
+
+    elif media_type == 'gif':
+    # Post the gif on Twitter
+        try:
+            media = api.media_upload('twitter_apodtoday.gif')
             tweet_imagem = client.create_tweet(text=full_text, media_ids=[media.media_id])
             if tweet_imagem and 'id' in tweet_imagem.data:
                 tweet_id_imagem = tweet_imagem.data['id']
