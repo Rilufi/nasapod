@@ -93,7 +93,8 @@ def formatar_data(data_str: str) -> Tuple[str, str]:
     data = datetime.strptime(data_str, "%Y-%m-%d")
     formato1 = data.strftime("%Y-%m-%d")
     formato2 = data.strftime("%y%m%d")
-    return formato1, formato2
+    formato3 = data.strftime("%d/%m/%Y")
+    return formato1, formato2, formato3
 
 # Função para criar facets de link
 def create_link_facets(text: str, link_text: str, url: str) -> List[Dict]:
@@ -504,7 +505,7 @@ def main():
         data = gerar_data_aleatoria()
         iniciar_com = ""  # Iniciar diretamente com o título
 
-        formato1, formato2 = formatar_data(data)
+        formato1, formato2, formato3 = formatar_data(data)
 
         # Buscar APOD para outras horas que não sejam 07
         URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -529,7 +530,7 @@ def main():
 
     # Criar o texto inicial "Astronomy Picture of the Day"
     if iniciar_com:
-        mystring = f"""Astronomy Picture of the Day
+        mystring = f"""Astronomy Picture from the Day {formato3}
 
 {title}
 
