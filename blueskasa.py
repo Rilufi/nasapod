@@ -484,7 +484,7 @@ def main():
 Source: {site}
 """
     else:
-        mystring = f"""Astronomy Picture from the Day {formato3}
+        mystring = f"""Astronomy Picture from {formato3}
 
 {title}
 
