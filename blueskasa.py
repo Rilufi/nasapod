@@ -190,18 +190,19 @@ def resize_twitter(image_path):
 # Função para redimensionar a imagem para Bluesky
 def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> None:
     try:
-        if os.path.getsize(image_path) > max_file_size:
-            img.thumbnail((1600, 1600))
-            quality = 95
-            output_path = 'bluesky_' + image_path
-            while os.path.getsize(image_path) > max_file_size and quality > 10:
-                img.save(output_path, quality=quality)
-                quality -= 5
-                img = Image.open(output_path)
-            print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
-        else:
-            img.save('bluesky_' + image_path)
-            print("Imagem já está dentro do limite de tamanho do Bluesky.")
+        with Image.open(image_path) as img:
+            if os.path.getsize(image_path) > max_file_size:
+                img.thumbnail((1600, 1600))
+                quality = 95
+                output_path = 'bluesky_' + image_path
+                while os.path.getsize(image_path) > max_file_size and quality > 10:
+                    img.save(output_path, quality=quality)
+                    quality -= 5
+                    img = Image.open(output_path)
+                print(f"Imagem redimensionada e comprimida para o limite do Bluesky de {max_file_size} bytes.")
+            else:
+                img.save('bluesky_' + image_path)
+                print("Imagem já está dentro do limite de tamanho do Bluesky.")
     except Exception as e:
         print(f"Erro ao redimensionar a imagem: {e}")
         
