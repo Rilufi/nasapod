@@ -477,14 +477,16 @@ def main():
 
     # Criar o texto inicial "Astronomy Picture of the Day"
     if iniciar_com:
-        mystring = f"""Astronomy Picture from the Day {formato3}
+        mystring = f"""Astronomy Picture of the Day
 
 {title}
 
 Source: {site}
 """
     else:
-        mystring = f"""{title}
+        mystring = f"""Astronomy Picture from the Day {formato3}
+
+{title}
 
 Source: {site}
 """
@@ -522,7 +524,7 @@ Source: {site}
         sys.exit(1)
 
     # Gerar hashtags e alt_text usando Gemini
-    prompt = f"Based on the following explanation and image, create engaging astronomy related hashtags and a descriptive alt text. Separate the hashtags from the alt text with 'ALT-TEXT:'.\n\nExplanation: {explanation}"
+    prompt = f"Based on the following explanation and image, create engaging astronomy related hashtags (with maximum 150 characters) and a descriptive alt text. Separate the hashtags from the alt text with 'ALT-TEXT:'.\n\nExplanation: {explanation}"
     hashtags, alt_text = gemini_image(prompt, 'apodtoday.jpeg')
 
     # Atualizar o texto completo com ou sem hashtags, dependendo do horário
