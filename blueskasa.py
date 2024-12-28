@@ -173,19 +173,20 @@ def resize_twitter(image_path):
             if img.format == "GIF":
                 # Caso seja um GIF, verifica e otimiza sem perder a animação
                 print("Redimensionando GIF para o Twitter.")
-                img.save("twitter_apodtoday.gif", save_all=True, optimize=True)
-                return "twitter_apodtoday.gif"
+                output_path = "twitter_apodtoday.gif"
+                img.save(output_path, save_all=True, optimize=True)
+                return output_path
             else:
                 img.thumbnail((1200, 675))  # Resolução padrão para Twitter
-                img.save("twitter_apodtoday.jpeg", format="JPEG")
-                return "twitter_apodtoday.jpeg"
+                output_path = "twitter_apodtoday.jpeg"
+                img.save(output_path, format="JPEG")
+                return output_path
     except UnidentifiedImageError:
         print(f"Erro: Arquivo {image_path} não é uma imagem válida.")
         raise
     except Exception as e:
         print(f"Erro ao redimensionar imagem: {e}")
         raise
-
 
 # Função para redimensionar a imagem para Bluesky
 def resize_bluesky(image_path: str, max_file_size: int = 1 * 1024 * 1024) -> None:
@@ -417,6 +418,7 @@ def cortar_video(video_path, start_time, end_time, output_path):
 
 # Função principal
 def main():
+    tweet_id_imagem = None
     hora = obter_hora_sao_paulo()
 
     if hora == '07':
@@ -578,19 +580,21 @@ Source: {site}
                 raise Exception("Falha ao obter ID do tweet.")
         except Exception as e:
             print(f"Erro ao postar foto no Twitter: {e}")
-
-    elif media_type == 'gif':
-    # Post the gif on Twitter
-        try:
-            media = api.media_upload('twitter_apodtoday.gif')
-            tweet_imagem = client.create_tweet(text=full_text, media_ids=[media.media_id])
-            if tweet_imagem and 'id' in tweet_imagem.data:
-                tweet_id_imagem = tweet_imagem.data['id']
-            else:
-                raise Exception("Falha ao obter ID do tweet.")
-        except Exception as e:
-            print(f"Erro ao postar foto no Twitter: {e}")
     
+    elif url.endswith(".gif"):
+    # Post the gif on Twitter
+        image_path = 'apodtoday.gif'
+        try:
+            resized_image = resize_twitter(image_path)
+            if resized_image:
+                media = api.media_upload(resized_image)
+                tweet_imagem = client.create_tweet(text=full_text, media_ids=[media.media_id])
+                if tweet_imagem and 'id' in tweet_imagem.data:
+                    tweet_id_imagem = tweet_imagem.data['id']
+                else:
+                    raise Exception("Falha ao obter ID do tweet.")
+        except Exception as e:
+            print(f"Erro ao postar GIF no Twitter: {e}")
 
     elif media_type == 'video':
             if video_file_twitter:
