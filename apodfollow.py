@@ -51,11 +51,15 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     access_jwt = session._session.access_jwt  # Corrigido aqui
     headers = {"Authorization": f"Bearer {access_jwt}"}
     
+    # Formata as datas no formato ISO sem frações de segundo
+    since_iso = since.replace(microsecond=0).isoformat()
+    until_iso = until.replace(microsecond=0).isoformat()
+    
     params = {
         "q": hashtag_query,
         "limit": 100,
-        "since": since,
-        "until": until,
+        "since": since_iso,
+        "until": until_iso,
         "sort": "latest"
     }
 
@@ -129,8 +133,8 @@ if __name__ == "__main__":
     # Calcula as datas de ontem e hoje no formato ISO com timezone-aware completo
     today = datetime.now(timezone.utc)
     yesterday = today - timedelta(days=1)
-    since = yesterday.isoformat()  # YYYY-MM-DDTHH:MM:SS+00:00
-    until = today.isoformat()      # YYYY-MM-DDTHH:MM:SS+00:00
+    since = yesterday.replace(microsecond=0)  # Remove frações de segundo
+    until = today.replace(microsecond=0)      # Remove frações de segundo
 
     # Define o número de ações a serem realizadas por hora
     actions_per_hour = HOURLY_LIMIT
@@ -195,6 +199,8 @@ if __name__ == "__main__":
                 break
         except requests.exceptions.HTTPError as e:
             print(f"Erro ao buscar posts para {hashtag}: {e}")
+        except Exception as e:
+            print(f"Erro inesperado ao processar {hashtag}: {e}")
 
     # Salva as interações para a próxima execução
     save_interactions(interactions)
