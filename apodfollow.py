@@ -19,7 +19,7 @@ HOURLY_LIMIT = DAILY_LIMIT // 24  # Limite de ações por hora
 INTERACTIONS_FILE = 'interactions.json'
 
 def load_interactions() -> Dict:
-    """Loads interactions from a JSON file."""
+    """Carrega interações de um arquivo JSON."""
     if os.path.exists(INTERACTIONS_FILE):
         with open(INTERACTIONS_FILE, 'r') as file:
             try:
@@ -30,12 +30,12 @@ def load_interactions() -> Dict:
     return {"likes": [], "reposts": [], "follows": []}
 
 def save_interactions(interactions: Dict):
-    """Saves interactions to a JSON file."""
+    """Salva interações em um arquivo JSON."""
     with open(INTERACTIONS_FILE, 'w') as file:
         json.dump(interactions, file)
 
 def bsky_login_session(pds_url: str, handle: str, password: str) -> Client:
-    """Logs in to Bluesky and returns the client instance."""
+    """Autentica no Bluesky e retorna a instância do cliente."""
     print("Tentando autenticar no Bluesky...")
     client = Client(base_url=pds_url)
     client.login(handle, password)
@@ -43,10 +43,14 @@ def bsky_login_session(pds_url: str, handle: str, password: str) -> Client:
     return client
 
 def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, until: str) -> Dict:
-    """Searches for posts containing the given hashtags within a specific time range."""
+    """Busca posts contendo as hashtags fornecidas dentro de um intervalo de tempo."""
     hashtag_query = " OR ".join(hashtags)
     url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
-    headers = {"Authorization": f"Bearer {session._access_jwt}"}
+    
+    # Obtém o token de acesso da sessão
+    access_jwt = session._session.access_jwt  # Corrigido aqui
+    headers = {"Authorization": f"Bearer {access_jwt}"}
+    
     params = {
         "q": hashtag_query,
         "limit": 100,
@@ -60,7 +64,7 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     return response.json()
 
 def find_images_with_keywords(post: Dict, keywords: List[str]) -> List[Dict]:
-    """Finds images in the post with alt text containing any of the specified keywords."""
+    """Encontra imagens no post com texto alternativo contendo qualquer uma das palavras-chave especificadas."""
     images_with_keywords = []
     embed = post.get('record', {}).get('embed')
 
@@ -84,21 +88,21 @@ def post_contains_ignored_hashtags(post: Dict, ignored_hashtags: List[str]) -> b
     return any(ignored_hashtag in content for ignored_hashtag in ignored_hashtags)
 
 def like_post(client: Client, uri: str, cid: str, interactions: Dict):
-    """Likes a post given its URI and CID, if not already liked."""
+    """Curtir um post, dado seu URI e CID, se ainda não curtido."""
     if uri not in interactions["likes"]:
         client.like(uri=uri, cid=cid)
         interactions["likes"].append(uri)
         print(f"Post curtido: {uri}")
 
 def repost_post(client: Client, uri: str, cid: str, interactions: Dict):
-    """Reposts a post given its URI and CID, if not already reposted."""
+    """Repostar um post, dado seu URI e CID, se ainda não repostado."""
     if uri not in interactions["reposts"]:
         client.repost(uri=uri, cid=cid)
         interactions["reposts"].append(uri)
         print(f"Post repostado: {uri}")
 
 def follow_user(client: Client, did: str, interactions: Dict):
-    """Follows a user given their DID, if not already followed."""
+    """Seguir um usuário, dado seu DID, se ainda não seguido."""
     if did not in interactions["follows"]:
         client.follow(did)
         interactions["follows"].append(did)
@@ -108,10 +112,10 @@ if __name__ == "__main__":
     # Carrega interações passadas para evitar duplicatas
     interactions = load_interactions()
 
-    # Login to Bluesky
+    # Login no Bluesky
     client = bsky_login_session(PDS_URL, BSKY_HANDLE, BSKY_PASSWORD)
 
-    # Define the hashtags and keywords to search for
+    # Define as hashtags e palavras-chave para busca
     hashtags = [
         "#astronomy", "#space", "#universe", "#NASA", "#astrophysics",
         "#galaxy", "#astrophotography", "#hubble", "#universe",
@@ -128,11 +132,11 @@ if __name__ == "__main__":
     since = yesterday.isoformat()  # YYYY-MM-DDTHH:MM:SS+00:00
     until = today.isoformat()      # YYYY-MM-DDTHH:MM:SS+00:00
 
-    # Define the number of actions to perform per hour
+    # Define o número de ações a serem realizadas por hora
     actions_per_hour = HOURLY_LIMIT
     action_counter = 0
 
-    # Search for posts within the specified time range
+    # Busca posts dentro do intervalo de tempo especificado
     for hashtag in hashtags:
         try:
             search_results = search_posts_by_hashtags(client, [hashtag], since, until)
@@ -159,7 +163,7 @@ if __name__ == "__main__":
 
                     # Verifica se a hashtag está presente no texto do post
                     if post_contains_hashtags(post, hashtags):
-                        # Find images containing keywords in their alt descriptions
+                        # Encontra imagens contendo palavras-chave no texto alternativo
                         images = find_images_with_keywords(post, keywords)
                         
                         if images:
