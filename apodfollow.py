@@ -51,9 +51,9 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
     access_jwt = session._session.access_jwt  # Corrigido aqui
     headers = {"Authorization": f"Bearer {access_jwt}"}
     
-    # Formata as datas no formato ISO sem frações de segundo
-    since_iso = since.replace(microsecond=0).isoformat()
-    until_iso = until.replace(microsecond=0).isoformat()
+    # Formata as datas no formato ISO com timezone UTC (Z no final)
+    since_iso = since.strftime("%Y-%m-%dT%H:%M:%SZ")
+    until_iso = until.strftime("%Y-%m-%dT%H:%M:%SZ")
     
     params = {
         "q": hashtag_query,
@@ -63,7 +63,12 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
         "sort": "latest"
     }
 
+    print(f"Enviando requisição para a API com params: {params}")
     response = requests.get(url, headers=headers, params=params)
+    
+    # Log da resposta da API para depuração
+    print(f"Resposta da API: {response.status_code}, {response.text}")
+    
     response.raise_for_status()
     return response.json()
 
