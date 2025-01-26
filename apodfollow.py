@@ -5,7 +5,6 @@ from atproto import Client
 import json
 from datetime import datetime, timedelta, timezone
 import time
-import tweepy
 import sys
 
 
