@@ -7,7 +7,6 @@ from datetime import datetime, timedelta, timezone
 import time
 import sys
 
-
 # Configurações do Bluesky
 BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
 BSKY_PASSWORD = os.environ.get("BSKY_PASSWORD")  # Senha do Bluesky
@@ -105,26 +104,6 @@ def follow_user_bluesky(client: Client, did: str, interactions):
         interactions["follows"].append(did)
         print(f"Seguindo usuário no Bluesky: {did}")
 
-def like_post_twitter(tweet_id: str, interactions):
-    """Curtir um post no Twitter."""
-    if tweet_id not in interactions["likes"]:
-        twitter_client.like(tweet_id)
-        interactions["likes"].append(tweet_id)
-        print(f"Post curtido no Twitter: {tweet_id}")
-
-def follow_user_twitter(username: str, interactions):
-    """Seguir um usuário no Twitter."""
-    if username not in interactions["follows"]:
-        twitter_api.create_friendship(screen_name=username)
-        interactions["follows"].append(username)
-        print(f"Seguindo usuário no Twitter: @{username}")
-
-def search_tweets_by_hashtags(hashtags: List[str]):
-    """Busca tweets contendo as hashtags fornecidas."""
-    query = " OR ".join(hashtags)
-    tweets = twitter_client.search_recent_tweets(query=query, max_results=50)
-    return tweets.data if tweets.data else []
-
 if __name__ == "__main__":
     interactions = load_interactions()
     bsky_client = bsky_login_session(PDS_URL, BSKY_HANDLE, BSKY_PASSWORD)
@@ -162,10 +141,10 @@ if __name__ == "__main__":
                         continue
 
                     if post_contains_hashtags(post, [hashtag]):
-                        if action_counter < actions_per_hour:
+                        if action_counter < actions_per_hour and uri not in interactions["likes"]:
                             like_post_bluesky(bsky_client, uri, cid, interactions)
                             action_counter += 1
-                        if action_counter < actions_per_hour:
+                        if action_counter < actions_per_hour and author_did not in interactions["follows"]:
                             follow_user_bluesky(bsky_client, author_did, interactions)
                             action_counter += 1
 
