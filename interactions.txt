@@ -23,3 +23,4 @@ like:at://did:plc:rcez3b6bp5gh5d4jxzlgo7vv/app.bsky.feed.post/3lhvfocdpji2a
 repost:at://did:plc:rcez3b6bp5gh5d4jxzlgo7vv/app.bsky.feed.post/3lhvfocdpji2a
 like:at://did:plc:ij6dn5kvtjy34d446vau7xzo/app.bsky.feed.post/3lhvdsvhrek24
 repost:at://did:plc:ij6dn5kvtjy34d446vau7xzo/app.bsky.feed.post/3lhvdsvhrek24
+like:at://did:plc:fu366m2aahg3vuldfz5cvcdk/app.bsky.feed.post/3lhv6q6ufs3i2
