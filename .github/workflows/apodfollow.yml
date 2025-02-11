@@ -7,53 +7,27 @@ on:
     types:
       - completed
 
-
 jobs:
-  tweet:
-    name: Skeet
+  run-bot:
     runs-on: ubuntu-latest
-
-    concurrency:
-      group: ${{ github.workflow }}
-
     steps:
-      - name: Checkout 🛎
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Keep this repo alive
-        uses: gautamkrishnar/keepalive-workflow@master
-
-      - name: Set up Python 🐍
-        uses: actions/setup-python@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.x
+          python-version: '3.9'
 
-      - name: Cache Python packages 💾
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Install packages ⚙
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install bs4 atproto requests
+          pip install requests atproto
 
-      # Use HEREDOC for `run` to escape possible single and double quotes in the message.
-      - name: Run all star scripts 🪐‎
+      - name: Run bot
         env:
-          BSKY_HANDLE:  ${{ secrets.BSKY_HANDLE }}
-          BSKY_PASSWORD:  ${{ secrets.BSKY_PASSWORD }}
+          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
+          BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python apodfollow.py
-
-      - name: Atualizar arquivo de interações
-        run: |
-          git config --global user.email "github-actions@example.com"
-          git config --global user.name "GitHub Actions"
-          git status  # Verificar se há mudanças detectadas
-          git add -f interactions.json  # Forçar adição do arquivo
-          git commit -m "Atualizar arquivo de interações [skip ci]" || echo "Nenhuma alteração para fazer commit."
-          git push || echo "Nenhuma alteração para fazer push."
+        
