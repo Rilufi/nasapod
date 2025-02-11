@@ -5,7 +5,6 @@ from atproto import Client
 import json
 from datetime import datetime, timedelta, timezone
 import time
-import sys
 
 # Configurações do Bluesky
 BSKY_HANDLE = os.environ.get("BSKY_HANDLE")  # Handle do Bluesky
@@ -28,8 +27,8 @@ def load_interactions():
                 return json.load(file)
             except json.JSONDecodeError:
                 print(f"O arquivo {INTERACTIONS_FILE} está vazio ou corrompido. Inicializando com valores padrão.")
-                return {"likes": [], "reposts": [], "follows": []}
-    return {"likes": [], "reposts": [], "follows": []}
+                return {"likes": []}
+    return {"likes": []}
 
 def save_interactions(interactions):
     """Salva interações em um arquivo JSON."""
@@ -97,13 +96,6 @@ def like_post_bluesky(client: Client, uri: str, cid: str, interactions):
         interactions["likes"].append(uri)
         print(f"Post curtido no Bluesky: {uri}")
 
-def follow_user_bluesky(client: Client, did: str, interactions):
-    """Seguir um usuário no Bluesky."""
-    if did not in interactions["follows"]:
-        client.follow(did)
-        interactions["follows"].append(did)
-        print(f"Seguindo usuário no Bluesky: {did}")
-
 if __name__ == "__main__":
     interactions = load_interactions()
     bsky_client = bsky_login_session(PDS_URL, BSKY_HANDLE, BSKY_PASSWORD)
@@ -134,7 +126,6 @@ if __name__ == "__main__":
                     uri = post.get('uri')
                     cid = post.get('cid')
                     author = post.get('author', {})
-                    author_did = author.get('did', '')
 
                     # Evita interagir com posts do próprio bot
                     if author.get('displayName', '') == BOT_NAME:
@@ -143,9 +134,6 @@ if __name__ == "__main__":
                     if post_contains_hashtags(post, [hashtag]):
                         if action_counter < actions_per_hour and uri not in interactions["likes"]:
                             like_post_bluesky(bsky_client, uri, cid, interactions)
-                            action_counter += 1
-                        if action_counter < actions_per_hour and author_did not in interactions["follows"]:
-                            follow_user_bluesky(bsky_client, author_did, interactions)
                             action_counter += 1
 
                     if action_counter >= actions_per_hour:
