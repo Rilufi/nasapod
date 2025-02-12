@@ -383,3 +383,4 @@ like:at://did:plc:oylz6xh23srmrfwk4kgjiin5/app.bsky.feed.post/3lhxamvdqrs2u
 repost:at://did:plc:oylz6xh23srmrfwk4kgjiin5/app.bsky.feed.post/3lhxamvdqrs2u
 like:at://did:plc:jygn53uakpz4pne6uvb3x4s3/app.bsky.feed.post/3lhxbxkwqmx2n
 repost:at://did:plc:jygn53uakpz4pne6uvb3x4s3/app.bsky.feed.post/3lhxbxkwqmx2n
+like:at://did:plc:6txdndyx4f42htjp3zbswx3x/app.bsky.feed.post/3lhxfvxgnww2c
