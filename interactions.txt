@@ -1968,3 +1968,4 @@ like:at://did:plc:p3kymqmhoujbqacwvostyxgi/app.bsky.feed.post/3li5df2i6bs2g
 repost:at://did:plc:p3kymqmhoujbqacwvostyxgi/app.bsky.feed.post/3li5df2i6bs2g
 like:at://did:plc:bw3uobs6k4rx5hbn6irgvkrr/app.bsky.feed.post/3li5eulp4ts2g
 repost:at://did:plc:bw3uobs6k4rx5hbn6irgvkrr/app.bsky.feed.post/3li5eulp4ts2g
+like:at://did:plc:osyrxf52xq4m677roiq6yxd5/app.bsky.feed.post/3li5elnbi2s2a
