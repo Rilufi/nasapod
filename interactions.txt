@@ -2152,3 +2152,4 @@ like:at://did:plc:czks5j64xlnbbzc57gwvjmw7/app.bsky.feed.post/3li5ryfqjrs2y
 repost:at://did:plc:czks5j64xlnbbzc57gwvjmw7/app.bsky.feed.post/3li5ryfqjrs2y
 like:at://did:plc:7dy7tkasxq575se7eq5assda/app.bsky.feed.post/3li5ro6hdbl2b
 repost:at://did:plc:7dy7tkasxq575se7eq5assda/app.bsky.feed.post/3li5ro6hdbl2b
+like:at://did:plc:powormhsdnmjflp7cusduh4s/app.bsky.feed.post/3li5r3j53wk2r
