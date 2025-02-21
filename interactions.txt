@@ -6140,3 +6140,4 @@ like:at://did:plc:7c4jjgfpjxdw7a6umxvusgjy/app.bsky.feed.post/3linuirco3222
 repost:at://did:plc:7c4jjgfpjxdw7a6umxvusgjy/app.bsky.feed.post/3linuirco3222
 like:at://did:plc:wumqannjr6lfhw6xerwv3qzf/app.bsky.feed.post/3lintvx5jrc2m
 repost:at://did:plc:wumqannjr6lfhw6xerwv3qzf/app.bsky.feed.post/3lintvx5jrc2m
+like:at://did:plc:6vwzq6ohuaspqpg3sa6ebsgw/app.bsky.feed.post/3linxo6pd5d2y
