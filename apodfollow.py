@@ -136,7 +136,10 @@ def search_posts_by_hashtags(client: Client, hashtags: List[str], since: str, un
             return {}
     except requests.exceptions.RequestException as e:
         print(f"Erro na requisição: {e}")
+        return {}    except requests.exceptions.RequestException as e:
+        print(f"Erro na requisição: {e}")
         return {}
+
 def like_post_bluesky(client: Client, uri: str, cid: str, interactions):
     """Curtir um post no Bluesky."""
     if f"like:{uri}" not in interactions:
