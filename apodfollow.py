@@ -103,16 +103,17 @@ def post_contains_hashtags(post: Dict, hashtags: List[str]) -> bool:
     content = post.get('record', {}).get('text', '').lower()
     return any(hashtag.lower() in content for hashtag in hashtags)
 
-def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, until: str) -> Dict:
+def search_posts_by_hashtags(client: Client, hashtags: List[str], since: str, until: str) -> Dict:
     """Busca posts contendo as hashtags fornecidas dentro de um intervalo de tempo."""
     cleaned_hashtags = [hashtag.replace('#', '').lower() for hashtag in hashtags]
     hashtag_query = " OR ".join(cleaned_hashtags)
-    url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
+    url = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchposts"  # Note o "searchposts" em minúsculas
     
     # Obtém o token de acesso da sessão
-    access_jwt = session._session.access_jwt  # Corrigido aqui
+    access_jwt = client._session.access_jwt
     headers = {"Authorization": f"Bearer {access_jwt}"}
     
+    # Parâmetros da requisição
     params = {
         "q": hashtag_query,
         "limit": 50,
@@ -121,17 +122,21 @@ def search_posts_by_hashtags(session: Client, hashtags: List[str], since: str, u
         "sort": "latest"
     }
 
-    response = requests.get(url, headers=headers, params=params)
-    check_rate_limit(response)  # Verifica e gerencia o limite de requisições
-
     try:
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.HTTPError as e:
-        print(f"Erro ao buscar posts para {hashtag_query}: {e}")
-        print(f"Detalhes do erro: {response.text}")
+        # Faz a requisição COM autenticação
+        response = requests.get(url, headers=headers, params=params)
+        
+        # Verifica o status da resposta
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Erro ao buscar posts para {hashtag_query}: {response.status_code}")
+            print(f"Detalhes do erro: {response.text}")
+            print(f"Headers da resposta: {response.headers}")
+            return {}
+    except requests.exceptions.RequestException as e:
+        print(f"Erro na requisição: {e}")
         return {}
-
 def like_post_bluesky(client: Client, uri: str, cid: str, interactions):
     """Curtir um post no Bluesky."""
     if f"like:{uri}" not in interactions:
