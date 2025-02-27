@@ -8620,3 +8620,4 @@ like:at://did:plc:clrfvwuhmua2kotmmxqtxwy5/app.bsky.feed.post/3lj563rqics2d
 repost:at://did:plc:clrfvwuhmua2kotmmxqtxwy5/app.bsky.feed.post/3lj563rqics2d
 like:at://did:plc:hnt3x6uducf4inl7c6iwjjlv/app.bsky.feed.post/3lj5b2y4wbc2b
 repost:at://did:plc:hnt3x6uducf4inl7c6iwjjlv/app.bsky.feed.post/3lj5b2y4wbc2b
+like:at://did:plc:s24s3quj2lgdoglkyx4m6vwc/app.bsky.feed.post/3lj5aqxpyut2f
