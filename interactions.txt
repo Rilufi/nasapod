@@ -8678,3 +8678,4 @@ like:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ljbqnmrzc52m
 repost:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ljbqnmrzc52m
 like:at://did:plc:ezbl6iz3gu2ov7qc6jvbxppv/app.bsky.feed.post/3ljboix76uk2t
 repost:at://did:plc:ezbl6iz3gu2ov7qc6jvbxppv/app.bsky.feed.post/3ljboix76uk2t
+like:at://did:plc:ad6glqcebnjzateykoo7hebk/app.bsky.feed.post/3ljbl6j425c2f
