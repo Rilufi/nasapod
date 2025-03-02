@@ -9478,3 +9478,4 @@ like:at://did:plc:4aev75gpyhuzcvsjtmywymud/app.bsky.feed.post/3lje3p3kop227
 repost:at://did:plc:4aev75gpyhuzcvsjtmywymud/app.bsky.feed.post/3lje3p3kop227
 like:at://did:plc:guav3o3yxthkj76fup5wwcni/app.bsky.feed.post/3lje2gpi4u22f
 repost:at://did:plc:guav3o3yxthkj76fup5wwcni/app.bsky.feed.post/3lje2gpi4u22f
+like:at://did:plc:6u7rtaa2edfro6hygeeatsns/app.bsky.feed.post/3lje2geaf522z
