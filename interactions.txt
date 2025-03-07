@@ -8,3 +8,4 @@ like:at://did:plc:jj2lpid4xbgegeryqvc4wjd5/app.bsky.feed.post/3ljsekx5w6ez2
 repost:at://did:plc:jj2lpid4xbgegeryqvc4wjd5/app.bsky.feed.post/3ljsekx5w6ez2
 like:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ljs7csqmqf2i
 repost:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ljs7csqmqf2i
+like:at://did:plc:kbzotn4ippvrqllcitxglgm2/app.bsky.feed.post/3ljs674aid52n
