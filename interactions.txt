@@ -280,3 +280,4 @@ like:at://did:plc:2cvve4n6hodvtcipqnu32ipd/app.bsky.feed.post/3ljqlqhg7722d
 repost:at://did:plc:2cvve4n6hodvtcipqnu32ipd/app.bsky.feed.post/3ljqlqhg7722d
 like:at://did:plc:5255zgdd56af3hjktm73n25c/app.bsky.feed.post/3ljqc2arqc22s
 repost:at://did:plc:5255zgdd56af3hjktm73n25c/app.bsky.feed.post/3ljqc2arqc22s
+like:at://did:plc:detxcagrie7pb55itj56u2aw/app.bsky.feed.post/3ljq4v2hdys2h
