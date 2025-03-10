@@ -1942,3 +1942,4 @@ like:at://did:plc:igptyggb2dxghi53kzczdn2h/app.bsky.feed.post/3ljydlen5fk2i
 repost:at://did:plc:igptyggb2dxghi53kzczdn2h/app.bsky.feed.post/3ljydlen5fk2i
 like:at://did:plc:klkh2se33ecufsl4kyiexgii/app.bsky.feed.post/3ljynpa3r772b
 repost:at://did:plc:klkh2se33ecufsl4kyiexgii/app.bsky.feed.post/3ljynpa3r772b
+like:at://did:plc:oai4bdczozub3o6pszrpc2vk/app.bsky.feed.post/3ljydlen5fk2i
