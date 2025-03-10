@@ -1948,3 +1948,4 @@ like:at://did:plc:xouofh5vo3bra5sopj5l67aq/app.bsky.feed.post/3ljyksaqt3k2p
 repost:at://did:plc:xouofh5vo3bra5sopj5l67aq/app.bsky.feed.post/3ljyksaqt3k2p
 like:at://did:plc:p5nwvdazj3mkasmm2hp5emo6/app.bsky.feed.post/3ljybw3juyc2c
 repost:at://did:plc:p5nwvdazj3mkasmm2hp5emo6/app.bsky.feed.post/3ljybw3juyc2c
+like:at://did:plc:sg32zg5k7wqejfwylhgpxlzn/app.bsky.feed.post/3ljyksaqt3k2p
