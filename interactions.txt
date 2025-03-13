@@ -4308,3 +4308,4 @@ like:at://did:plc:jdr65fnpaxcyh2wekeaqtttw/app.bsky.feed.post/3lkalnqsdm72s
 repost:at://did:plc:jdr65fnpaxcyh2wekeaqtttw/app.bsky.feed.post/3lkalnqsdm72s
 like:at://did:plc:xlupw2b5v6f7dm5hpvsco4eq/app.bsky.feed.post/3lkaljpbvzc2g
 repost:at://did:plc:xlupw2b5v6f7dm5hpvsco4eq/app.bsky.feed.post/3lkaljpbvzc2g
+like:at://did:plc:qsfnjt6rtano7xpbxiax2tkn/app.bsky.feed.post/3lkam6sgbuc2d
