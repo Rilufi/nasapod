@@ -7713,3 +7713,4 @@ like:at://did:plc:eo6a6x7zl7zkavxkayq54y3s/app.bsky.feed.post/3lkl5jlq5uk2u
 repost:at://did:plc:eo6a6x7zl7zkavxkayq54y3s/app.bsky.feed.post/3lkl5jlq5uk2u
 like:at://did:plc:j2rpnkm6s2j3xvgjaeoug6vt/app.bsky.feed.post/3lkl5edwv242g
 repost:at://did:plc:j2rpnkm6s2j3xvgjaeoug6vt/app.bsky.feed.post/3lkl5edwv242g
+like:at://did:plc:6jndfwcne4ucguutruvamtft/app.bsky.feed.post/3lkl5otcrf22t
