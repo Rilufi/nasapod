@@ -10195,3 +10195,4 @@ like:at://did:plc:s2fhcpwc3desldm65v5uc7yl/app.bsky.feed.post/3lkuacrpnvt2y
 repost:at://did:plc:s2fhcpwc3desldm65v5uc7yl/app.bsky.feed.post/3lkuacrpnvt2y
 like:at://did:plc:y25wdpl53bjx6l7wuukijeav/app.bsky.feed.post/3lkub67uucs2w
 repost:at://did:plc:y25wdpl53bjx6l7wuukijeav/app.bsky.feed.post/3lkub67uucs2w
+like:at://did:plc:lc6hdhnjkgccd6ysi7e23pll/app.bsky.feed.post/3lkub3si7py2y
