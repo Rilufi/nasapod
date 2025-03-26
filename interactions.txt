@@ -80,3 +80,4 @@ like:at://did:plc:da2ng3ydbseiuj2335zcmkkj/app.bsky.feed.post/3llbqgbrg7c2e
 repost:at://did:plc:da2ng3ydbseiuj2335zcmkkj/app.bsky.feed.post/3llbqgbrg7c2e
 like:at://did:plc:cros23kdwegocphsqelo7hxj/app.bsky.feed.post/3llbqel33nu2k
 repost:at://did:plc:cros23kdwegocphsqelo7hxj/app.bsky.feed.post/3llbqel33nu2k
+like:at://did:plc:rosza6li42i2fszf2xxbjqcr/app.bsky.feed.post/3llbnt7s3p22y
