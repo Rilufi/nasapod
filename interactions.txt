@@ -240,3 +240,4 @@ like:at://did:plc:2wwz64hkfrhljlat3zcoubp7/app.bsky.feed.post/3ll7dbsgr2l2i
 repost:at://did:plc:2wwz64hkfrhljlat3zcoubp7/app.bsky.feed.post/3ll7dbsgr2l2i
 like:at://did:plc:iqdt6i5ezkgikcw7ws2llwpq/app.bsky.feed.post/3llbuh2j6tc2h
 repost:at://did:plc:iqdt6i5ezkgikcw7ws2llwpq/app.bsky.feed.post/3llbuh2j6tc2h
+like:at://did:plc:bsxeabyltbhu6qakiayawwt2/app.bsky.feed.post/3llbsfcmysk2b
