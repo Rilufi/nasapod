@@ -1928,3 +1928,4 @@ like:at://did:plc:yspvtbvqfilaimcnyqs6whdp/app.bsky.feed.post/3lli7nnomts2u
 repost:at://did:plc:yspvtbvqfilaimcnyqs6whdp/app.bsky.feed.post/3lli7nnomts2u
 like:at://did:plc:gyros6vj2lzmrm6x2mmniqoc/app.bsky.feed.post/3lli6ki27jk2d
 repost:at://did:plc:gyros6vj2lzmrm6x2mmniqoc/app.bsky.feed.post/3lli6ki27jk2d
+like:at://did:plc:4pbt3zeesuxqusfv5ydaizyd/app.bsky.feed.post/3lli6aao64s23
