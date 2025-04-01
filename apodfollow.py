@@ -23,7 +23,8 @@ HOURLY_LIMIT = DAILY_LIMIT // 24  # Limite de ações por hora
 # Lista de palavras-chave inapropriadas
 ADULT_KEYWORDS = [
     "nsfw", "porn", "sex", "nude", "onlyfans", "adult", "explicit",
-    "xxx", "nsfw18+", "hentai", "fuck", "dick", "pussy", "ass", "r18"
+    "xxx", "nsfw18+", "hentai", "fuck", "dick", "pussy", "ass", "r18",
+    "apple", "samsung", "smartphone", "tarot", "digitalart", "iphone"
 ]
 
 def load_interactions():
@@ -189,7 +190,7 @@ if __name__ == "__main__":
 
     # Define hashtags e palavras-chave para busca
     hashtags = [
-        "#astrophysics", "#galaxy", "#astrophotography", "#hubble", "#universe",
+        "#astrophysics", "#astrophotography", "#hubble", "#universe",
         "#science", "#telescope", "#cosmology", "#nightsky", "#milkyway"
     ]
 
