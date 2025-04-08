@@ -7975,3 +7975,6 @@ repost:at://did:plc:7joe6nyotgurrpklfkcen6ix/app.bsky.feed.post/3lmbtz2zjin2n
 like:at://did:plc:gtxi6ccwgn2wh33kh7loiix7/app.bsky.feed.post/3lmbwkgcu2s2q
 repost:at://did:plc:gtxi6ccwgn2wh33kh7loiix7/app.bsky.feed.post/3lmbwkgcu2s2q
 like:at://did:plc:d4gbuuknwmjdshpnq76ut7lu/app.bsky.feed.post/3lmbzeheyxc2c
+repost:at://did:plc:d4gbuuknwmjdshpnq76ut7lu/app.bsky.feed.post/3lmbzeheyxc2c
+like:at://did:plc:kb7ncuujijxbu4ucrz4loaxc/app.bsky.feed.post/3lmbzbo66hk2z
+repost:at://did:plc:kb7ncuujijxbu4ucrz4loaxc/app.bsky.feed.post/3lmbzbo66hk2z
