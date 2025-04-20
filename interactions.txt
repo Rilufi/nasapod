@@ -90,3 +90,4 @@ like:at://did:plc:dmfcr4ij36tu4wk2pt3w6qg5/app.bsky.feed.post/3lnaolqwjws2u
 repost:at://did:plc:dmfcr4ij36tu4wk2pt3w6qg5/app.bsky.feed.post/3lnaolqwjws2u
 like:at://did:plc:rd37jauicwpuh76gefzjhxsf/app.bsky.feed.post/3lnantvi2kc2u
 repost:at://did:plc:rd37jauicwpuh76gefzjhxsf/app.bsky.feed.post/3lnantvi2kc2u
+like:at://did:plc:chf3ulw5hmdfvpye4ofzsmyx/app.bsky.feed.post/3lnanp4ucbk2p
