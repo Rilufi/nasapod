@@ -24,3 +24,4 @@ like:at://did:plc:cag2njnh455u4ehdpae4wmhn/app.bsky.feed.post/3ln7i6lgrts2m
 repost:at://did:plc:cag2njnh455u4ehdpae4wmhn/app.bsky.feed.post/3ln7i6lgrts2m
 like:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ln77lrxz5h2z
 repost:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ln77lrxz5h2z
+like:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3ln6zqisb6m24
