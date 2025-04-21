@@ -440,3 +440,4 @@ like:at://did:plc:am2eg2fcdzrt5345kqxeabii/app.bsky.feed.post/3lnczbzw76r2m
 repost:at://did:plc:am2eg2fcdzrt5345kqxeabii/app.bsky.feed.post/3lnczbzw76r2m
 like:at://did:plc:lc6hdhnjkgccd6ysi7e23pll/app.bsky.feed.post/3lncz7c5mea2p
 repost:at://did:plc:lc6hdhnjkgccd6ysi7e23pll/app.bsky.feed.post/3lncz7c5mea2p
+like:at://did:plc:2wwz64hkfrhljlat3zcoubp7/app.bsky.feed.post/3lncz66mcc32p
