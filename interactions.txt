@@ -390,3 +390,4 @@ like:at://did:plc:sbkc77na7jjedxretiseyvq5/app.bsky.feed.post/3lncou63anc2a
 repost:at://did:plc:sbkc77na7jjedxretiseyvq5/app.bsky.feed.post/3lncou63anc2a
 like:at://did:plc:o7ocwftf5irggpis45hfclgl/app.bsky.feed.post/3lncrljmcmk2b
 repost:at://did:plc:o7ocwftf5irggpis45hfclgl/app.bsky.feed.post/3lncrljmcmk2b
+like:at://did:plc:yh5kl53hwy7rhahgcsuyef5a/app.bsky.feed.post/3lncskphihs2k
