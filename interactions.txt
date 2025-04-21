@@ -480,3 +480,4 @@ like:at://did:plc:jygn53uakpz4pne6uvb3x4s3/app.bsky.feed.post/3lndd7dfr6z2o
 repost:at://did:plc:jygn53uakpz4pne6uvb3x4s3/app.bsky.feed.post/3lndd7dfr6z2o
 like:at://did:plc:j2rpnkm6s2j3xvgjaeoug6vt/app.bsky.feed.post/3lnddwmustu26
 repost:at://did:plc:j2rpnkm6s2j3xvgjaeoug6vt/app.bsky.feed.post/3lnddwmustu26
+like:at://did:plc:cweysc3thpa3tpuukyx5ya7l/app.bsky.feed.post/3lnddw47i4o42
