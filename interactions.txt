@@ -972,3 +972,4 @@ like:at://did:plc:gc74awj2gzcdhfcgbvzmcexs/app.bsky.feed.post/3lng4hv3dck2q
 repost:at://did:plc:gc74awj2gzcdhfcgbvzmcexs/app.bsky.feed.post/3lng4hv3dck2q
 like:at://did:plc:tdz6ppiqpaowcllv4hqukkow/app.bsky.feed.post/3lng3kytkis2u
 repost:at://did:plc:tdz6ppiqpaowcllv4hqukkow/app.bsky.feed.post/3lng3kytkis2u
+like:at://did:plc:3w3olndufk6hr57qf3swtzgf/app.bsky.feed.post/3lng5xsabor2d
