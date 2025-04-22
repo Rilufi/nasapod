@@ -820,3 +820,5 @@ like:at://did:plc:232wt2erhh4fr7m7crk5bj2t/app.bsky.feed.post/3lnfel3xnmtt2
 repost:at://did:plc:232wt2erhh4fr7m7crk5bj2t/app.bsky.feed.post/3lnfel3xnmtt2
 like:at://did:plc:utbh3aowiu3fq6rwjs4t5o73/app.bsky.feed.post/3lnfh27dfp222
 repost:at://did:plc:utbh3aowiu3fq6rwjs4t5o73/app.bsky.feed.post/3lnfh27dfp222
+like:at://did:plc:crkad4f43vduotk6shgflb7l/app.bsky.feed.post/3lnfgx4ektc2d
+repost:at://did:plc:crkad4f43vduotk6shgflb7l/app.bsky.feed.post/3lnfgx4ektc2d
