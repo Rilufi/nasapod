@@ -1992,3 +1992,4 @@ like:at://did:plc:4kn4zclw35fifo3kgpkmhnj5/app.bsky.feed.post/3lnlcztae222a
 repost:at://did:plc:4kn4zclw35fifo3kgpkmhnj5/app.bsky.feed.post/3lnlcztae222a
 like:at://did:plc:3lcsn4fyfxt52rqi62ohwf4t/app.bsky.feed.post/3lnlcypdfgs2j
 repost:at://did:plc:3lcsn4fyfxt52rqi62ohwf4t/app.bsky.feed.post/3lnlcypdfgs2j
+like:at://did:plc:scso77zal5rnjgswjpr3odnv/app.bsky.feed.post/3lnlcjsdjml2p
