@@ -1994,3 +1994,4 @@ like:at://did:plc:3lcsn4fyfxt52rqi62ohwf4t/app.bsky.feed.post/3lnlcypdfgs2j
 repost:at://did:plc:3lcsn4fyfxt52rqi62ohwf4t/app.bsky.feed.post/3lnlcypdfgs2j
 like:at://did:plc:scso77zal5rnjgswjpr3odnv/app.bsky.feed.post/3lnlcjsdjml2p
 repost:at://did:plc:scso77zal5rnjgswjpr3odnv/app.bsky.feed.post/3lnlcjsdjml2p
+like:at://did:plc:wbnzl2vsvcbeyqtojnpipqw5/app.bsky.feed.post/3lnlatj5k722p
