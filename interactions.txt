@@ -2520,6 +2520,4 @@ like:at://did:plc:wcvol6nfba6mq4ukfugt7syz/app.bsky.feed.post/3lnonkyzuuk27
 repost:at://did:plc:wcvol6nfba6mq4ukfugt7syz/app.bsky.feed.post/3lnonkyzuuk27
 like:at://did:plc:3v5wdecpwruccdkeco4ztpim/app.bsky.feed.post/3lnnvygprps2j
 repost:at://did:plc:3v5wdecpwruccdkeco4ztpim/app.bsky.feed.post/3lnnvygprps2j
-like:at://did:plc:pflvdel7wsqin2fbxi2c4t4s/app.bsky.feed.post/3lnnvw76hjb2i
-repost:at://did:plc:pflvdel7wsqin2fbxi2c4t4s/app.bsky.feed.post/3lnnvw76hjb2i
-like:at://did:plc:2wwz64hkfrhljlat3zcoubp7/app.bsky.feed.post/3lnnrhhkwuh2u
+like:at://did:plc:zhq4wxlxtiwc2hznld4w364j/app.bsky.feed.post/3lnny2mt66t2q
