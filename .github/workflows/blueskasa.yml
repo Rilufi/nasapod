@@ -13,10 +13,17 @@ jobs:
 
     steps:
       - name: Checkout 🛎
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
-      - name: Keep this repo alive
-        uses: gautamkrishnar/keepalive-workflow@master
+      - name: Set up Git identity
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Make keepalive commit
+        run: |
+          git commit --allow-empty -m "Keepalive commit - $(date)"
+          git push
 
       - name: Set up Python 🐍
         uses: actions/setup-python@v4
