@@ -20,7 +20,7 @@ Para usar a Google Generative AI para traduções, você precisa de uma chave de
 Para postar no Twitter/X, configure as chaves e tokens da API do Twitter em `auth.py`. Certifique-se de ter as permissões necessárias para postar mídia e texto.
 
 ## Instagram API
-Para postar no Instagram, use o pacote `instagrapi`. Certifique-se de fornecer suas credenciais do Instagram nas variáveis de ambiente.
+Para postar no Instagram, use o pacote `instagrapi`. Certifique-se de fornecer suas credenciais do Instagram nas variáveis de ambiente. Essa função está funcionando em outro [repositório](github.com/rilufi/instasa)
 
 ## Threads API
 Para postar no Threads, forneça suas credenciais do Threads nas variáveis de ambiente.
